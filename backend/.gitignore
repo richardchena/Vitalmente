@@ -1,0 +1,11 @@
+# Archivo de variables de entorno
+.env
+
+# Directorios de dependencia
+node_modules/
+
+# Archivos de node
+package-lock.json
+
+# Otros
+init_visual_code.bat
