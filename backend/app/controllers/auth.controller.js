@@ -17,6 +17,8 @@ exports.getUser = async (username, password) => {
     delete usuario.id;
     delete usuario.email;
     delete usuario.password;
+    delete usuario.fecha_creacion;
+    delete usuario.fecha_baja;
 
     return usuario;
   }
@@ -31,17 +33,17 @@ exports.verifyToken = (req, res) => {
   const accessToken = req.body.accessToken;
 
   if (!accessToken)
-    res.send({message: "¡Token invalido!"});
+    res.send({message: "¡Token invalido!", status: 1});
   else{
     try {
       res.json(jwt.verify(accessToken, config.authJwtSecret));
 
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
-        res.send({message: '¡Token expirado!'});
+        res.send({message: '¡Token expirado!', status: 2});
 
       } else {
-        res.send({message: "¡Token invalido!"});
+        res.send({message: "¡Token invalido!", status: 1});
       }
     }
   }
@@ -51,13 +53,14 @@ exports.verifyToken = (req, res) => {
 function firmarToken (user) {
     const payload = {
       sub: user.username,
-      role: user.role
+      role: user.role,
+      cuenta: user.status,
+      status: 0,
     }
     
     const accessToken = jwt.sign(payload, config.authJwtSecret, {expiresIn: config.json_expires});
 
     return {
-      //user,
       accessToken
     };
 }
