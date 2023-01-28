@@ -92,7 +92,7 @@ $$;
 /*
 SELECT REGISTRAR_PACIENTE ('damian', 'damian@example.com', 'passw0rd', 3, 'Richard', 'Damian', NULL, 'Cabrera', 'Chena', '1998-02-14', 139, 1104, 'S', '0', 'No Aplica');
 
-SELECT * FROM USERS;
+SELECT * FROM ROLES;
 SELECT * FROM PERSONAS;
 SELECT * FROM PACIENTES;
 */
