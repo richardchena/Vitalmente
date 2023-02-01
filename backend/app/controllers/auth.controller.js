@@ -61,6 +61,7 @@ function firmarToken (user) {
     const accessToken = jwt.sign(payload, config.authJwtSecret, {expiresIn: config.json_expires});
 
     return {
-      accessToken
+      accessToken,
+      role: user.role
     };
 }

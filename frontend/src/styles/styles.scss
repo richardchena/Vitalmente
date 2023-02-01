@@ -1,0 +1,21 @@
+//Cambiar colores predeterminados del bootstrap
+
+$theme-colors: (
+  "primary":    #7cd175,
+  "secondary":  #1d6042,
+  "success":    #198754,
+  "info":       #0dcaf0,
+  "warning":    #ffc107,
+  "danger":     #dc3545,
+  "light":      #f8f9fa,
+  "dark":       #343a40
+);
+
+
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+@import 'node_modules/bootstrap/scss/bootstrap.scss';
+
+// Tipo de letra por defecto
+* {
+  font-family: 'SF Pro Display', sans-serif;
+}
