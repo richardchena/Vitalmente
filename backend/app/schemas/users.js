@@ -42,4 +42,8 @@ const crear_usuario = joi.object({
   ocu
 });
 
-module.exports = { crear_usuario }
+const usuario_datos = joi.object({
+  username
+})
+
+module.exports = { crear_usuario, usuario_datos }

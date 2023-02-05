@@ -2,7 +2,7 @@
     <nav class="navbar bg-primary">
         <a class="navbar-brand text-black">
             <img
-                src="@/assets/logo.png"
+                src="@/assets/logos/logo1.png"
                 alt="Logo"
                 height="30"
                 class="d-inline-block align-text-top mx-2"
@@ -11,7 +11,7 @@
         </a>
 
         <div class="d-flex justify-content-center border border-dark rounded w-25 h-50">
-            <strong>PORTAL ADMINITRACIÓN</strong>
+            <strong>PORTAL {{user}}</strong>
         </div>
 
         <div class="d-flex flex-row align-items-center justify-content-center">
@@ -37,11 +37,35 @@
 </template>
 
 <script>
+    import store from '@/store'
     import Swal  from 'sweetalert2'
+    import { mapGetters /*, mapActions*/} from 'vuex'
+    
 
     export default {
+        data() {
+            return {
+                user: null
+            }
+        },
+
+        created() {
+            this.user = this.username
+        },
+
+        computed:{
+            ...mapGetters('auth', ['username'])
+        },
+
+        /*watch: {
+            username: function(value) {
+                this.user = value;
+            }
+        },*/
         
         methods:{
+            //...mapActions('auth', ['cerrar_sesion']),
+
             logOut(){
                 Swal.fire({
                 title: '¿Cerrar sesión?',
@@ -55,9 +79,15 @@
 
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        //this.cerrar_sesion
+                        store.dispatch('auth/cerrar_sesion')
                         Swal.fire({
                             title: 'Sesíon cerrada',
                             text: 'Por favor ingresa nuevamente tus credenciales'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.$router.push({name: 'login'})
+                            }
                         })
                     }
                 })

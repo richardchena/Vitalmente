@@ -68,3 +68,26 @@ exports.crear_admin = async (req, res) => {
     const resp = await registrar_paciente(req.body);
     res.send(`<h1>${resp.message}</h1>`);
 };
+
+exports.obtener_datos_usuario = async (req, res) => {
+    const query = `SELECT DATOS_USUARIO('${req.body.username}')`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        const resultado = datos[0][0].datos_usuario.replace('(', '').replace(')', '').replace(/"/gi, "");
+        const array = resultado.split(',');
+
+        const obj = {
+            email: array[0],
+            nombre: array[1],
+            rol: array[2],
+            ocupacion: array[3]
+        }
+
+        return res.json(obj);
+
+    } catch (error) {
+        console.log('error')
+        return res.send(null);
+    }
+};
