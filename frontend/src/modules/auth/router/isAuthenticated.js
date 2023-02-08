@@ -2,6 +2,7 @@ import store from '@/store'
 
 export const isAuthenticated = async (to, from, next) => {
     const {ok, cuenta} = await store.dispatch('auth/checkAuthentication')
+    console.log(ok, cuenta)
     if(ok && cuenta === 'A') next(null)
     else if (ok && cuenta !== 'A') next({name: 'cuenta-suspendida'})
     else next({name: 'login'})

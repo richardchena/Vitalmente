@@ -12,7 +12,6 @@ export const signInUser = async ({commit}, user) => {
         return{ok:true}
         
     } catch (error) {
-        console.log(error.code)
         if (error.code === 'ERR_NETWORK'){
             return  {ok: false, message: 'No es posible conectarse al servidor. Intentelo más tarde'}
         } else {
@@ -32,13 +31,19 @@ export const checkAuthentication = async ({commit}) => {
     try {
        const {data} = await authApi.post('/verify', {accessToken})
 
-       const user = {
-            username: data.sub,
-            role: data.role
+       if(data.status === 0) {
+            const user = {
+                    username: data.sub,
+                    role: data.role
+            }
+
+            commit('loginUser', {user, accessToken})
+            return {ok:true, cuenta: data.cuenta}
+       } else {
+            commit('loginUser', {user: null, accessToken})
+            return {ok:false, cuenta: null}
        }
 
-       commit('loginUser', {user, accessToken})
-       return {ok:true, cuenta: data.cuenta}
 
     } catch (error) {
         commit('logout')
