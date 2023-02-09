@@ -7,3 +7,7 @@ export const currentStatus = (state) => {
 export const username = (state) => {
     return state.user ?.username || ''
 }
+
+export const accessToken = (state) => {
+    return state.accessToken
+}

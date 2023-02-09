@@ -70,7 +70,7 @@ exports.crear_admin = async (req, res) => {
 };
 
 exports.obtener_datos_usuario = async (req, res) => {
-    const query = `SELECT DATOS_USUARIO('${req.body.username}')`
+    const query = `SELECT DATOS_USUARIO('${req.query.username}')`
 
     try {
         const datos = await db.sequelize.query(query);
@@ -87,7 +87,6 @@ exports.obtener_datos_usuario = async (req, res) => {
         return res.json(obj);
 
     } catch (error) {
-        console.log('error')
         return res.send(null);
     }
 };

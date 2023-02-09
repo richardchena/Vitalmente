@@ -11,7 +11,7 @@
         </a>
 
         <div class="d-flex justify-content-center border border-dark rounded w-25 h-50">
-            <strong>PORTAL {{user}}</strong>
+            <strong>PORTAL {{rol}}</strong>
         </div>
 
         <div class="d-flex flex-row align-items-center justify-content-center">
@@ -23,7 +23,7 @@
             </div>
 
             <div class="p-2">
-                <strong>USUARIO: ANA MEDINA</strong>
+                <strong>USUARIO: {{nombre}}</strong>
             </div>
 
             <div class="p-2">
@@ -39,32 +39,28 @@
 <script>
     import store from '@/store'
     import Swal  from 'sweetalert2'
+    import authApi from '@/api/authApi'
     import { mapGetters /*, mapActions*/} from 'vuex'
     
 
     export default {
         data() {
             return {
-                user: null
+                rol: 'Cargando...',
+                nombre: 'Cargando...',
             }
         },
 
-        created() {
-            this.user = this.username
+        async created() {
+            await this.get_data_current_user()
         },
 
         computed:{
-            ...mapGetters('auth', ['username'])
+            ...mapGetters('auth', ['username']),
+            ...mapGetters('auth', ['accessToken'])
         },
 
-        /*watch: {
-            username: function(value) {
-                this.user = value;
-            }
-        },*/
-        
         methods:{
-            //...mapActions('auth', ['cerrar_sesion']),
 
             logOut(){
                 Swal.fire({
@@ -91,6 +87,17 @@
                         })
                     }
                 })
+            },
+
+            async get_data_current_user(){
+                const {data} = await authApi.get('/obtener_datos_usuario', {
+                    params: {'username': this.username},
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`
+                    }
+                })
+                this.rol = data.rol
+                this.nombre = data.nombre
             }
         }
     }  

@@ -13,7 +13,7 @@ router.get('/create_user_paciente',
 
 router.get('/obtener_datos_usuario',
        passport.authenticate('jwt', {session: false}),
-       validar_datos(usuario_datos, 'body'),
+       validar_datos(usuario_datos, 'query'),
        users.obtener_datos_usuario);
 
 module.exports = router;

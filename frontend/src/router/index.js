@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import authRouter from '@/modules/auth/router'
+import principalRouter from '@/modules/principal/router'
 
 import { isAuthenticated, isLoginRequired, isSuspended } from '@/modules/auth/router/isAuthenticated'
 
 const routes = [
   {
     path: '/',
-    name: 'principal',
     beforeEnter: [isAuthenticated],
-    component: () => import(/* webpackChunkName: "Login" */ '@/modules/administrator/components/Navbar'),
+    ...principalRouter
   },
 
   {
