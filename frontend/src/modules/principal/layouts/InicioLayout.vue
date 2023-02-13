@@ -1,7 +1,7 @@
 <template>
     <div class="vh-100" style="background-color: gray">
         <Navbar/>
-        <router-view/>
+        <Inicio/>
     </div>
 </template>
 
@@ -9,7 +9,7 @@
 import {defineAsyncComponent} from 'vue'
 
 export default {
-    name: 'Inicio',
+    //name: 'Inicio',
 
     created(){
         document.title = 'Inicio'
@@ -17,6 +17,7 @@ export default {
 
     components: {
         Navbar: defineAsyncComponent(() => import ('@/modules/principal/components/Navbar')),
+        Inicio: defineAsyncComponent(() => import ('@/modules/principal/views/InicioAdministracion.vue')),
     }
 }
 </script>

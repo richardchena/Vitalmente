@@ -44,14 +44,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         store.dispatch('auth/cerrar_sesion')
-                        Swal.fire({
-                            title: 'Sesíon cerrada',
-                            text: 'Por favor ingresa nuevamente tus credenciales'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                this.$router.push({name: 'login'})
-                            }
-                        })
+                        this.$router.push({name: 'login'})
                     }
                 })
             }
