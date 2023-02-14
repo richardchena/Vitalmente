@@ -10,17 +10,34 @@
 
                         <h2 class="mb-5" style="margin-top: 20px">Clínica VitalMente</h2>
 
-                        <div class="form-outline mb-4">
-                            <input v-model="user" placeholder="Usuario" type="text" :class="input_user" required>
-                            <div id="validationServerUsernameFeedback" class="invalid-feedback">
-                                Por favor ingrese el username
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-outline mb-4">
+                                        <input v-model="user" placeholder="Usuario" type="text" :class="input_user" required>
+                                        <div id="validationServerUsernameFeedback" class="invalid-feedback">
+                                            Por favor ingrese el username
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="form-outline mb-4">
-                            <input v-model="pass" placeholder="Contraseña" type="password" :class="input_pass" required>
-                            <div id="validationServerPassFeedback" class="invalid-feedback">
-                                {{msg}}
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-10">
+                                    <div class="form-outline mb-4">
+                                        <input v-model="pass" placeholder="Contraseña" :type="tipo" :class="input_pass" required>
+                                        <div id="validationServerPassFeedback" class="invalid-feedback">
+                                            {{msg}}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-1">
+                                    <button class="btn btn-outline-dark btn-lg" @click="mostrar_pass">
+                                        <i :class="icono"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -45,7 +62,9 @@ export default {
             pass: null,
             input_user: 'form-control form-control-lg',
             input_pass: 'form-control form-control-lg',
-            msg: 'Por favor ingrese la contraseña'
+            msg: 'Por favor ingrese la contraseña',
+            tipo: 'password',
+            icono: 'fa fa-lock'
             //prueba: null
         }
     },
@@ -93,6 +112,18 @@ export default {
                 this.input_pass = 'form-control form-control-lg is-invalid'
             } else {
                 this.$router.push({name: 'principal'})
+            }
+        },
+
+        mostrar_pass(){
+            if(this.tipo === 'password'){
+                this.tipo = 'text'
+                this.icono = 'fa fa-unlock'
+            }
+            else {
+                this.tipo = 'password'
+                this.icono = 'fa fa-lock'
+
             }
         }
     }
