@@ -1,7 +1,14 @@
 <template>
-    <div class="vh-100" style="background-color: gray">
+    <div>
         <Navbar/>
-        <Inicio/>
+
+        <div class="super">
+            <div class="contenedor">
+                <Inicio/>
+            </div>
+        </div>
+
+
     </div>
 </template>
 
@@ -21,3 +28,15 @@ export default {
     }
 }
 </script>
+
+<style>
+    .contenedor{
+        /*height: 90vh;
+        width: 100vw;*/
+        background-color: gray;
+    }
+
+    .super{
+        padding: 10px 20px 10px 20px
+    }
+</style>

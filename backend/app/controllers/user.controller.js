@@ -1,7 +1,7 @@
 const db = require('../models');
 const bcrypt = require('bcrypt');
 
-const Users = db.Users;
+//const Users = db.Users;
 
 //Obtener el usuario por su identificador
 exports.findByUsername = async (username) => {
