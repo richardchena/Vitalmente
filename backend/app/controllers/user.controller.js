@@ -1,5 +1,7 @@
 const db = require('../models');
 const bcrypt = require('bcrypt');
+const generator = require('generate-password');
+const mail = require("../config/mailer");
 
 //const Users = db.Users;
 
@@ -24,7 +26,8 @@ async function registrar_paciente (paciente) {
     const seg_apellido = paciente.seg_apellido ? "'" + paciente.seg_apellido + "'" : 'NULL';
 
     // Encriptamos la contraseña
-    const pass = await encriptar_pass(paciente.password);
+    const generacion_pass = generar_pass()
+    const pass = await encriptar_pass(generacion_pass);
 
     //QUERY
     const query = `SELECT REGISTRAR_PACIENTE('${paciente.username}',
@@ -40,6 +43,7 @@ async function registrar_paciente (paciente) {
                                              ${paciente.nac},
                                              ${paciente.lugar_nac || 'NULL'},
                                              '${paciente.estado_civ}',
+                                             '${paciente.genero}',
                                              '${paciente.nro_doc}',
                                              '${paciente.ocu}')`
 
@@ -52,6 +56,7 @@ async function registrar_paciente (paciente) {
         
         const array = resp.split(',')
 
+        const msg = await enviar_pass(paciente.email, paciente.username, generacion_pass)
         return {"message": array[1], "codigo": array[0]};
 
     } catch (error) {
@@ -90,3 +95,47 @@ exports.obtener_datos_usuario = async (req, res) => {
         return res.send(null);
     }
 };
+
+/*exports.prueba_mail = async (req, res) => {
+    const password_generado = generar_pass()
+    const msg = await enviar_pass('richardchena@gmail.com', 'richard', password_generado)
+
+    res.send(`<h1>${password_generado}/${msg}</h1>`)
+}*/
+
+function generar_pass(){
+    const password_generado = generator.generate({
+        length: 8,
+        numbers: true
+    });
+
+    return password_generado
+}
+
+async function enviar_pass(email, user, pass) {
+    let msg;
+    await mail.transporter.sendMail({
+        from: '"noreply" tparqweb@gmail.com>',
+        to: email,
+        subject: "Le damos la bienvenida a la Clínica VitalMente :D",
+        html: `
+            <p>Estimad@ paciente,
+            <p>Le informamos que se ha creado su cuenta</p>
+            <p>Usuario: ${user}</p>
+            <p>Contraseña: ${pass}</p>
+
+            <br>
+            <strong><p>Una vez recibido este mensaje favor eliminarlo</p></strong>
+            <p>Saludos cordiales</p>
+            <p>Atte. Clínica VitalMente</p>
+        `,
+    })
+    .then(data => {
+        msg = "Mail enviado correctamente"
+    })
+    .catch(err => {
+        msg = "Error inesperado"
+    });
+
+    return msg
+}

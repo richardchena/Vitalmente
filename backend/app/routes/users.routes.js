@@ -16,4 +16,6 @@ router.get('/obtener_datos_usuario',
        validar_datos(usuario_datos, 'query'),
        users.obtener_datos_usuario);
 
+//router.get('/hola', users.prueba_mail)
+
 module.exports = router;

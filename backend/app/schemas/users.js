@@ -16,6 +16,7 @@ const fec_nac = joi.date().required();
 const nac = joi.number().integer().required();
 const lugar_nac = joi.number().integer();
 const estado_civ = joi.string().min(1).max(1).required();
+const genero = joi.string().min(1).max(1).required();
 const nro_doc = joi.string().min(1).max(50).required();
 
 //DATOS DEL PACIENTE
@@ -25,7 +26,7 @@ const crear_usuario = joi.object({
   //USER
   username,
   email,
-  password,
+  //password,
   role,
   //PERSONA
   pri_nombre,
@@ -37,6 +38,7 @@ const crear_usuario = joi.object({
   nac,
   lugar_nac,
   estado_civ,
+  genero,
   nro_doc,
   //PACIENTE
   ocu

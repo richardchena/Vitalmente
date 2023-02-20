@@ -15,4 +15,11 @@ const dbConfig = {
     dialect: process.env.DIALECT,
 }
 
-module.exports =  { config, dbConfig };
+const mailConfig = {
+    host_mail: process.env.HOST_MAIL,
+    port_mail: process.env.PORT_MAIL,
+    user_mail: process.env.USER_MAIL,
+    pass_mail: process.env.PASS_MAIL
+}
+
+module.exports =  { config, dbConfig, mailConfig };
