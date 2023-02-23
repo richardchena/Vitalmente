@@ -6,7 +6,6 @@ function checkRoles(...roles) {
             next();
         } else {
             return res.status(401).send('El usuario no cuenta con los permisos necesarios');
-            //next(res.status(401).send('El usuario no cuenta con los permisos necesarios')); //Usuario no autorizado para acceder
         }
     }
 }

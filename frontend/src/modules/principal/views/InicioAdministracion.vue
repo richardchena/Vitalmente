@@ -1,5 +1,12 @@
 <template>
     <div>
+        <div v-if="isLoading" class="spinner-wrapper">
+            <div class="spinner-border text-otros">
+                <span class="visually-hidden"></span>
+            </div>
+            <strong style="font-size: 25px; margin-left: 20px; margin-top:15px; color: black"><p>Registrando paciente... Aguarde por favor</p></strong>
+        </div>
+
         <nav class="navbar" style="background: #c6c6c6">
             <div style="margin-left: 15px">
                 <strong>Registrar nuevo paciente</strong>
@@ -170,7 +177,6 @@ export default {
             // Usuario
             username: null,
             email:  null, 
-            //pass: null,
 
             // Otros datos
             ocu: null,
@@ -189,7 +195,10 @@ export default {
             selectedCiu: 0,
 
             // Extras
-            desactivar: false
+            desactivar: false,
+
+            //
+            isLoading: false,
         }
     },
 
@@ -217,33 +226,13 @@ export default {
         },
         
         validar(){
-            if(!this.pri_nom  || !this.pri_ape || !this.fec_nac || !this.username || !this.pass || !this.email || !this.ocu){
+            if(!this.pri_nom  || !this.pri_ape || !this.fec_nac || !this.username || !this.email || !this.ocu){
                 Swal.fire({
                 text: "Debe completar todos los campos obligatorios",
                 icon: 'warning'})
             } else {
-                this.guardar()   
+                this.registrar_paciente()   
             }
-        },
-
-        guardar(){
-            console.log(this.pri_nom)
-            console.log(this.seg_nom)
-            console.log(this.ter_nom)
-            console.log(this.pri_ape)
-            console.log(this.seg_ape)
-            console.log(this.nro_doc)
-            console.log(this.selectedPais)
-            console.log(this.selectedDep)
-            console.log(this.selectedCiu)
-            console.log(this.fec_nac)
-            console.log(this.est_civ)
-            console.log(this.genero)
-            console.log(this.username)
-            console.log(this.email)
-            //console.log(this.pass)
-            console.log(this.ocu)
-            
         },
 
         async get_paises(){
@@ -310,13 +299,94 @@ export default {
             }
 
             return number + ""; // siempre devuelve tipo cadena
+        },
+
+        respuesta(msg, cod){
+            if(cod === '0') {
+                Swal.fire({
+                title: msg,
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK',
+                }).then(() => {
+                    this.$router.push('/')
+                });
+            } else if(cod === '999'){
+                const {response} = msg
+                const {data} = response
+
+                Swal.fire({
+                title: data,
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK',
+                }).then(() => {
+                    this.$router.push('/')
+                });
+            } else {
+                Swal.fire({
+                title: msg,
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK',
+                }).then(() => {
+                    this.$router.push('/')
+                });
+            }
+        },
+
+        reestructurar(){
+            let obj = {}
+
+            obj.role = 3
+            obj.fec_nac = this.fec_nac
+            obj.nac = this.selectedPais
+            obj.lugar_nac = this.selectedPais === 139 ? this.selectedCiu : null
+            obj.estado_civ = this.est_civ
+            obj.genero = this.genero
+
+            if(this.username && this.username.trim().length !== 0) obj.username = this.username.trim(); else obj.username = null;
+            if(this.email && this.email.trim().length !== 0) obj.email = this.email.trim(); else obj.email = null;
+            if(this.pri_nom && this.pri_nom.trim().length !== 0) obj.pri_nombre = this.pri_nom.trim(); else obj.pri_nombre = null;
+            if(this.seg_nom && this.seg_nom.trim().length !== 0) obj.seg_nombre = this.seg_nom.trim(); else delete obj.seg_nombre;
+            if(this.ter_nom && this.ter_nom.trim().length !== 0) obj.ter_nombre = this.ter_nom.trim(); else delete  obj.ter_nombre;
+            if(this.pri_ape && this.pri_ape.trim().length !== 0) obj.pri_apellido = this.pri_ape.trim(); else obj.pri_apellido = null;
+            if(this.seg_ape && this.seg_ape.trim().length !== 0) obj.seg_apellido = this.seg_ape.trim(); else delete  obj.seg_apellido;
+            if(this.nro_doc && this.nro_doc.trim().length !== 0) obj.nro_doc = this.nro_doc.trim(); else obj.nro_doc = null;
+            if(this.ocu && this.ocu.trim().length !== 0) obj.ocu = this.ocu.trim(); else obj.ocu = null;
+
+            return obj
+        },
+
+        async registrar_paciente(){
+            this.isLoading = true
+            authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
+
+            const objeto = this.reestructurar()
+
+            try {
+                const {data} = await authApi.post('/pacientes', {
+                    params: objeto 
+                })
+
+                this.respuesta(data.message, data.codigo)
+            } catch (error) {
+                this.isLoading = false
+                this.respuesta(error, '999')
+            }
+
+            this.isLoading = false
+        },
+
+        async regresar_atras(){
+
         }
     }
 }
 
 </script>
 
-<style>
+<style scoped>
     .contenedor{
         /*height: 80vh;*/
         background-color: #ededed;
@@ -329,5 +399,28 @@ export default {
         border: 0;
         border-top: 1px solid black;
         padding: 10px;
+    }
+
+    .spinner-wrapper {
+        background-color: gray;
+        opacity:0.9;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .spinner-border {
+        height: 70px;
+        width: 70px;
+    }
+
+    .text-otros {
+        font-size: 30px;
     }
 </style>

@@ -56,8 +56,11 @@ async function registrar_paciente (paciente) {
         
         const array = resp.split(',')
 
-        const msg = await enviar_pass(paciente.email, paciente.username, generacion_pass)
-        return {"message": array[1], "codigo": array[0]};
+        if(array[0] === '0'){
+            const msg = await enviar_pass(paciente.email, paciente.username, generacion_pass)
+        }
+
+        return {"message": array[1].replace('"', '').replace('"', ''), "codigo": array[0]};
 
     } catch (error) {
         return error;
@@ -69,9 +72,9 @@ async function encriptar_pass (pass) {
 }
 
 
-exports.crear_admin = async (req, res) => {
-    const resp = await registrar_paciente(req.body);
-    res.send(`<h1>${resp.message}</h1>`);
+exports.crear_paciente = async (req, res) => {
+    const resp = await registrar_paciente(req.body.params);
+    res.json(resp);
 };
 
 exports.obtener_datos_usuario = async (req, res) => {
@@ -95,13 +98,6 @@ exports.obtener_datos_usuario = async (req, res) => {
         return res.send(null);
     }
 };
-
-/*exports.prueba_mail = async (req, res) => {
-    const password_generado = generar_pass()
-    const msg = await enviar_pass('richardchena@gmail.com', 'richard', password_generado)
-
-    res.send(`<h1>${password_generado}/${msg}</h1>`)
-}*/
 
 function generar_pass(){
     const password_generado = generator.generate({
