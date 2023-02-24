@@ -135,3 +135,20 @@ async function enviar_pass(email, user, pass) {
 
     return msg
 }
+
+//ELIMINAR USUARIO
+exports.eliminar_paciente = async (req, res) => {
+    const resp = await eliminar_paciente_bd(req.params.username);
+    res.json(resp);
+};
+
+async function eliminar_paciente_bd(user) {
+    const query = `SELECT ELIMINAR_PACIENTE('${user}')`
+    try {
+        const datos = await db.sequelize.query(query);
+        return datos[0][0].eliminar_paciente
+
+    } catch (error) {
+        return error;
+    }
+}
