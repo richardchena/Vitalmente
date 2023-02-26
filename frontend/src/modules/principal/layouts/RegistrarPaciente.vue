@@ -1,12 +1,10 @@
 <template>
     <div>
         <Navbar/>
-        <!--<Menu/>-->
 
         <div class="super">
             <div class="contenedor">
-                <!--<ListarPaciente/>-->
-                <Menu/>
+                <RegistroPaciente/>
             </div>
         </div>
         
@@ -26,8 +24,7 @@ export default {
 
     components: {
         Navbar: defineAsyncComponent(() => import ('@/modules/principal/components/Navbar')),
-        Menu: defineAsyncComponent(() => import ('@/modules/principal/views/Menu.vue')),
-        //ListarPaciente: defineAsyncComponent(() => import ('@/modules/principal/views/ListarPacientes.vue')),
+        RegistroPaciente: defineAsyncComponent(() => import ('@/modules/principal/views/FormularioRegistroPaciente.vue')),
     }
 }
 </script>

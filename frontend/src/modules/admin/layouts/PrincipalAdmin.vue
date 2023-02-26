@@ -1,16 +1,11 @@
 <template>
     <div>
         <Navbar/>
-        <!--<Menu/>-->
-
         <div class="super">
             <div class="contenedor">
-                <!--<ListarPaciente/>-->
-                <Menu/>
+                <router-view/>
             </div>
         </div>
-        
-
     </div>
 </template>
 
@@ -18,16 +13,12 @@
 import {defineAsyncComponent} from 'vue'
 
 export default {
-    //name: 'Inicio',
-
     created(){
         document.title = 'Inicio'
     },
 
     components: {
-        Navbar: defineAsyncComponent(() => import ('@/modules/principal/components/Navbar')),
-        Menu: defineAsyncComponent(() => import ('@/modules/principal/views/Menu.vue')),
-        //ListarPaciente: defineAsyncComponent(() => import ('@/modules/principal/views/ListarPacientes.vue')),
+        Navbar: defineAsyncComponent(() => import ('@/modules/principal/components/Navbar'))
     }
 }
 </script>
@@ -35,8 +26,6 @@ export default {
 <style scoped>
     .contenedor{
         height: 82vh;
-        /*width: 100vw;*/
-        /*background-color: gray;*/
         background-color: #ededed;
     }
 

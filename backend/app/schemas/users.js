@@ -1,5 +1,7 @@
 const joi = require('joi');
 
+const id_paciente = joi.number().integer().min(1).required();
+
 //DATOS DEL USUARIO
 const username = joi.string().min(4).required();
 const email = joi.string().email().required();
@@ -49,4 +51,8 @@ const usuario_datos = joi.object({
   username
 })
 
-module.exports = { crear_usuario, usuario_datos }
+const paciente = joi.object({
+  id_paciente
+})
+
+module.exports = { crear_usuario, usuario_datos, paciente }

@@ -11,6 +11,8 @@
     "axios": "^1.2.6",
     "bootstrap": "^5.2.3",
     "core-js": "^3.6.5",
+    "datatables.net-dt": "^1.13.2",
+    "jquery": "^3.6.3",
     "sweetalert2": "^11.7.1",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",

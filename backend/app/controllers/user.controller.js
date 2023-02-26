@@ -152,3 +152,55 @@ async function eliminar_paciente_bd(user) {
         return error;
     }
 }
+
+//Lista Paciente
+async function lista_pacientes_bd() {
+    const query = 'SELECT * FROM LISTA_PACIENTES'
+    try {
+        const datos = await db.sequelize.query(query);
+        return datos[0]
+
+    } catch (error) {
+        return error;
+    }
+}
+
+exports.lista_pacientes = async (req, res) => {
+    const resp = await lista_pacientes_bd();
+    res.json(resp);
+};
+
+//Cambiar estado
+async function cambiar_estado_paciente_bd(id_paciente) {
+    const query = `SELECT CAMBIAR_STATUS_PACIENTE(${id_paciente})`
+    try {
+        const datos = await db.sequelize.query(query);
+        return datos[0][0].CAMBIAR_STATUS_PACIENTE
+
+    } catch (error) {
+        return error;
+    }
+}
+
+exports.cambiar_estado_paciente = async (req, res) => {
+    const resp = await cambiar_estado_paciente_bd(req.params.id_paciente);
+    res.json(resp);
+};
+
+
+//Dar de baja paciente
+async function baja_paciente_bd(id_paciente) {
+    const query = `SELECT ELIMINAR_PACIENTE(${id_paciente})`
+    try {
+        const datos = await db.sequelize.query(query);
+        return datos[0][0].CAMBIAR_STATUS_PACIENTE
+
+    } catch (error) {
+        return error;
+    }
+}
+
+exports.baja_paciente = async (req, res) => {
+    const resp = await baja_paciente_bd(req.params.id_paciente);
+    res.json(resp);
+};

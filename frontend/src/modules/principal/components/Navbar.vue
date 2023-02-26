@@ -16,7 +16,7 @@
 
         <div class="d-flex flex-row align-items-center justify-content-center">
             <div class="p-2">
-                <img src="@/assets/avatar.png" 
+                <img src="@/assets/icon.png" 
                 alt="persona" 
                 class="rounded-circle"
                 height="30">
