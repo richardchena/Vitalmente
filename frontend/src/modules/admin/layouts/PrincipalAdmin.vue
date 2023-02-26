@@ -25,7 +25,7 @@ export default {
 
 <style scoped>
     .contenedor{
-        height: 82vh;
+        height: 87vh;
         background-color: #ededed;
     }
 

@@ -42,3 +42,18 @@ export const isAuthenticatedAdmin = async (to, from, next) => {
         next({path: '/login'})
     }
 }
+
+export const isAuthenticatedPaciente = async (to, from, next) => {
+    const {ok, cuenta} = await store.dispatch('auth/checkAuthentication')
+    if(ok && cuenta === 'A') {
+        const role = store.getters['auth/role']
+        if(role === 3) next()
+        else if(role === 1) next({name: 'menu-admin'}) //profesional
+        else next({name: 'paciente-home'})
+    }
+    else if (ok && cuenta !== 'A') {
+        next({path: '/suspended-account'})}
+    else {
+        next({path: '/login'})
+    }
+}

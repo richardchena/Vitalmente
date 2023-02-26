@@ -1,13 +1,13 @@
 <template>
     <nav class="navbar bg-primary">
-        <a class="navbar-brand text-black">
+        <a class="navbar-brand text-black" @click="menu_principal">
             <img
                 src="@/assets/logos/logo1.png"
                 alt="Logo"
                 height="30"
                 class="d-inline-block align-text-top mx-2"
             >
-            <strong>Vitalmente</strong>
+            <strong>Vitalmente&nbsp;&nbsp;</strong>
         </a>
 
         <div class="d-flex justify-content-center border border-dark rounded w-25 h-50">
@@ -57,10 +57,18 @@
 
         computed:{
             ...mapGetters('auth', ['username']),
-            ...mapGetters('auth', ['accessToken'])
+            ...mapGetters('auth', ['accessToken']),
+            ...mapGetters('auth', ['role'])
         },
 
         methods:{
+            menu_principal(){
+                if(this.role === 1){
+                    this.$router.push({name: 'menu-admin'})
+                } else {
+                    this.$router.push({name: 'paciente-home'})
+                }
+            },
 
             logOut(){
                 Swal.fire({
@@ -75,17 +83,8 @@
 
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        //this.cerrar_sesion
                         store.dispatch('auth/cerrar_sesion')
                         this.$router.push({name: 'login'})
-                        /*Swal.fire({
-                            title: 'Sesíon cerrada',
-                            text: 'Por favor ingresa nuevamente tus credenciales'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                this.$router.push({name: 'login'})
-                            }
-                        })*/
                     }
                 })
             },
@@ -103,3 +102,20 @@
         }
     }  
 </script>
+
+<style scoped>
+    a {
+        margin-left: 15px;
+    }
+
+    a:hover {
+        cursor:pointer;
+        background-color: rgba(0, 255, 38, 0.218);
+        border-radius: 10px;
+        border: 0.001em solid gray;
+    }
+
+    a:hover strong {
+        color: rgba(0, 0, 0, 0.67);
+    }
+</style>
