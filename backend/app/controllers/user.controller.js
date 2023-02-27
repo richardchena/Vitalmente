@@ -33,6 +33,7 @@ async function registrar_paciente (paciente) {
     const query = `SELECT REGISTRAR_PACIENTE('${paciente.username}',
                                              '${paciente.email}',
                                              '${pass}',
+                                             '${paciente.telf_numb}',
                                              ${paciente.role},
                                              '${paciente.pri_nombre}',
                                              ${seg_nombre},

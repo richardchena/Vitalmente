@@ -1,6 +1,12 @@
 const joi = require('joi');
 
 const id_paciente = joi.number().integer().min(1).required();
+const telf_numb = joi.string().regex(/^[0-9]{4}-[0-9]{3}-[0-9]{3}$/).required().messages({
+  'string.base': `Formato incorrecto del número de télefono`,
+  'string.empty': `El número de télefono no puede estar vacío`,
+  'any.required': `Debe ingresar un número de télefono`,
+  'string.pattern.base': 'Formato incorrecto del número de télefono'
+});
 
 //DATOS DEL USUARIO
 const username = joi.string().min(4).required();
@@ -17,7 +23,7 @@ const fec_nac = joi.date().required();
 //const nac = joi.number().integer().required();
 const nac = joi.number().integer().min(0).max(300).required();
 //const lugar_nac = joi.number().integer();
-const lugar_nac = joi.number().integer().min(0).max(9999).required();
+const lugar_nac = joi.number().integer().min(0).max(9999);
 const estado_civ = joi.string().min(1).max(1).required();
 const genero = joi.string().min(1).max(1).required();
 const nro_doc = joi.string().min(1).max(50).required();
@@ -44,7 +50,8 @@ const crear_usuario = joi.object({
   genero,
   nro_doc,
   //PACIENTE
-  ocu
+  ocu,
+  telf_numb
 });
 
 const usuario_datos = joi.object({

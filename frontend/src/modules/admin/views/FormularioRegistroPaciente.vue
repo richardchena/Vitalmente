@@ -101,29 +101,35 @@
                 </div>
                 <br>
                 <div class="row">
-                    <div class="col-sm">
-                        <label for="primer_apellido">Fecha de nacimiento <label style="color: red">*</label></label>
-                        <input v-model="fec_nac" type="date" class="form-control" id="primer_apellido" placeholder="Ingrese aquí su fecha de nacimiento" :max="max_fecha">
-                    </div>
-                    <div class="col-sm">
-                        <label for="inputState">Estado civil <label style="color: red">*</label></label>
-                        <select v-model="est_civ" id="inputState" class="form-control">
-                            <option value="S">Soltero</option>
-                            <option value="C">Casado</option>
-                            <option value="V">Viudo</option>
-                            <option value="D">Divorsiado</option>
-                            <option value="M">Menor</option>
-                            <option value="O">Otro</option>
-                        </select>
-                    </div>
-                    <div class="col-sm">
-                        <label for="inputState">Género <label style="color: red">*</label></label>
-                        <select v-model="genero" id="inputState" class="form-control">
-                            <option selected value="P">Prefiero no decirlo</option>
-                            <option value="M">Masculino</option>
-                            <option value="F">Femenino</option>
-                            <option value="O">Otro</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-sm-4" style="margin-right: 10px">
+                            <label for="primer_apellido">Fecha de nacimiento <label style="color: red">*</label></label>
+                            <input v-model="fec_nac" type="date" class="form-control" id="primer_apellido" placeholder="Ingrese aquí su fecha de nacimiento" :max="max_fecha">
+                        </div>
+                        <div class="col-sm-2">
+                            <label for="inputState">Estado civil <label style="color: red">*</label></label>
+                            <select v-model="est_civ" id="inputState" class="form-control">
+                                <option value="S">Soltero</option>
+                                <option value="C">Casado</option>
+                                <option value="V">Viudo</option>
+                                <option value="D">Divorsiado</option>
+                                <option value="M">Menor</option>
+                                <option value="O">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <label for="inputState">Género <label style="color: red">*</label></label>
+                            <select v-model="genero" id="inputState" class="form-control">
+                                <option selected value="P">Prefiero no decirlo</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                                <option value="O">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-sm" style="margin-left: 8px">
+                            <label for="ocupacion">Ocupación <label style="color: red">*</label></label>
+                            <input v-model="ocu" type="text" class="form-control" id="ocupacion" placeholder="Ingrese aquí su ocupación">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -143,8 +149,8 @@
                         <input v-model="email" type="email" class="form-control" id="email" placeholder="Ingrese un correo electrónico">
                     </div>
                     <div class="col-sm">
-                        <label for="ocupacion">Ocupación <label style="color: red">*</label></label>
-                        <input v-model="ocu" type="text" class="form-control" id="ocupacion" placeholder="Ingrese aquí su ocupación">
+                        <label for="ocupacion">Teléfono<label style="color: red">*</label></label>
+                        <input v-model="telf" type="tel" class="form-control" id="telefono" pattern="[0-9]{4}-[0-9]{3}-[0-9]{3}" placeholder="Formato válido 09XX-XXX-XXX">
                     </div>
                 </div>
             </div>
@@ -176,7 +182,8 @@ export default {
 
             // Usuario
             username: null,
-            email:  null, 
+            email:  null,
+            telf: null,
 
             // Otros datos
             ocu: null,
@@ -226,7 +233,7 @@ export default {
         },
         
         validar(){
-            if(!this.pri_nom  || !this.pri_ape || !this.fec_nac || !this.username || !this.email || !this.ocu){
+            if(!this.pri_nom  || !this.pri_ape || !this.fec_nac || !this.username || !this.email || !this.ocu || !this.telf){
                 Swal.fire({
                 text: "Debe completar todos los campos obligatorios",
                 icon: 'warning'})
@@ -309,7 +316,7 @@ export default {
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK',
                 }).then(() => {
-                    this.$router.push('/')
+                    this.$router.push({name: 'lista-pacientes-admin'})
                 });
             } else if(cod === '999'){
                 const {response} = msg
@@ -321,7 +328,7 @@ export default {
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK',
                 }).then(() => {
-                    this.$router.push('/')
+                    //this.$router.push('/')
                 });
             } else {
                 Swal.fire({
@@ -330,7 +337,7 @@ export default {
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK',
                 }).then(() => {
-                    this.$router.push('/')
+                    //this.$router.push('/')
                 });
             }
         },
@@ -341,7 +348,7 @@ export default {
             obj.role = 3
             obj.fec_nac = this.fec_nac
             obj.nac = this.selectedPais
-            obj.lugar_nac = this.selectedPais === 139 ? this.selectedCiu : null
+            obj.lugar_nac = this.selectedPais === 139 ? this.selectedCiu : undefined
             obj.estado_civ = this.est_civ
             obj.genero = this.genero
 
@@ -354,6 +361,7 @@ export default {
             if(this.seg_ape && this.seg_ape.trim().length !== 0) obj.seg_apellido = this.seg_ape.trim(); else delete  obj.seg_apellido;
             if(this.nro_doc && this.nro_doc.trim().length !== 0) obj.nro_doc = this.nro_doc.trim(); else obj.nro_doc = null;
             if(this.ocu && this.ocu.trim().length !== 0) obj.ocu = this.ocu.trim(); else obj.ocu = null;
+            if(this.telf && this.telf.trim().length !== 0) obj.telf_numb = this.telf.trim(); else obj.telf_numb = null;
 
             return obj
         },
