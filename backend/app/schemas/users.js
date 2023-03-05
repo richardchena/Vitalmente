@@ -62,4 +62,26 @@ const paciente = joi.object({
   id_paciente
 })
 
-module.exports = { crear_usuario, usuario_datos, paciente }
+const modificar_paciente = joi.object({
+  //USER
+  id_paciente,
+  email,
+  telf_numb,
+
+  //PERSONA
+  pri_nombre,
+  seg_nombre,
+  ter_nombre,
+  pri_apellido,
+  seg_apellido,
+  fec_nac,
+  nac,
+  lugar_nac,
+  estado_civ,
+  genero,
+  nro_doc,
+  //PACIENTE
+  ocu
+});
+
+module.exports = { crear_usuario, usuario_datos, paciente, modificar_paciente }

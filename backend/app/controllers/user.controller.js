@@ -205,3 +205,50 @@ exports.baja_paciente = async (req, res) => {
     const resp = await baja_paciente_bd(req.params.id_paciente);
     res.json(resp);
 };
+
+exports.obtener_datos_para_modificar = async (req, res) => {
+    const query = `SELECT * FROM GET_DATOS_PACIENTE_MODIFICAR WHERE ID_PACIENTE = ${req.query.id_paciente}`
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0][0])
+
+    } catch (error) {
+        res.json(error);
+    }
+};
+
+
+exports.modificar_paciente = async (req, res) => {
+    const paciente = req.body;
+
+    // VERIFICAMOS LOS POSIBLES NULOS (STRING)
+    const seg_nombre = paciente.seg_nombre ? "'" + paciente.seg_nombre + "'" : 'NULL';
+    const ter_nombre = paciente.ter_nombre ? "'" + paciente.ter_nombre + "'" : 'NULL';
+    const seg_apellido = paciente.seg_apellido ? "'" + paciente.seg_apellido + "'" : 'NULL';
+
+
+    //QUERY
+    const query = `SELECT MODIFICAR_PACIENTE(${paciente.id_paciente},
+                                             '${paciente.email}',
+                                             '${paciente.telf_numb}',
+                                             '${paciente.pri_nombre}',
+                                             ${seg_nombre},
+                                             ${ter_nombre},
+                                             '${paciente.pri_apellido}',
+                                             ${seg_apellido},
+                                             '${paciente.fec_nac}',
+                                             ${paciente.nac},
+                                             ${paciente.lugar_nac || 'NULL'},
+                                             '${paciente.estado_civ}',
+                                             '${paciente.genero}',
+                                             '${paciente.nro_doc}',
+                                             '${paciente.ocu}')`
+
+    try {
+        const resp = await db.sequelize.query(query);
+        res.json(resp[0][0].modificar_paciente);
+
+    } catch (error) {
+        return res.json(error);
+    }
+}; 

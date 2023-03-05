@@ -233,7 +233,7 @@ export default {
         },
         
         validar(){
-            if(!this.pri_nom  || !this.pri_ape || !this.fec_nac || !this.username || !this.email || !this.ocu || !this.telf){
+            if(!this.pri_nom  || !this.pri_ape || !this.fec_nac || !this.username || !this.email || !this.ocu || !this.telf || !this.nro_doc){
                 Swal.fire({
                 text: "Debe completar todos los campos obligatorios",
                 icon: 'warning'})

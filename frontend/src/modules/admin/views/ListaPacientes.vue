@@ -1,5 +1,29 @@
 <template>
    <div>
+        <!--MODAL ACTUALIZAR-->
+        <div class="modal fade bd-example-modal-lg" id="my_modal" ref="hola" data-bs-backdrop="static" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Actualizar datos del paciente #{{id_user_mod}}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <FormularioActualizar
+                            :id_paciente=id_user_mod
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#my_modal" ref="boton" style="display: none;">
+            boton oculto
+        </button>
+        <!--FIN MODAL-->
+
+        <!--PAGINA PRINCIPAL-->
         <div v-if="isLoading" class="spinner-wrapper">
             <div class="spinner-border text-otros">
                 <span class="visually-hidden"></span>
@@ -21,14 +45,8 @@
                     <i class="fas fa-user-plus"></i>&nbsp;&nbsp;&nbsp;Alta de Paciente
                 </button>
 
-                <img src="@/assets/lupa.png" 
-                    alt="persona" 
-                    class="rounded"
-                    height="30"
-                    style="margin-right: 10px"
-                >
                 <div class="form-group" style="margin-right: 12px">
-                    <input type="text" class="form-control" id="buscador" style="width: 220px" placeholder="Realiza una búsqueda aquí" v-model="filtro">
+                    <input type="text" class="form-control" id="buscador" style="width: 225px" placeholder='&#x1F50E;&#xFE0E; Realiza una búsqueda aquí' v-model="filtro">
                 </div>
             </div>
         </nav>
@@ -72,13 +90,18 @@ import 'jquery/dist/jquery.min.js';
 //Datatable Modules
 import "datatables.net-dt/js/dataTables.dataTables"
 import "datatables.net-dt/css/jquery.dataTables.min.css"
-import $ from 'jquery';
+import * as $ from 'jquery';
 
-import { mapGetters} from 'vuex'
+import {mapGetters} from 'vuex'
 import authApi from '@/api/authApi'
 import Swal  from 'sweetalert2'
- 
+import 'bootstrap';
+import {defineAsyncComponent} from 'vue'
+
 export default {
+    components: {
+        FormularioActualizar: defineAsyncComponent(() => import ('@/modules/admin/components/EstructuraRegistro'))
+    },
 
     data: function() {
         return {
@@ -87,6 +110,9 @@ export default {
             users: null,
             isLoading: false,
             msg: 'Actualizando datos',
+
+            //DATOS DEL MODAL
+            id_user_mod: 0
         }
     },
 
@@ -95,6 +121,11 @@ export default {
     },
 
     methods: {
+        modificar(id){
+            this.id_user_mod = +id;
+            this.$refs.boton.click();
+        },
+
         async get_pacientes(){
             const {data} = await authApi.get('/pacientes', {
                 headers: {
@@ -108,14 +139,10 @@ export default {
             this.$router.push({ name: 'registrar-paciente-admin' })
         },
 
-        modificar(id){
-            alert(id)
-        },
-
-        eliminar(id_paciente){
+        eliminar(id_paciente, nombre){
             Swal.fire({
-            title: '¿Eliminar paciente?',
-            text: "¡Esta acción no se puede deshacer!",
+            text: `¿Eliminar al paciente #${id_paciente} ${nombre}?`,
+            //text: "¡Esta acción no se puede deshacer!",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -232,7 +259,7 @@ export default {
             });
 
             $(".btn-danger").click(function(){
-                function_eliminar($(this).parents("tr").find("td").eq(0).html());
+                function_eliminar($(this).parents("tr").find("td").eq(0).html(), $(this).parents("tr").find("td").eq(1).html());
             });
 
             $(".btn-warning").click(function(){

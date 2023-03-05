@@ -4,7 +4,7 @@ const users = require('../controllers/user.controller');
 //const auth = require('../controllers/auth.controller')
 const {validar_datos, validar_datos_post} = require('../middlewares/validacion_datos');
 const { checkRoles } = require('../middlewares/auth');
-const { crear_usuario, usuario_datos, paciente } = require('../schemas/users');
+const { crear_usuario, usuario_datos, paciente, modificar_paciente } = require('../schemas/users');
  
 //RUTAS DE PACIENTES
 router.get('/pacientes',
@@ -37,6 +37,17 @@ router.delete('/pacientes/eliminar_paciente/:id_paciente',
     checkRoles('admin'),
     validar_datos(paciente, 'params'),
     users.baja_paciente
+);
+
+router.put('/pacientes',
+    passport.authenticate('jwt', {session: false}),
+    validar_datos(modificar_paciente, 'body'),
+    users.modificar_paciente);
+
+router.get('/pacientes/datos_paciente_modificar',
+    passport.authenticate('jwt', {session: false}),
+    validar_datos(paciente, 'query'),
+    users.obtener_datos_para_modificar
 );
 
 //OTRAS RUTAS
