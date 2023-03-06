@@ -27,6 +27,7 @@ const lugar_nac = joi.number().integer().min(0).max(9999);
 const estado_civ = joi.string().min(1).max(1).required();
 const genero = joi.string().min(1).max(1).required();
 const nro_doc = joi.string().min(1).max(50).required();
+const reg = joi.string().min(1).max(100).required();
 
 //DATOS DEL PACIENTE
 const ocu = joi.string().min(2).max(100).required();
@@ -53,6 +54,30 @@ const crear_usuario = joi.object({
   ocu,
   telf_numb
 });
+
+const crear_profesional = joi.object({
+  //USER
+  username,
+  email,
+  //password,
+  role,
+  //PERSONA
+  pri_nombre,
+  seg_nombre,
+  ter_nombre,
+  pri_apellido,
+  seg_apellido,
+  fec_nac,
+  nac,
+  lugar_nac,
+  estado_civ,
+  genero,
+  nro_doc,
+  //PACIENTE
+  reg,
+  telf_numb
+});
+
 
 const usuario_datos = joi.object({
   username
@@ -84,4 +109,4 @@ const modificar_paciente = joi.object({
   ocu
 });
 
-module.exports = { crear_usuario, usuario_datos, paciente, modificar_paciente }
+module.exports = { crear_usuario, usuario_datos, paciente, modificar_paciente, crear_profesional }

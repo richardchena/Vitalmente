@@ -2,10 +2,12 @@ const router = require('express').Router();
 const auth = require('./auth.routes');
 const users = require('./users.routes');
 const parametros = require('./parametros.routes');
+const profesionales = require('./profesionales.routes');
 
 // Rutas sobre el login del sistema
 router.use(auth);
 router.use(users);
 router.use(parametros);
+router.use(profesionales);
 
 module.exports = router;

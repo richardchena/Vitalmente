@@ -15,7 +15,7 @@
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-secondary mx-2 btn-lg btn-block" @click="logOut">
+                    <button class="btn btn-secondary mx-2 btn-lg btn-block" @click="pagina_profesional">
                         Profesionales&nbsp;
                         <i class="fas fa-hospital-user"></i>
                     </button>
@@ -36,7 +36,10 @@ export default {
     methods: {
         pagina_paciente(){
             this.$router.push({ name: 'lista-pacientes-admin' })
-        }
+        },
+        pagina_profesional(){
+            this.$router.push({ name: 'lista-profesionales-admin' })
+        },
     }
 }
 </script>
