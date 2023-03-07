@@ -129,3 +129,51 @@ async function enviar_pass(email, user, pass) {
 
     return msg
 }
+
+// Get de los datos a modificar
+exports.obtener_datos_para_modificar = async (req, res) => {
+    const query = `SELECT * FROM GET_DATOS_PROFESIONAL_MODIFICAR WHERE ID_PROFESIONAL = ${req.query.id_paciente	}`
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0][0])
+
+    } catch (error) {
+        res.json(error);
+    }
+};
+
+//Modificar datos del profesional
+exports.modificar_profesional = async (req, res) => {
+    const paciente = req.body;
+
+    // VERIFICAMOS LOS POSIBLES NULOS (STRING)
+    const seg_nombre = paciente.seg_nombre ? "'" + paciente.seg_nombre + "'" : 'NULL';
+    const ter_nombre = paciente.ter_nombre ? "'" + paciente.ter_nombre + "'" : 'NULL';
+    const seg_apellido = paciente.seg_apellido ? "'" + paciente.seg_apellido + "'" : 'NULL';
+
+
+    //QUERY
+    const query = `SELECT MODIFICAR_PROFESIONAL(${paciente.id_paciente},
+                                             '${paciente.email}',
+                                             '${paciente.telf_numb}',
+                                             '${paciente.pri_nombre}',
+                                             ${seg_nombre},
+                                             ${ter_nombre},
+                                             '${paciente.pri_apellido}',
+                                             ${seg_apellido},
+                                             '${paciente.fec_nac}',
+                                             ${paciente.nac},
+                                             ${paciente.lugar_nac || 'NULL'},
+                                             '${paciente.estado_civ}',
+                                             '${paciente.genero}',
+                                             '${paciente.nro_doc}',
+                                             '${paciente.reg}')`
+
+    try {
+        const resp = await db.sequelize.query(query);
+        res.json(resp[0][0].modificar_profesional);
+
+    } catch (error) {
+        return res.json(error);
+    }
+}; 

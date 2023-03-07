@@ -1,5 +1,28 @@
 <template>
     <div>
+        <!--MODAL ACTUALIZAR-->
+        <div class="modal fade bd-example-modal-lg" id="my_modal" ref="hola" data-bs-backdrop="static" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Actualizar datos del profesional #{{id_user_mod}}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <FormularioActualizar
+                            :id_paciente=id_user_mod
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#my_modal" ref="boton" style="display: none;">
+            boton oculto
+        </button>
+        <!--FIN MODAL-->
+
         <!--PAGINA PRINCIPAL-->
         <div v-if="isLoading" class="spinner-wrapper">
             <div class="spinner-border text-otros">
@@ -70,12 +93,17 @@
     import authApi from '@/api/authApi'
     import Swal  from 'sweetalert2'
     import 'bootstrap';
-    //import {defineAsyncComponent} from 'vue'
+    import {defineAsyncComponent} from 'vue'
 
     export default {
         computed:{
             ...mapGetters('auth', ['accessToken'])
         },
+
+        components: {
+            FormularioActualizar: defineAsyncComponent(() => import ('@/modules/admin/components/EstructuraRegistroProfesional'))
+        },
+
 
         data: function() {
             return {
@@ -91,6 +119,11 @@
         },
 
         methods: {
+            modificar(id){
+                this.id_user_mod = +id;
+                this.$refs.boton.click();
+            },
+
             registrar_profesional(){
                 this.$router.push({ name: 'registrar-profesional-admin' })
             },
@@ -162,6 +195,7 @@
         async mounted(){
             await this.get_profesionales();
 
+            const funcion_modificar = this.modificar;
             const function_eliminar = this.eliminar;
             const funcion_cambiar = this.activar_desactivar;
 
@@ -195,25 +229,27 @@
                             orderable: false,
                             searchable: false,
                             render: function (data, type, row) {
-                                let mod, file, dis, del;
+                                let mod, dis, del;
 
                                 if(row[8] === 'Activa') {
-                                    file = '<button class="btn btn-secondary boton" title="Ver expediente"><i class="far fa-file-alt"></i></button>';
                                     mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
                                     dis = '<button class="btn btn-warning boton" title="Desactivar cuenta"><i class="fas fa-user-slash"></i></button>';
                                     del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
                                 } else {
-                                    file = '<button class="btn btn-secondary boton" title="Ver expediente"><i class="far fa-file-alt"></i></button>';
                                     mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
                                     dis = '<button class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user"></i></button>';
                                     del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
                                 }
 
-                                return file + mod + dis + del;
+                                return mod + dis + del;
                             }
                         }
                     ]
                 }).api();
+
+                $(".btn-info").click(function(){
+                    funcion_modificar($(this).parents("tr").find("td").eq(0).html());
+                });
 
                 $(".btn-danger").click(function(){
                     function_eliminar($(this).parents("tr").find("td").eq(0).html(), $(this).parents("tr").find("td").eq(1).html());

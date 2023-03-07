@@ -1,6 +1,7 @@
 const joi = require('joi');
 
 const id_paciente = joi.number().integer().min(1).required();
+//const id_profesional = joi.number().integer().min(1).required();
 const telf_numb = joi.string().regex(/^[0-9]{4}-[0-9]{3}-[0-9]{3}$/).required().messages({
   'string.base': `Formato incorrecto del número de télefono`,
   'string.empty': `El número de télefono no puede estar vacío`,
@@ -109,4 +110,26 @@ const modificar_paciente = joi.object({
   ocu
 });
 
-module.exports = { crear_usuario, usuario_datos, paciente, modificar_paciente, crear_profesional }
+const modificar_profesional = joi.object({
+  //USER
+  id_paciente,
+  email,
+  telf_numb,
+
+  //PERSONA
+  pri_nombre,
+  seg_nombre,
+  ter_nombre,
+  pri_apellido,
+  seg_apellido,
+  fec_nac,
+  nac,
+  lugar_nac,
+  estado_civ,
+  genero,
+  nro_doc,
+  //PACIENTE
+  reg
+});
+
+module.exports = { crear_usuario, usuario_datos, paciente, modificar_paciente, crear_profesional, modificar_profesional }
