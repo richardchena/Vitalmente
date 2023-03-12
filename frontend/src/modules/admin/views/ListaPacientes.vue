@@ -37,10 +37,6 @@
             </div>
 
             <div class="d-flex flex-row align-items-center justify-content-center">
-                <button class="btn btn-outline-secondary" style="margin-right: 20px">
-                    <i class="fas fa-file-excel"></i>&nbsp;&nbsp;&nbsp;Importar a Excel
-                </button>
-
                 <button class="btn btn-outline-dark" style="margin-right: 20px" @click="registrar_paciente">
                     <i class="fas fa-user-plus"></i>&nbsp;&nbsp;&nbsp;Alta de Paciente
                 </button>
@@ -139,6 +135,10 @@ export default {
             this.$router.push({ name: 'registrar-paciente-admin' })
         },
 
+        expediente(id){
+            this.$router.push({ name: 'historial-consultas-admin', params: { id } })
+        },
+
         eliminar(id_paciente, nombre){
             Swal.fire({
             text: `¿Eliminar al paciente #${id_paciente} ${nombre}?`,
@@ -200,6 +200,7 @@ export default {
         const funcion_modificar = this.modificar;
         const function_eliminar = this.eliminar;
         const funcion_cambiar = this.activar_desactivar;
+        const funcion_expendiente = this.expediente;
 
         $(document).ready(function(){
             var tabla = $('#tabla').dataTable({
@@ -252,6 +253,10 @@ export default {
 
             $('#buscador').on('keyup change', function(){
                 tabla.search($(this).val()).draw();
+            });
+
+            $(".btn-secondary").click(function(){
+                funcion_expendiente($(this).parents("tr").find("td").eq(0).html());
             });
 
             $(".btn-info").click(function(){

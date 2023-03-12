@@ -48,6 +48,14 @@ exports.registrar_profesional = async (req, res) => {
     const ter_nombre = profesional.ter_nombre ? "'" + profesional.ter_nombre + "'" : 'NULL';
     const seg_apellido = profesional.seg_apellido ? "'" + profesional.seg_apellido + "'" : 'NULL';
 
+    let lugar;
+
+    if(profesional.lugar_nac === undefined){
+        lugar = 'NULL';
+    } else {
+        lugar = profesional.lugar_nac;
+    }
+
     // Encriptamos la contraseña
     const generacion_pass = generar_pass()
     const pass = await bcrypt.hash(generacion_pass, 10);
@@ -65,7 +73,7 @@ exports.registrar_profesional = async (req, res) => {
                                              ${seg_apellido},
                                              '${profesional.fec_nac}',
                                              ${profesional.nac},
-                                             ${profesional.lugar_nac || 'NULL'},
+                                             ${lugar},
                                              '${profesional.estado_civ}',
                                              '${profesional.genero}',
                                              '${profesional.nro_doc}',
@@ -151,6 +159,13 @@ exports.modificar_profesional = async (req, res) => {
     const ter_nombre = paciente.ter_nombre ? "'" + paciente.ter_nombre + "'" : 'NULL';
     const seg_apellido = paciente.seg_apellido ? "'" + paciente.seg_apellido + "'" : 'NULL';
 
+    let lugar;
+
+    if(paciente.lugar_nac === undefined){
+        lugar = 'NULL';
+    } else {
+        lugar = paciente.lugar_nac;
+    }
 
     //QUERY
     const query = `SELECT MODIFICAR_PROFESIONAL(${paciente.id_paciente},
@@ -163,7 +178,7 @@ exports.modificar_profesional = async (req, res) => {
                                              ${seg_apellido},
                                              '${paciente.fec_nac}',
                                              ${paciente.nac},
-                                             ${paciente.lugar_nac || 'NULL'},
+                                             ${lugar},
                                              '${paciente.estado_civ}',
                                              '${paciente.genero}',
                                              '${paciente.nro_doc}',

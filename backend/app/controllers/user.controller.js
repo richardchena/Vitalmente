@@ -25,6 +25,14 @@ async function registrar_paciente (paciente) {
     const ter_nombre = paciente.ter_nombre ? "'" + paciente.ter_nombre + "'" : 'NULL';
     const seg_apellido = paciente.seg_apellido ? "'" + paciente.seg_apellido + "'" : 'NULL';
 
+    let lugar;
+
+    if(paciente.lugar_nac === undefined){
+        lugar = 'NULL';
+    } else {
+        lugar = paciente.lugar_nac;
+    }
+
     // Encriptamos la contraseña
     const generacion_pass = generar_pass()
     const pass = await encriptar_pass(generacion_pass);
@@ -42,7 +50,7 @@ async function registrar_paciente (paciente) {
                                              ${seg_apellido},
                                              '${paciente.fec_nac}',
                                              ${paciente.nac},
-                                             ${paciente.lugar_nac || 'NULL'},
+                                             ${lugar},
                                              '${paciente.estado_civ}',
                                              '${paciente.genero}',
                                              '${paciente.nro_doc}',
@@ -225,6 +233,13 @@ exports.modificar_paciente = async (req, res) => {
     const seg_nombre = paciente.seg_nombre ? "'" + paciente.seg_nombre + "'" : 'NULL';
     const ter_nombre = paciente.ter_nombre ? "'" + paciente.ter_nombre + "'" : 'NULL';
     const seg_apellido = paciente.seg_apellido ? "'" + paciente.seg_apellido + "'" : 'NULL';
+    let lugar;
+
+    if(paciente.lugar_nac === undefined){
+        lugar = 'NULL';
+    } else {
+        lugar = paciente.lugar_nac;
+    }
 
 
     //QUERY
@@ -238,7 +253,7 @@ exports.modificar_paciente = async (req, res) => {
                                              ${seg_apellido},
                                              '${paciente.fec_nac}',
                                              ${paciente.nac},
-                                             ${paciente.lugar_nac || 'NULL'},
+                                             ${lugar},
                                              '${paciente.estado_civ}',
                                              '${paciente.genero}',
                                              '${paciente.nro_doc}',
@@ -252,3 +267,16 @@ exports.modificar_paciente = async (req, res) => {
         return res.json(error);
     }
 }; 
+
+exports.consulta_datos_paciente = async (req, res) => {
+    const cod = req.query.id_paciente
+    const query = `SELECT * FROM HISTORIAL_PACIENTE_DATOS_PACIENTE WHERE ID_PACIENTE =  ${cod}`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0][0]);
+
+    } catch (error) {
+        return null;
+    }
+}

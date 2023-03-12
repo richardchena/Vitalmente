@@ -14,4 +14,8 @@ router.get('/obtener_ciudades',
        passport.authenticate('jwt', {session: false}),
        parametros.obtener_ciudades);
 
+router.get('/obtener_especialidades',
+       passport.authenticate('jwt', {session: false}),
+       parametros.obtener_especialidades);
+
 module.exports = router;

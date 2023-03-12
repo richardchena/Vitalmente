@@ -156,6 +156,13 @@ import 'bootstrap'
             },
         },
 
+        async created(){
+            await this.obtener_datos_iniciales();
+            await this.get_paises();
+            await this.get_departamentos();
+            await this.get_ciudades();
+        },
+
         computed:{
             ...mapGetters('auth', ['accessToken']),
         },
@@ -175,11 +182,11 @@ import 'bootstrap'
                 authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
 
                 const objeto = this.reestructurar()
+                console.log(objeto);
 
                 try {
                     const {data} = await authApi.put('/pacientes', objeto)
                     await new Promise(resolve => setTimeout(resolve, 1500));
-                    console.log(data)
                     this.respuesta(data, '0')
                 } catch (error) {
                     this.isLoading = false
@@ -281,7 +288,7 @@ import 'bootstrap'
                 this.ocu = user.ocupacion;
                 this.telf = user.telefono;
                 this.email = user.email;
-                this.username = user.username.toUpperCase();
+                this.username = user.username;
                 this.selectedDep = user.departamento_nac;
                 this.selectedPais = user.nacionalidad;
                 this.selectedCiu = user.ciudad_nac;

@@ -25,5 +25,15 @@ export default {
             name: 'registrar-profesional-admin',
             component: () => import(/* webpackChunkName: "registrar-profesional-admin" */ '@/modules/admin/views/FormularioRegistroProfesional'),
         },
+        {
+            path: 'historial_consultas/:id',
+            name: 'historial-consultas-admin',
+            component: () => import(/* webpackChunkName: "historial-consultas-admin" */ '@/modules/admin/components/HistorialConsultas'),
+        },
+        {
+            path: 'registro_consulta/:id',
+            name: 'registro-consulta',
+            component: () => import(/* webpackChunkName: "registro-consulta" */ '@/modules/admin/views/RegistroConsulta'),
+        },
     ]
 }

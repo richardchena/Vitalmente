@@ -50,6 +50,12 @@ router.get('/pacientes/datos_paciente_modificar',
     users.obtener_datos_para_modificar
 );
 
+router.get('/pacientes/consulta_datos_paciente',
+    passport.authenticate('jwt', {session: false}),
+    validar_datos(paciente, 'query'),
+    users.consulta_datos_paciente
+);
+
 //OTRAS RUTAS
 router.get('/obtener_datos_usuario',
        passport.authenticate('jwt', {session: false}),
