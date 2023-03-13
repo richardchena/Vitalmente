@@ -31,9 +31,21 @@ export default {
             component: () => import(/* webpackChunkName: "historial-consultas-admin" */ '@/modules/admin/components/HistorialConsultas'),
         },
         {
-            path: 'registro_consulta/:id',
+            path: 'registro_consulta',
             name: 'registro-consulta',
             component: () => import(/* webpackChunkName: "registro-consulta" */ '@/modules/admin/views/RegistroConsulta'),
+            children: [
+                {
+                    path: ':id',
+                    name: 'datos-historial-consultas-admin',
+                    component: () => import(/* webpackChunkName: "datos-historial-consultas-admin" */ '@/modules/admin/components/FormularioConsulta'),
+                },
+                {
+                    path: ':id/historial',
+                    name: 'datos-historial-consultas-texto-admin',
+                    component: () => import(/* webpackChunkName: "datos-historial-consultas-texto-admin" */ '@/modules/admin/components/HistorialTexto'),
+                },
+            ]
         },
     ]
 }

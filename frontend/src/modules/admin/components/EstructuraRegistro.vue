@@ -182,7 +182,6 @@ import 'bootstrap'
                 authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
 
                 const objeto = this.reestructurar()
-                console.log(objeto);
 
                 try {
                     const {data} = await authApi.put('/pacientes', objeto)

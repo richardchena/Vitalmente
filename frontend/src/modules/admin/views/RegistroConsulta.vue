@@ -40,11 +40,6 @@
             <div class="d-flex flex-row align-items-center justify-content-center">
                 <div class="d-flex flex-row align-items-center justify-content-center">
                     <div style="margin-right: 10px">
-                        <button class="btn btn-success " @click="validar">
-                            GUARDAR
-                        </button>
-                    </div>
-                    <div style="margin-right: 10px">
                         <button class="btn btn-danger " @click="regresar_atras">
                             CANCELAR
                         </button>
@@ -78,52 +73,37 @@
             <div class="d-flex flex-row-reverse">
                 <div style="margin-right: 55px">
                     <button class="btn btn-warning" @click="modificar_datos_paciente">
-                        MODIFICAR DATOS
+                        MODIFICAR DATOS PACIENTE
                     </button>
                 </div>
             </div>
             <hr style="margin-top: 3px; margin-bottom: 2px">
         </div>
 
-        <div class="container">
-            <div style="margin-top: 15px; margin-bottom: 15px; display: flex">
-                <strong><label style="margin-top: 1px; margin-right: 10px">Especialidad: </label></strong>
-                <select v-model="select_especialidad">
-                    <option 
-                        v-for="item in especialidades" 
-                        :key="item.id_especialidad"
-                        :value="item.id_especialidad"
-                    >
-                        {{item.descripcion}}
-                    </option>
-                </select>
-            </div>
-            
-            <div class="row">
-                <div class="col-sm">
-                    <div class="mb-3">
-                        <textarea v-model="motivo_consulta" class="form-control" rows="5" placeholder="Motivo de consulta"></textarea>
-                    </div>
-                </div>
-                <div class="col-sm">
-                    <div class="mb-3">
-                        <textarea v-model="tecnica_consulta" class="form-control" rows="5" placeholder="Técnica utilizada/Sintomas actuales"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm">
-                    <div class="mb-3">
-                        <textarea v-model="diagnostico_consulta" class="form-control" rows="5" placeholder="Diagnóstico actual"></textarea>
-                    </div>
-                </div>
-                <div class="col-sm">
-                    <div class="mb-3">
-                        <textarea v-model="antecedente_consulta" class="form-control" rows="5" placeholder="Antecedentes"></textarea>
-                    </div>
-                </div>
+        <div style="padding: 20px 55px 0px 55px">
+            <div class="btn-group d-flex w-100" role="group"> 
+                <router-link 
+                    :to="{ name: 'datos-historial-consultas-admin',
+                           params: { id: $route.params.id}}"
+                    tag="button" 
+                    class="btn btn-b_no_act w-100">
+                    Datos generales
+                </router-link>
+                <router-link 
+                    :to="{ name: 'datos-historial-consultas-texto-admin',
+                           params: { id: $route.params.id}}"
+                    tag="button" 
+                    class="btn btn-b_no_act w-100">
+                    Historial clínico
+                </router-link>
             </div>
         </div>
+
+        <router-view v-slot="{ Component }">
+            <keep-alive>
+                <component :is="Component" />
+            </keep-alive>
+        </router-view>
     </div>
 </template>
 
@@ -381,5 +361,9 @@ export default {
 
     .text-otros {
         font-size: 30px;
+    }
+
+    a.router-link-exact-active {
+        background-color: #8d8d8d;
     }
 </style>

@@ -1,5 +1,27 @@
 <template>
     <div>
+        <!--MODAL CONSULTA-->
+        <div class="modal fade bd-example-modal-lg" id="my_modal" ref="hola" data-bs-backdrop="static" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">DATOS DE LA CONSULTA #{{id_consulta}}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <Consulta
+                            :id_consulta=+id_consulta
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#my_modal" ref="boton" style="display: none;">
+            boton oculto
+        </button>
+
+        <!--PRINCIPAL-->
         <nav class="navbar" style="background: #c6c6c6">
             <div style="margin-left: 15px; margin-top: 7px; height: 30px">
                 <strong>Historial de consultas</strong>
@@ -53,13 +75,16 @@
     import {mapGetters} from 'vuex'
     import authApi from '@/api/authApi'
     import 'bootstrap';
+    import Swal  from 'sweetalert2'
+    import {defineAsyncComponent} from 'vue'
 
     export default {
         data: function() {
             return {
                 id: this.$route.params.id,
                 filtro: null,
-                datos: null
+                datos: null,
+                id_consulta: 0
             }
         },
 
@@ -67,13 +92,34 @@
             ...mapGetters('auth', ['accessToken']),
         },
 
+        components: {
+            Consulta: defineAsyncComponent(() => import ('@/modules/admin/components/Consulta'))
+        },
+
         methods:{
+            iniciar(){
+                if(isNaN(this.$route.params.id)) {
+                    Swal.fire({
+                    title: 'El ID es inválido',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK',
+                    backdrop: `rgba(128,128,128,0.9)`
+                    }).then(() => {
+                        this.$router.push({ name: 'lista-pacientes-admin' });
+                    })
+                }
+            },
+
             atras(){
                 this.$router.push({name: 'lista-pacientes-admin'})
             },
 
             registrar_consulta(){
-                this.$router.push({name: 'registro-consulta', params:{
+                /*this.$router.push({name: 'registro-consulta', params:{
+                    id: this.id
+                }})*/
+                this.$router.push({name: 'datos-historial-consultas-admin', params:{
                     id: this.id
                 }})
             },
@@ -90,16 +136,25 @@
 
                 this.datos = data
             },
+
+            ver_detalles(id){
+                this.id_consulta = id;
+                this.$refs.boton.click();
+            }
         },
 
         async mounted(){
+            //this.iniciar()
             await this.get_lista()
+            const funcion_ver = this.ver_detalles; 
+
             $(document).ready(function(){
                 var tabla = $('#tabla').dataTable({
                     responsive: true,
                     destroy: true,
                     language: {
-                        url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json"
+                        url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json",
+                        emptyTable: "No hay consultas previas del paciente seleccionado"
                     },
                     fixedColumns: true,
                     pageLength: 10,
@@ -132,6 +187,10 @@
 
                 $('#buscador').on('keyup change', function(){
                     tabla.search($(this).val()).draw();
+                });
+
+                $(".btn-success").click(function(){
+                    funcion_ver($(this).parents("tr").find("td").eq(0).html());
                 });
             })
         },

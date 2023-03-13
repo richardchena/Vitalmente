@@ -3,6 +3,7 @@ const joi = require('joi');
 const id_paciente = joi.number().integer().min(0).required();
 const id_profesional = joi.number().integer().min(1).required();
 const id_especialidad = joi.number().integer().min(1).required();
+const id_consulta = joi.number().integer().required();
 const motivo = joi.string().max(2000);
 const antecedente = joi.string().max(2000);
 const diagnostico = joi.string().max(2000);
@@ -149,5 +150,19 @@ const consulta = joi.object({
   tecnica
 })
 
+const detalle_consulta = joi.object({
+  id_consulta
+})
 
-module.exports = { crear_usuario, usuario_datos, paciente, modificar_paciente, crear_profesional, modificar_profesional, consulta }
+const modificar_consulta = joi.object({
+  id_consulta,
+  id_especialidad,
+  motivo,
+  antecedente,
+  tecnica,
+  diagnostico
+})
+
+
+
+module.exports = { crear_usuario, usuario_datos, paciente, modificar_paciente, crear_profesional, modificar_profesional, consulta, detalle_consulta, modificar_consulta }
