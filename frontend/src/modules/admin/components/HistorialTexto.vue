@@ -46,11 +46,11 @@
 
             cargar(){
                 let orden = 1;
-                this.fin_parrafo();
 
                 if (this.registros.length === 0) {
                     this.sin_datos()
                 } else {
+                    this.fin_parrafo();
                     for (let obj of this.registros) {
                         this.insertar_datos(obj, orden, this.registros.length);
                         orden = orden + 1;
