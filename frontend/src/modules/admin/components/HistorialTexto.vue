@@ -2,7 +2,7 @@
     <div>
         <div class="container">
             <br>
-            <textarea v-model="datos" class="form-control" rows="11" readonly></textarea>
+            <textarea v-model="datos" class="form-control" rows="10" readonly></textarea>
         </div>
     </div>
 </template>
