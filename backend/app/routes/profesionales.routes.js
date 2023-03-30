@@ -42,4 +42,24 @@ router.post('/profesionales/cambiar_estado/:id_paciente',
     docs.cambiar_estado_profesional
 );
 
+router.post('/profesionales/agenda',
+    passport.authenticate('jwt', {session: false}),
+    docs.registrar_agenda
+);
+
+router.post('/profesionales/agenda/dias',
+    passport.authenticate('jwt', {session: false}),
+    docs.registrar_dias_consulta
+);
+
+router.get('/profesionales/agenda/lista',
+    passport.authenticate('jwt', {session: false}),
+    docs.lista_agenda
+);
+
+router.get('/profesionales/validar/:id_profesional',
+    passport.authenticate('jwt', {session: false}),
+    docs.validar_id
+);
+
 module.exports = router;

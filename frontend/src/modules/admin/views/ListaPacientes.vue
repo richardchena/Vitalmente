@@ -47,15 +47,14 @@
             </div>
         </nav>
         <div class="contendor_tabla">
-            <table class="table table-hover table-cell-border table-stripe" id="tabla">
+            <table class="table table-hover table-cell-border table-striped" id="tabla">
                 <thead>
                 <tr>
-                    <th>Expediente</th>
-                    <th>Nombre y Apellido</th>
+                    <th>Exp.</th>
+                    <th>Nombre completo</th>
+                    <th>Tipo documento</th>
                     <th>Nro. Documento</th>
-                    <th>Edad</th>
-                    <th>Género</th>
-                    <th>Email</th>
+                    <th>Residencia</th>
                     <th>Télefono</th>
                     <th>Status Account</th>
                     <th></th>
@@ -65,10 +64,9 @@
                 <tr v-for="user in users" :key="user.id">
                     <td>{{user.id}}</td>
                     <td>{{user.name}}</td>
+                    <td>{{user.tipo_doc}}</td>
                     <td>{{user.nro_doc}}</td>
-                    <td>{{user.edad}}</td>
-                    <td>{{user.genero}}</td>
-                    <td>{{user.email}}</td>
+                    <td>{{user.residencia}}</td>
                     <td>{{user.telefono}}</td>
                     <td>{{user.status}}</td>
                     <th></th>
@@ -141,7 +139,7 @@ export default {
 
         eliminar(id_paciente, nombre){
             Swal.fire({
-            text: `¿Eliminar al paciente #${id_paciente} ${nombre}?`,
+            html: `<strong><div style="font-size: 22px">¿Eliminar al paciente #${id_paciente} ${nombre}?</div></strong>`,
             //text: "¡Esta acción no se puede deshacer!",
             icon: 'warning',
             showCancelButton: true,
@@ -222,7 +220,6 @@ export default {
                     {e: "edad"},
                     {f: "genero"},
                     {g: "email"},
-                    {h: "telefono"},
                     {i: "status"},
                     {
                         j: null, 

@@ -24,7 +24,7 @@ export const isSuspended = async (to, from, next) => {
 export const role = async (to, from, next) => {
     const role = store.getters['auth/role']
     if(role === 1) next({name: 'menu-admin'})
-    else next({name: 'paciente-home'})
+    else next({name: 'menu-paciente'})
 }
 
 

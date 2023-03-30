@@ -45,7 +45,7 @@
             },
 
             cargar(){
-                let orden = 1;
+                let orden = this.registros.length;
 
                 if (this.registros.length === 0) {
                     this.sin_datos()
@@ -53,7 +53,7 @@
                     this.fin_parrafo();
                     for (let obj of this.registros) {
                         this.insertar_datos(obj, orden, this.registros.length);
-                        orden = orden + 1;
+                        orden = orden - 1;
                         this.fin_parrafo();
                     }
                 }

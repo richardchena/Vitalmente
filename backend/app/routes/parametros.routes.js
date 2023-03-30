@@ -18,4 +18,12 @@ router.get('/obtener_especialidades',
        passport.authenticate('jwt', {session: false}),
        parametros.obtener_especialidades);
 
+router.get('/obtener_feriados',
+       passport.authenticate('jwt', {session: false}),
+       parametros.obtener_feriados);
+
+router.get('/obtener_tipos_documento',
+       passport.authenticate('jwt', {session: false}),
+       parametros.obtener_tipo_documento);
+
 module.exports = router;

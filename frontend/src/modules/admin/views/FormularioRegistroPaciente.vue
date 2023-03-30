@@ -55,16 +55,28 @@
                         <label for="segundo_apellido">Segundo apellido</label>
                         <input v-model="seg_ape" type="text" class="form-control" id="segundo_apellido" placeholder="Ingrese aquí su segundo apellido">
                     </div>
-                    <div class="col-sm">
-                        <label for="doc">Número de documento <label style="color: red">*</label></label>
-                        <input v-model="nro_doc" type="text" class="form-control" id="doc" placeholder="Ingrese aquí su número de documento">
+                    <div class="col-sm-2">
+                        <label for="inputState">Tipo Doc. <label style="color: red">*</label></label>
+                        <select v-model="selectedDoc" class="form-select">
+                            <option 
+                                v-for="item in tipos_docs" 
+                                :key="item.id"
+                                :value="item.id"
+                            >
+                                {{item.descripcion}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="doc">Nro. de doc. <label style="color: red">*</label></label>
+                        <input v-model="nro_doc" type="text" class="form-control" id="doc" placeholder="Nro. de identificación">
                     </div>
                 </div>
                 <br>
                 <div class="row">
                     <div class="col-sm">
                         <label for="inputState">Nacionalidad <label style="color: red">*</label></label>
-                        <select v-model="selectedPais" class="form-control" @change="cambiar_pais">
+                        <select v-model="selectedPais" class="form-select" @change="cambiar_pais">
                             <option 
                                 v-for="item in paises" 
                                 :key="item.id_pais"
@@ -76,7 +88,7 @@
                     </div>
                     <div class="col-sm">
                         <label for="inputState">Departamento nacimiento</label>
-                        <select v-model="selectedDep" class="form-control" :disabled="desactivar" @change="cambiar_ciudad">
+                        <select v-model="selectedDep" class="form-select" :disabled="desactivar" @change="cambiar_ciudad">
                             <option 
                                 v-for="item in departamentos" 
                                 :key="item.id_departamento"
@@ -88,9 +100,40 @@
                     </div>
                     <div class="col-sm">
                         <label for="inputState">Ciudad nacimiento</label>
-                        <select v-model="selectedCiu" class="form-control" :disabled="desactivar"> 
+                        <select v-model="selectedCiu" class="form-select" :disabled="desactivar"> 
                             <option 
                                 v-for="item in ciudades" 
+                                :key="item.cod_concatenado"
+                                :value="item.cod_concatenado"
+                            >
+                                {{item.descripcion}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm">
+                        <label for="segundo_apellido">Dirección actual <label style="color: red">*</label></label>
+                        <input v-model="direccion" type="text" class="form-control" id="segundo_apellido" placeholder="Calle principal, secundaria y numeración">
+                    </div>
+                    <div class="col-sm">
+                        <label for="inputState">Departamento residencia <label style="color: red">*</label></label>
+                        <select v-model="selectedDepResi" class="form-select" @change="cambiar_ciudad_residencia">
+                            <option 
+                                v-for="item in departamentos" 
+                                :key="item.id_departamento"
+                                :value="item.id_departamento"
+                            >
+                                {{item.descripcion}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-sm">
+                        <label for="inputState">Ciudad residencia <label style="color: red">*</label></label>
+                        <select v-model="selectedCiuResi" class="form-select"> 
+                            <option 
+                                v-for="item in ciudades_residencia" 
                                 :key="item.cod_concatenado"
                                 :value="item.cod_concatenado"
                             >
@@ -108,7 +151,7 @@
                         </div>
                         <div class="col-sm-2">
                             <label for="inputState">Estado civil <label style="color: red">*</label></label>
-                            <select v-model="est_civ" id="inputState" class="form-control">
+                            <select v-model="est_civ" id="inputState" class="form-select">
                                 <option value="S">Soltero</option>
                                 <option value="C">Casado</option>
                                 <option value="V">Viudo</option>
@@ -119,7 +162,7 @@
                         </div>
                         <div class="col-sm-2">
                             <label for="inputState">Género <label style="color: red">*</label></label>
-                            <select v-model="genero" id="inputState" class="form-control">
+                            <select v-model="genero" id="inputState" class="form-select">
                                 <option selected value="P">Prefiero no decirlo</option>
                                 <option value="M">Masculino</option>
                                 <option value="F">Femenino</option>
@@ -179,6 +222,7 @@ export default {
             fec_nac: null,
             est_civ: 'S',
             genero: 'P',
+            direccion: null,
 
             // Usuario
             username: null,
@@ -195,11 +239,16 @@ export default {
             paises: null,
             departamentos: null,
             ciudades: null,
+            ciudades_residencia: null,
+            tipos_docs: null,
 
             //
+            selectedDoc: 1,
             selectedPais: 139,
             selectedDep: 0,
             selectedCiu: 0,
+            selectedDepResi: 0,
+            selectedCiuResi: 0,
 
             // Extras
             desactivar: false,
@@ -214,6 +263,8 @@ export default {
         this.get_paises()
         this.get_departamentos()
         this.get_ciudades()
+        this.get_ciudades_residencia()
+        this.get_tipos_documentos()
     },
 
     computed:{
@@ -233,13 +284,23 @@ export default {
         },
         
         validar(){
-            if(!this.pri_nom  || !this.pri_ape || !this.fec_nac || !this.username || !this.email || !this.ocu || !this.telf || !this.nro_doc){
+            if(!this.pri_nom  || !this.pri_ape || !this.fec_nac || !this.username || !this.email || !this.ocu || !this.telf || !this.nro_doc || !this.direccion){
                 Swal.fire({
                 text: "Debe completar todos los campos obligatorios",
                 icon: 'warning'})
             } else {
                 this.registrar_paciente()   
             }
+        },
+
+        async get_tipos_documentos(){
+            const {data} = await authApi.get('/obtener_tipos_documento', {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            this.tipos_docs = data
         },
 
         async get_paises(){
@@ -275,6 +336,19 @@ export default {
             this.ciudades = data
         },
 
+        async get_ciudades_residencia(){
+            const {data} = await authApi.get('/obtener_ciudades', {
+                params: {
+                    cod: this.selectedDepResi
+                },
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            this.ciudades_residencia = data
+        },
+
         cambiar_pais(){
             if(this.selectedPais === 139){
                 this.desactivar = false
@@ -297,6 +371,14 @@ export default {
                 else 
                     this.selectedCiu = (this.zeroFill(this.selectedDep, 2) + '01')*1
             }
+        },
+
+        cambiar_ciudad_residencia(){
+            this.get_ciudades_residencia()
+            if(this.selectedDepResi === 0) 
+                    this.selectedCiuResi = 0
+            else 
+                this.selectedCiuResi = (this.zeroFill(this.selectedDepResi, 2) + '01')*1
         },
         
         zeroFill( number, width ) {
@@ -351,7 +433,10 @@ export default {
             obj.lugar_nac = this.selectedPais === 139 ? this.selectedCiu : undefined
             obj.estado_civ = this.est_civ
             obj.genero = this.genero
+            obj.tipo_doc = this.selectedDoc
+            obj.lugar_residencia = this.selectedCiuResi
 
+            if(this.direccion && this.direccion.trim().length !== 0) obj.direccion = this.direccion.trim(); else obj.direccion = null;
             if(this.username && this.username.trim().length !== 0) obj.username = this.username.trim(); else obj.username = null;
             if(this.email && this.email.trim().length !== 0) obj.email = this.email.trim(); else obj.email = null;
             if(this.pri_nom && this.pri_nom.trim().length !== 0) obj.pri_nombre = this.pri_nom.trim(); else obj.pri_nombre = null;

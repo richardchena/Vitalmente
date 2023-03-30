@@ -54,7 +54,10 @@ async function registrar_paciente (paciente) {
                                              '${paciente.estado_civ}',
                                              '${paciente.genero}',
                                              '${paciente.nro_doc}',
-                                             '${paciente.ocu}')`
+                                             '${paciente.ocu}',
+                                             '${paciente.direccion}',
+                                              ${paciente.lugar_residencia},
+                                              ${paciente.tipo_doc})`
 
     try {
         let resp = await db.sequelize.query(query);
@@ -257,7 +260,10 @@ exports.modificar_paciente = async (req, res) => {
                                              '${paciente.estado_civ}',
                                              '${paciente.genero}',
                                              '${paciente.nro_doc}',
-                                             '${paciente.ocu}')`
+                                             '${paciente.ocu}',
+                                             '${paciente.direccion}',
+                                              ${paciente.lugar_residencia},
+                                              ${paciente.tipo_doc})`
 
     try {
         const resp = await db.sequelize.query(query);
@@ -278,5 +284,22 @@ exports.consulta_datos_paciente = async (req, res) => {
 
     } catch (error) {
         return null;
+    }
+}
+
+
+exports.obtener_id_paciente = async (req, res) => {
+    const usr = req.query.username
+    const query = `SELECT A.ID_PACIENTE 
+                   FROM PACIENTES A
+                   INNER JOIN USERS B ON B.ID = A.ID_USUARIO
+                   WHERE LOWER(B.USERNAME) = LOWER('${usr}')`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0][0]);
+
+    } catch (error) {
+        res.json(error);
     }
 }

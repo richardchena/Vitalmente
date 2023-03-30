@@ -40,7 +40,7 @@
             </div>
         </nav>
         <div class="contendor_tabla">
-            <table class="table table-hover table-cell-border table-stripe" id="tabla">
+            <table class="table table-hover table-cell-border table-striped" id="tabla">
                 <thead>
                     <tr>
                         <th>ID Consulta</th>

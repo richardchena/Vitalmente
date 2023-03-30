@@ -47,5 +47,20 @@ export default {
                 },
             ]
         },
+        {
+            path: 'reserva/:id_paciente',
+            name: 'reserva-cita',
+            component: () => import(/* webpackChunkName: "reserva-cita" */ '@/modules/admin/views/ReservaCita')
+        },
+        {
+            path: 'gestionar_horario/:id_profesional',
+            name: 'gestionar-horario',
+            component: () => import(/* webpackChunkName: "gestionar-horario" */ '@/modules/admin/views/GestionHorarios')
+        },
+        {
+            path: 'agenda/:id_profesional',
+            name: 'agenda-profesional',
+            component: () => import(/* webpackChunkName: "agenda-profesional" */ '@/modules/admin/views/ListaAgenda')
+        },
     ]
 }

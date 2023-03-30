@@ -77,7 +77,10 @@ exports.registrar_profesional = async (req, res) => {
                                              '${profesional.estado_civ}',
                                              '${profesional.genero}',
                                              '${profesional.nro_doc}',
-                                             '${profesional.reg}')`
+                                             '${profesional.reg}',
+                                             '${profesional.direccion}',
+                                              ${profesional.lugar_residencia},
+                                              ${profesional.tipo_doc})`
 
     try {
         let resp = await db.sequelize.query(query);
@@ -182,7 +185,10 @@ exports.modificar_profesional = async (req, res) => {
                                              '${paciente.estado_civ}',
                                              '${paciente.genero}',
                                              '${paciente.nro_doc}',
-                                             '${paciente.reg}')`
+                                             '${paciente.reg}',
+                                             '${paciente.direccion}',
+                                              ${paciente.lugar_residencia},
+                                              ${paciente.tipo_doc})`
 
     try {
         const resp = await db.sequelize.query(query);
@@ -192,3 +198,56 @@ exports.modificar_profesional = async (req, res) => {
         return res.json(error);
     }
 }; 
+
+
+exports.registrar_agenda = async (req, res) => {
+    const d = req.body;
+
+    const query = `SELECT REGISTRAR_AGENDA_CONSULTA(${d.id_profesional}, '${d.fecha_desde}', '${d.fecha_hasta}');`
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0][0].registrar_agenda_consulta)
+
+    } catch (error) {
+        res.json(error);
+    }
+};
+
+exports.registrar_dias_consulta = async (req, res) => {
+    const d = req.body;
+
+    const query = `SELECT REGISTRAR_DIAS_CONSULTA(${d.id_agenda}, ${d.id_dia}, ${d.id_especialidad}, ${d.id_turno}, '${d.hora_inicio}', '${d.hora_fin}');`
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0][0].registrar_dias_consulta)
+
+    } catch (error) {
+        res.json(error);
+    }
+};
+
+exports.validar_id = async (req, res) => {
+    const id = req.params.id_profesional;
+
+    const query = `select * from profesionales where id_profesional = ${id}`
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0])
+
+    } catch (error) {
+        res.json(error);
+    }
+};
+
+exports.lista_agenda = async (req, res) => {
+    const id = req.query.id_profesional;
+
+    const query = `select * from AGENDAS_PROFESIONALES where id_profesional = ${id}`
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0])
+
+    } catch (error) {
+        res.json(error);
+    }
+};

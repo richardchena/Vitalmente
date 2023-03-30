@@ -65,6 +65,8 @@
             menu_principal(){
                 if(this.role === 1){
                     this.$router.push({name: 'menu-admin'})
+                } else if (this.role === 3){
+                    this.$router.push({name: 'menu-paciente'})
                 } else {
                     this.$router.push({name: 'paciente-home'})
                 }

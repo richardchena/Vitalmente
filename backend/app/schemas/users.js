@@ -9,6 +9,10 @@ const antecedente = joi.string().max(2000);
 const diagnostico = joi.string().max(2000);
 const tecnica = joi.string().max(2000);
 
+//EXTRAS PACIENTE
+const lugar_residencia = joi.number().integer().min(0).max(9999).required();
+const direccion = joi.string().min(2).max(200).required();
+const tipo_doc = joi.number().integer().required();
 
 const telf_numb = joi.string().regex(/^[0-9]{4}-[0-9]{3}-[0-9]{3}$/).required().messages({
   'string.base': `Formato incorrecto del número de télefono`,
@@ -61,7 +65,11 @@ const crear_usuario = joi.object({
   nro_doc,
   //PACIENTE
   ocu,
-  telf_numb
+  telf_numb,
+
+  direccion,
+  tipo_doc,
+  lugar_residencia
 });
 
 const crear_profesional = joi.object({
@@ -84,7 +92,11 @@ const crear_profesional = joi.object({
   nro_doc,
   //PACIENTE
   reg,
-  telf_numb
+  telf_numb,
+
+  direccion,
+  tipo_doc,
+  lugar_residencia
 });
 
 
@@ -115,7 +127,11 @@ const modificar_paciente = joi.object({
   genero,
   nro_doc,
   //PACIENTE
-  ocu
+  ocu,
+
+  direccion,
+  tipo_doc,
+  lugar_residencia
 });
 
 const modificar_profesional = joi.object({
@@ -137,7 +153,11 @@ const modificar_profesional = joi.object({
   genero,
   nro_doc,
   //PACIENTE
-  reg
+  reg,
+
+  direccion,
+  tipo_doc,
+  lugar_residencia
 });
 
 const consulta = joi.object({

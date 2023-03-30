@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import authRouter from '@/modules/auth/router'
 import authAdmin from '@/modules/admin/router'
+import authPaciente from '@/modules/paciente/router'
 import principalRouter from '@/modules/principal/router'
 
 import { isAuthenticated, isLoginRequired, isSuspended, role, isAuthenticatedAdmin, isAuthenticatedPaciente} from '@/modules/auth/router/isAuthenticated'
@@ -37,10 +38,11 @@ const routes = [
 
   //PACIENTE
   {
-    path: '/enconstruccion',
+    path: '/portal',
     name: 'paciente-home',
     beforeEnter: [isAuthenticatedPaciente],
-    component: () => import(/* webpackChunkName: "admin" */ '@/modules/auth/views/prueba_paciente'),
+    component: () => import(/* webpackChunkName: "paciente-home" */ '@/modules/paciente/layouts/Paciente'),
+    ...authPaciente
   },
   
 

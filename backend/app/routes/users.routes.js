@@ -62,4 +62,8 @@ router.get('/obtener_datos_usuario',
        validar_datos(usuario_datos, 'query'),
        users.obtener_datos_usuario);
 
+router.get('/obtener_id_paciente',
+       passport.authenticate('jwt', {session: false}),
+       users.obtener_id_paciente);
+
 module.exports = router;

@@ -47,16 +47,15 @@
             </div>
         </nav>
         <div class="contendor_tabla">
-            <table class="table table-hover table-cell-border table-stripe" id="tabla">
+            <table class="table table-hover table-cell-border table-striped" id="tabla">
                 <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nombre y Apellido</th>
+                    <th>Nombre completo</th>
+                    <th>Tipo documento</th>
                     <th>Nro. Documento</th>
-                    <th>Registro</th> 
-                    <th>Edad</th>
-                    <th>Género</th>
-                    <th>Email</th>
+                    <th>Registro</th>
+                    <th>Residencia</th>
                     <th>Télefono</th>
                     <th>Status Account</th>
                     <th></th>
@@ -66,11 +65,10 @@
                 <tr v-for="user in users" :key="user.id">
                     <td>{{user.id}}</td>
                     <td>{{user.name}}</td>
+                    <td>{{user.tipo_doc}}</td>
                     <td>{{user.nro_doc}}</td>
                     <td>{{user.registro}}</td>
-                    <td>{{user.edad}}</td>
-                    <td>{{user.genero}}</td>
-                    <td>{{user.email}}</td>
+                    <td>{{user.residencia}}</td>
                     <td>{{user.telefono}}</td>
                     <td>{{user.status}}</td>
                     <th></th>
@@ -157,7 +155,7 @@
 
             eliminar(id, nombre){
                 Swal.fire({
-                text: `¿Eliminar al profesional #${id} ${nombre}?`,
+                html: `<strong><div style="font-size: 20px">¿Eliminar al profesional #${id} ${nombre}?</strong>`,
                 //text: "¡Esta acción no se puede deshacer!",
                 icon: 'warning',
                 showCancelButton: true,
@@ -190,6 +188,10 @@
                     console.log(error)
                 }
             },
+
+            agenda(id){
+                this.$router.push({name: 'agenda-profesional', params: {id_profesional: id}})
+            }
         },
 
         async mounted(){
@@ -198,6 +200,7 @@
             const funcion_modificar = this.modificar;
             const function_eliminar = this.eliminar;
             const funcion_cambiar = this.activar_desactivar;
+            const function_agenda = this.agenda;
 
             $(document).ready(function(){
                 //var tabla = $('#tabla').dataTable({
@@ -221,7 +224,6 @@
                         {e: "edad"},
                         {f: "genero"},
                         {g: "email"},
-                        {h: "telefono"},
                         {i: "status"},
                         {
                             j: null, 
@@ -229,19 +231,21 @@
                             orderable: false,
                             searchable: false,
                             render: function (data, type, row) {
-                                let mod, dis, del;
+                                let mod, dis, del, cal;
 
                                 if(row[8] === 'Activa') {
+                                    cal = '<button class="btn btn-success boton" title="Agenda profesional"><i class="far fa-calendar-alt"></i></button>'
                                     mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
                                     dis = '<button class="btn btn-warning boton" title="Desactivar cuenta"><i class="fas fa-user-slash"></i></button>';
                                     del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
                                 } else {
+                                    cal = '<button class="btn btn-success boton" title="Agenda profesional"><i class="far fa-calendar-alt"></i></button>'
                                     mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
                                     dis = '<button class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user"></i></button>';
                                     del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
                                 }
 
-                                return mod + dis + del;
+                                return cal + mod + dis + del;
                             }
                         }
                     ]
@@ -253,6 +257,10 @@
 
                 $(".btn-danger").click(function(){
                     function_eliminar($(this).parents("tr").find("td").eq(0).html(), $(this).parents("tr").find("td").eq(1).html());
+                });
+
+                $(".btn-success").click(function(){
+                    function_agenda($(this).parents("tr").find("td").eq(0).html(), $(this).parents("tr").find("td").eq(1).html());
                 });
 
                 $(".btn-warning").click(function(){
