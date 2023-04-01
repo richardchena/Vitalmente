@@ -8,7 +8,7 @@ app.use(express.json());
 
 // Configuración del CORS
 const corsOptions = {
-    origin: ['http://localhost:8080', 'http://192.168.0.8:8080']
+    origin: ['http://localhost']
 };
 
 app.use(cors(corsOptions));

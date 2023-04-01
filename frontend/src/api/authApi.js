@@ -1,10 +1,7 @@
 import axios from 'axios'
 
 const authApi = axios.create({
-    baseURL: 'http://localhost:80/api/v1',
-    /*params: {
-        key: 'pass_key'
-    }*/
+    baseURL: 'http://localhost:9000/api/v1',
 })
 
 export default authApi

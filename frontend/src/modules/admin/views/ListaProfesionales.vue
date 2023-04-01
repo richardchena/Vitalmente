@@ -203,8 +203,7 @@
             const function_agenda = this.agenda;
 
             $(document).ready(function(){
-                //var tabla = $('#tabla').dataTable({
-                $('#tabla').dataTable({
+                var tabla = $('#tabla').dataTable({
                     responsive: true,
                     destroy: true,
                     language: {
@@ -250,6 +249,10 @@
                         }
                     ]
                 }).api();
+
+                $('#buscador').on('keyup change', function(){
+                    tabla.search($(this).val()).draw();
+                });
 
                 $(".btn-info").click(function(){
                     funcion_modificar($(this).parents("tr").find("td").eq(0).html());
