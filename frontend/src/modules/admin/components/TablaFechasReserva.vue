@@ -90,7 +90,7 @@ export default {
 
     methods: {
         async obtener_lista_disponible(){
-            const {data} = await authApi.get('/reservas', {
+            const {data} = await authApi.get('/reservas/v2', {
                 params: {
                     id_profesional: this.$route.query.id_profesional || 0,
                     id_turno: this.$route.query.id_turno || 0,
@@ -169,7 +169,7 @@ export default {
                 icon: 'error'});
             } else {
                 Swal.fire({
-                html: '<h4>Se ha agendando correctamente la cita</h4>',
+                html: '<h4>Su cita ha sido programada correctamente</h4>',
                 icon: 'success'})
                 .then(() => {
                     if(this.role === 3) {

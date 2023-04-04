@@ -242,7 +242,20 @@ exports.validar_id = async (req, res) => {
 exports.lista_agenda = async (req, res) => {
     const id = req.query.id_profesional;
 
-    const query = `select * from AGENDAS_PROFESIONALES where id_profesional = ${id}`
+    const query = `SELECT * FROM AGENDAS_PROFESIONALES WHERE ID_PROFESIONAL = ${id} ORDER BY ORDEN DESC`
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0])
+
+    } catch (error) {
+        res.json(error);
+    }
+};
+
+exports.dias = async (req, res) => {
+    const id = req.query.id_agenda;
+
+    const query = `SELECT * FROM DIAS_CONSULTA_PROFESIONAL WHERE ID_AGENDA = ${id}`
     try {
         const datos = await db.sequelize.query(query);
         res.json(datos[0])

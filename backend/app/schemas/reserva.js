@@ -4,7 +4,7 @@ const id_paciente = joi.number().integer().required();
 const id_profesional = joi.number().integer().required();
 const id_turno = joi.number().integer().min(1).max(2).required();
 const id_especialidad = joi.number().integer().min(1).required();
-const fecha = joi.string().max(9).required();
+const fecha = joi.string().max(10).required();
 const hora = joi.string().max(8).required()
 
 

@@ -66,4 +66,8 @@ router.get('/obtener_id_paciente',
        passport.authenticate('jwt', {session: false}),
        users.obtener_id_paciente);
 
+router.post('/change_password',
+       passport.authenticate('jwt', {session: false}),
+       users.change_password);       
+       
 module.exports = router;

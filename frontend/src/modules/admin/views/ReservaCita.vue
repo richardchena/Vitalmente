@@ -190,7 +190,7 @@ export default {
 
         async obtener_datos_lista_desplegable(){
             //PARA PROFESIONALES
-            const {data} = await authApi.get('/reservas/distinct', {
+            const {data} = await authApi.get('/reservas/v2/distinct', {
                 params: {
                     id: 'id_profesional',
                     propiedad: 'profesional',
@@ -271,7 +271,7 @@ export default {
 
         async lista_turnos(){
             //TURNOS
-            let {data} = await authApi.get('/reservas/distinct', {
+            let {data} = await authApi.get('/reservas/v2/distinct', {
                 params: {
                     id: 'id_turno',
                     propiedad: 'turno',
@@ -292,10 +292,10 @@ export default {
 
         async lista_fechas(){
             //FECHAS
-            let {data} = await authApi.get('/reservas/distinct/fecha', {
+            let {data} = await authApi.get('/reservas/v2/distinct/fecha', {
                 params: {
-                    id: 'id_turno',
-                    propiedad: 'turno',
+                    id: 'fecha',
+                    propiedad: 'fecha',
                     id_profesional: this.$route.query.id_profesional || 0,
                     id_turno: this.$route.query.id_turno || 0,
                     id_especialidad: this.$route.query.id_especialidad || 0,
@@ -313,7 +313,7 @@ export default {
 
         async lista_especialidades(){
             //TURNOS
-            let {data} = await authApi.get('/reservas/distinct', {
+            let {data} = await authApi.get('/reservas/v2/distinct', {
                 params: {
                     id: 'id_especialidad',
                     propiedad: 'especialidad',

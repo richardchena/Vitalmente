@@ -1,5 +1,32 @@
 <template>
     <div>
+        <!--MODAL ACTUALIZAR-->
+        <div class="modal fade bd-example-modal-lg" id="my_modal" ref="hola" data-bs-backdrop="static" role="dialog">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">#{{id_agenda_select}} Desde {{fecha_desde_select}} hasta el {{fecha_hasta_select}} - {{prof_selec}}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <Horario
+                            :id_agenda=+id_agenda_select
+                        >
+                        </Horario>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#my_modal" ref="boton" style="display: none;">
+            boton oculto
+        </button>
+        <!--FIN MODAL-->
+
         <nav class="navbar" style="background: #c6c6c6">
             <div style="margin-left: 15px; margin-top: 7px; height: 30px">
                 <strong>Rangos de fechas habilitadas</strong>
@@ -34,9 +61,10 @@
                 <tr v-for="dato in agendas" :key="dato.id">
                     <td>{{dato.id}}</td>
                     <td>{{dato.name}}</td>
-                    <td>{{new Date((dato.fecha_desde)).toLocaleDateString('es-PY')}}</td>
-                    <td>{{(new Date(dato.fecha_hasta)).toLocaleDateString('es-PY')}}</td>
-                    <td>{{dato.estado}}</td>
+                    <td>{{dato.fecha_desde}}</td>
+                    <td>{{dato.fecha_hasta}}</td>
+                    <td v-if="dato.estado === 'POR VENCER'" style="color: #dc3545">{{dato.estado}}</td>
+                    <td v-else style="color: #1d6042">{{dato.estado}}</td>
                     <th></th>
                 </tr>
                 
@@ -58,16 +86,40 @@ import * as $ from 'jquery';
 import {mapGetters} from 'vuex'
 import authApi from '@/api/authApi'
 import 'bootstrap';
+import {defineAsyncComponent} from 'vue'
+import Swal  from 'sweetalert2'
 
 export default {
+    components: {
+        Horario: defineAsyncComponent(() => import ('@/modules/admin/views/VerHorario'))
+    },
+
     methods: {
         regresar_atras(){
-            this.$router.push({name: 'lista-profesionales-admin'})
+            this.$router.push({ name: 'lista-profesionales-admin' })
         },
 
         nuevo_horario(){
-            const id_prof = this.$route.params.id_profesional
-            this.$router.push({name: 'gestionar-horario', params: {id_profesional: id_prof}})
+            this.check();
+
+            if(this.bandera !== 1) {
+                const id_prof = this.$route.params.id_profesional
+                this.$router.push({name: 'gestionar-horario', params: {id_profesional: id_prof}})
+            } else {
+                Swal.fire({
+                html: '<h4>Aún existen fechas vigentes</h4>',
+                icon: 'error'});
+            }
+
+        },
+
+        ver_detalle(id, desde, hasta, prof){
+            this.id_agenda_select = +id;
+            this.fecha_desde_select = desde
+            this.fecha_hasta_select = hasta
+            this.prof_selec = prof
+
+            this.$refs.boton.click();
         },
 
         async get_lista(){
@@ -82,6 +134,63 @@ export default {
 
             this.agendas = data
         },
+
+        check() {
+            this.bandera = 0;
+            for (let i = 0; i < this.agendas.length; i++) {
+                if(this.agendas[i].estado === 'VIGENTE') {
+                    this.bandera = 1
+                }
+            }
+        },
+
+        async inicio() {
+            await this.get_lista();
+            const funcion_ver_detalle = this.ver_detalle;
+
+            $(document).ready(function(){
+                $('#tabla').dataTable({
+                    responsive: true,
+                    destroy: true,
+                    language: {
+                        url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json",
+                        emptyTable: "Aún no se han cargado fechas de consultas"
+                    },
+                    fixedColumns: true,
+                    pageLength: 10,
+                    lengthChange: false,
+                    ordering: false,
+                    //searching: true,
+                    //searchDelay: 0,
+                    dom: 'lrtip',
+                    columns:[
+                        {a: "id", orderable: false},
+                        {c: "name", orderable: false},
+                        {d: "nro_doc", orderable: false},
+                        {e: "name", orderable: false},
+                        {e: "edad", orderable: false},
+                        {
+                            j: null, 
+                            title: 'Controles',
+                            orderable: false,
+                            searchable: false,
+                            //wrap: true, 
+                            render: function () {
+                                let file = '<button class="btn btn-secondary boton"><i class="far fa-file-alt"></i>&nbsp;&nbsp;Ver detalle horario</button>';
+                                return file;
+                            }
+                        }
+                    ]
+                }).api();
+
+                $(".btn-secondary").click(function(){
+                    funcion_ver_detalle($(this).parents("tr").find("td").eq(0).html(),
+                                        $(this).parents("tr").find("td").eq(2).html(),
+                                        $(this).parents("tr").find("td").eq(3).html(),
+                                        $(this).parents("tr").find("td").eq(1).html());
+                });
+            })
+        }
     },
 
     computed:{
@@ -90,56 +199,17 @@ export default {
 
     data() {
         return {
-            agendas: null
+            agendas: null,
+            id_agenda_select: 0,
+            fecha_desde_select: null,
+            fecha_hasta_select: null,
+            prof_selec: null,
+            bandera: null
         }
     },
 
-    async created(){
-        
-    },
-
     async mounted(){
-        await this.get_lista();
-        const funcion_ver_detalle = this.ver_detalle;
-
-        $(document).ready(function(){
-            $('#tabla').dataTable({
-                responsive: true,
-                destroy: true,
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json",
-                    emptyTable: "Aún no se han cargado fechas de consultas"
-                },
-                fixedColumns: true,
-                pageLength: 10,
-                lengthChange: false,
-                searching: true,
-                searchDelay: 0,
-                dom: 'lrtip',
-                columns:[
-                    {a: "id"},
-                    {c: "name"},
-                    {d: "nro_doc"},
-                    {e: "name"},
-                    {e: "edad"},
-                    {
-                        j: null, 
-                        title: 'Controles',
-                        orderable: false,
-                        searchable: false,
-                        //wrap: true, 
-                        render: function () {
-                            let file = '<button class="btn btn-secondary boton"><i class="far fa-file-alt"></i>&nbsp;&nbsp;Ver detalle horario</button>';
-                            return file;
-                        }
-                    }
-                ]
-            }).api();
-
-            $(".btn-secondary").click(function(){
-                funcion_ver_detalle($(this).parents("tr").find("td").eq(0).html());
-            });
-        })
+        this.inicio()
     }
 }
 </script>

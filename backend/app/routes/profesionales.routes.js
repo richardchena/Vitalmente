@@ -57,6 +57,11 @@ router.get('/profesionales/agenda/lista',
     docs.lista_agenda
 );
 
+router.get('/profesionales/agenda/dias',
+    passport.authenticate('jwt', {session: false}),
+    docs.dias
+);
+
 router.get('/profesionales/validar/:id_profesional',
     passport.authenticate('jwt', {session: false}),
     docs.validar_id

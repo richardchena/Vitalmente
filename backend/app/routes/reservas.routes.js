@@ -9,6 +9,21 @@ router.get('/reservas',
     controller.obtener_lista_disponible
 );
 
+router.get('/reservas/v2',
+    passport.authenticate('jwt', {session: false}),
+    controller.obtener_lista_disponible_v2
+);
+
+router.get('/reservas/v2/distinct',
+    passport.authenticate('jwt', {session: false}),
+    controller.distinct_reserva_v2
+);
+
+router.get('/reservas/v2/distinct/fecha',
+    passport.authenticate('jwt', {session: false}),
+    controller.distinct_fecha_v2
+);
+
 router.get('/reservas/distinct',
     passport.authenticate('jwt', {session: false}),
     controller.distinct_reserva

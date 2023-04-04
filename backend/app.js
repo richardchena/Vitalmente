@@ -8,7 +8,12 @@ app.use(express.json());
 
 // Configuración del CORS
 const corsOptions = {
-    origin: ['http://localhost']
+    origin: ['http://localhost:82',
+    'http://localhost:8080',
+    'http://localhost:80',
+    'http://localhost',
+    'https://clinicavitalmente.com',
+    'https://www.clinicavitalmente.com']
 };
 
 app.use(cors(corsOptions));

@@ -303,3 +303,67 @@ exports.obtener_id_paciente = async (req, res) => {
         res.json(error);
     }
 }
+
+exports.change_password = async (req, res) => {
+    const usr = req.body.username
+    const p_a = req.body.pass_actual
+    const p_n = req.body.pass_new
+    const p_v = req.body.pass_new_verif
+
+    if(p_n !== p_v){
+        res.json({cod: 1, msg: "Las contraseñas no coinciden"})
+        return
+    }
+
+    if(p_n.length < 8) {
+        res.json({cod: 1, msg: "La nueva contraseña debe contener al menos 8 caracteres"})
+        return    
+    }
+
+    if(p_a === p_n){
+        res.json({cod: 1, msg: "La nueva contraseña debe ser distinta a la anterior"})
+        return
+    }
+
+    const p_bd = await password_actual(usr)
+    const isMatch = await bcrypt.compare(p_a, p_bd);
+
+    if(!isMatch){
+        res.json({cod: 1, msg: "Contraseña incorrecta"})
+    } else {
+        const encriptado = await encriptar_pass(p_n);
+        const resp = await cambiar_pass_bd(usr, encriptado)
+        if(resp === 0) {
+            res.json({cod: 0, msg: "Contraseña actualizada correctamente" })
+        } else {
+            res.json({cod: 1, msg: "Hubo un error al actualizar. Inténtelo más tarde" })
+        }
+        
+    }
+}
+
+async function password_actual(username){
+    const query = `SELECT PASSWORD FROM USERS WHERE USERNAME = '${username}'`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        return datos[0][0].password;
+
+    } catch (error) {
+        return null;
+    }
+}
+
+async function cambiar_pass_bd(user, pass) {
+    const query = `UPDATE USERS
+                   SET PASSWORD = '${pass}'
+                   WHERE USERNAME = '${user}'`
+
+    try {
+        await db.sequelize.query(query);
+        return 0;
+
+    } catch (error) {
+        return null;
+    }
+}

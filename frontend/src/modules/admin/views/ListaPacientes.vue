@@ -189,6 +189,10 @@ export default {
                 this.isLoading = false;
                 console.log(error)
             }
+        },
+
+        funcion_reserva(id){
+            this.$router.push({ name: 'reserva-cita', params: { id_paciente: id } })
         }
     },
   
@@ -199,6 +203,7 @@ export default {
         const function_eliminar = this.eliminar;
         const funcion_cambiar = this.activar_desactivar;
         const funcion_expendiente = this.expediente;
+        const funcion_reserva = this.funcion_reserva;
 
         $(document).ready(function(){
             var tabla = $('#tabla').dataTable({
@@ -228,21 +233,23 @@ export default {
                         searchable: false,
                         //wrap: true, 
                         render: function (data, type, row) {
-                            let mod, file, dis, del;
+                            let mod, file, dis, del, reserva;
 
                             if(row[7] === 'Activa') {
+                                reserva = '<button class="btn btn-success boton" title="Reserva"><i class="fas fa-calendar-plus"></i></button>';
                                 file = '<button class="btn btn-secondary boton" title="Ver expediente"><i class="far fa-file-alt"></i></button>';
                                 mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
                                 dis = '<button class="btn btn-warning boton" title="Desactivar cuenta"><i class="fas fa-user-slash"></i></button>';
                                 del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
                             } else {
+                                reserva = '<button class="btn btn-success boton" title="Reserva"><i class="fas fa-calendar-plus"></i></button>';
                                 file = '<button class="btn btn-secondary boton" title="Ver expediente"><i class="far fa-file-alt"></i></button>';
                                 mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
                                 dis = '<button class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user"></i></button>';
                                 del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
                             }
 
-                            return file + mod + dis + del;
+                            return reserva + file + mod + dis + del;
                         }
                     }
                 ]
@@ -266,6 +273,10 @@ export default {
 
             $(".btn-warning").click(function(){
                 funcion_cambiar($(this).parents("tr").find("td").eq(0).html());
+            });
+
+            $(".btn-success").click(function(){
+                funcion_reserva($(this).parents("tr").find("td").eq(0).html());
             });
         })
     },

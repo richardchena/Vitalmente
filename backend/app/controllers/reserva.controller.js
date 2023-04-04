@@ -78,6 +78,169 @@ async function obtener_feriados () {
 
 }
 
+async function obtener_bd_v2(params){
+    const id_pro = +params.id_profesional || 0
+    const id_tur = +params.id_turno || 0
+    const id_esp = +params.id_especialidad || 0
+    let fecha = params.fecha || '0'
+
+    let t_pro, t_tur, t_esp, t_fec;
+    
+    if (id_pro === 0) {
+        t_pro = id_pro
+
+    } else {
+        t_pro = 'id_profesional' 
+    }
+
+    if (id_tur === 0) {
+        t_tur = id_tur
+
+    } else {
+        t_tur = 'id_turno' 
+    }
+
+    if (id_esp === 0) {
+        t_esp = id_esp
+
+    } else {
+        t_esp = 'id_especialidad' 
+    }
+
+    if (fecha === '0') {
+        t_fec = fecha 
+
+    } else {
+        fecha = "'" + fecha + "'"
+        t_fec = 'cast(fecha_rango as date)' 
+    }
+
+    const query =  `SELECT * 
+                    FROM LISTA_FECHAS_DISPONIBLES_V2
+                    WHERE ${t_pro} = ${id_pro} AND ${t_tur} = ${id_tur} AND ${t_esp} = ${id_esp} AND ${t_fec} = ${fecha}
+                    ORDER BY ID_AGENDA, ID_DIA, FECHA_RANGO`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        return datos[0];
+
+    } catch (error) {
+        return null;
+    }
+}
+
+
+exports.obtener_lista_disponible_v2 = async (req, res) => {
+    const resp = await obtener_bd_v2(req.query);
+    res.json(resp)
+}
+
+exports.distinct_reserva_v2 = async (req, res) => {
+    const valor = req.query
+    const id_pro = +valor.id_profesional || 0
+    const id_tur = +valor.id_turno || 0
+    const id_esp = +valor.id_especialidad || 0
+    let fecha = valor.fecha || '0'
+
+    let t_pro, t_tur, t_esp, t_fec;
+    
+    if (id_pro === 0) {
+        t_pro = id_pro
+
+    } else {
+        t_pro = 'id_profesional' 
+    }
+
+    if (id_tur === 0) {
+        t_tur = id_tur
+
+    } else {
+        t_tur = 'id_turno' 
+    }
+
+    if (id_esp === 0) {
+        t_esp = id_esp
+
+    } else {
+        t_esp = 'id_especialidad' 
+    }
+
+    if (fecha === '0') {
+        t_fec = fecha 
+
+    } else {
+        fecha = "'" + fecha + "'"
+        t_fec = 'cast(fecha_rango as date)' 
+    }
+
+    const query =  `SELECT DISTINCT ${valor.id}, ${valor.propiedad} 
+                    FROM LISTA_FECHAS_DISPONIBLES_V2
+                    WHERE ${t_pro} = ${id_pro} AND ${t_tur} = ${id_tur} AND ${t_esp} = ${id_esp} AND ${t_fec} = ${fecha}
+                    ORDER BY ${valor.id}`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0]);
+            
+    } catch (error) {
+        res.json(datos[0]);
+    }
+}
+
+exports.distinct_fecha_v2 = async (req, res) => {
+    const valor = req.query
+    const id_pro = +valor.id_profesional || 0
+    const id_tur = +valor.id_turno || 0
+    const id_esp = +valor.id_especialidad || 0
+    let fecha = valor.fecha || '0'
+
+    let t_pro, t_tur, t_esp, t_fec;
+    
+    if (id_pro === 0) {
+        t_pro = id_pro
+
+    } else {
+        t_pro = 'id_profesional' 
+    }
+
+    if (id_tur === 0) {
+        t_tur = id_tur
+
+    } else {
+        t_tur = 'id_turno' 
+    }
+
+    if (id_esp === 0) {
+        t_esp = id_esp
+
+    } else {
+        t_esp = 'id_especialidad' 
+    }
+
+    if (fecha === '0') {
+        t_fec = fecha 
+
+    } else {
+        fecha = "'" + fecha + "'"
+        t_fec = 'cast(fecha_rango as date)' 
+    }
+
+    const query =  `SELECT DISTINCT TO_DATE(A.FECHA, 'dd/mm/yyyy') AS FECHA, LOWER(B.DESCRIPCION) || ', ' || EXTRACT(DAY FROM A.FECHA::TIMESTAMP) || ' de ' ||  LOWER(C.DESCRIPCION) || ' del ' || EXTRACT(YEAR FROM A.FECHA::TIMESTAMP) AS DESC
+                    FROM LISTA_FECHAS_DISPONIBLES_V2 A
+                    LEFT JOIN DIAS B ON B.ID = A.ID_DIA
+                    LEFT JOIN MESES C ON C.ID = EXTRACT(MONTH FROM A.FECHA::TIMESTAMP)
+                    WHERE ${t_pro} = ${id_pro} AND ${t_tur} = ${id_tur} AND ${t_esp} = ${id_esp} AND ${t_fec} = ${fecha}
+                    ORDER BY TO_DATE(A.FECHA, 'dd/mm/yyyy')`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0]);
+            
+    } catch (error) {
+        res.json(datos[0]);
+    }
+}
+
 exports.obtener_lista_disponible = async (req, res) => {
     const resp = await obtener_bd(req.query);
     const feriados = await obtener_feriados();
