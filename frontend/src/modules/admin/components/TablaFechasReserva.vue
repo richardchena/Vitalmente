@@ -174,7 +174,10 @@ export default {
                 .then(() => {
                     if(this.role === 3) {
                         this.$router.push({name: 'agenda-paciente', params: {id_paciente: id_pac}})
-                    } else {
+                    } else if (this.role === 2) {
+                        this.$router.go(0);
+                    }
+                    else {
                         this.$router.go(0);
                     }
                     

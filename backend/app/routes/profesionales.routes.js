@@ -67,4 +67,10 @@ router.get('/profesionales/validar/:id_profesional',
     docs.validar_id
 );
 
+router.get('/profesionales/obtener_id',
+    passport.authenticate('jwt', {session: false}),
+    docs.obtener_id_profesional
+);
+
+
 module.exports = router;

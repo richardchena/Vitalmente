@@ -81,7 +81,7 @@
         </div>
 
         <div style="padding: 20px 55px 0px 55px">
-            <div class="btn-group d-flex w-100" role="group"> 
+            <div  v-if="role === 1" class="btn-group d-flex w-100" role="group"> 
                 <router-link 
                     :to="{ name: 'datos-historial-consultas-admin',
                            params: { id: $route.params.id}}"
@@ -91,6 +91,22 @@
                 </router-link>
                 <router-link 
                     :to="{ name: 'datos-historial-consultas-texto-admin',
+                           params: { id: $route.params.id}}"
+                    tag="button" 
+                    class="btn btn-b_no_act w-100">
+                    Historial clínico
+                </router-link>
+            </div>
+            <div v-else class="btn-group d-flex w-100" role="group">
+                <router-link 
+                    :to="{ name: 'datos-historial-consultas-prof',
+                           params: { id: $route.params.id}}"
+                    tag="button" 
+                    class="btn btn-b_no_act w-100">
+                    Datos generales
+                </router-link>
+                <router-link 
+                    :to="{ name: 'datos-historial-consultas-texto-prof',
                            params: { id: $route.params.id}}"
                     tag="button" 
                     class="btn btn-b_no_act w-100">
@@ -121,7 +137,7 @@ export default {
     },
 
     computed:{
-        ...mapGetters('auth', ['accessToken']),
+        ...mapGetters('auth', ['accessToken', 'role']),
     },
 
     components: {
@@ -240,9 +256,16 @@ export default {
         },
 
         regresar_atras(){
-            this.$router.push({ name: 'historial-consultas-admin', params: {
-                id: this.id_paciente
-            }});
+            if(this.role === 1) {
+                this.$router.push({ name: 'historial-consultas-admin', params: {
+                    id: this.id_paciente
+                }});
+            } else {
+                this.$router.push({ name: 'historial-consultas-prof', params: {
+                    id: this.id_paciente
+                }});
+            }
+
         },
 
         async iniciar(){

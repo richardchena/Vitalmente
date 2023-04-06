@@ -89,7 +89,7 @@
         },
 
         computed:{
-            ...mapGetters('auth', ['accessToken']),
+            ...mapGetters('auth', ['accessToken', 'role']),
         },
 
         components: {
@@ -112,16 +112,25 @@
             },
 
             atras(){
-                this.$router.push({name: 'lista-pacientes-admin'})
+                if(this.role === 1) this.$router.push({name: 'lista-pacientes-admin'})
+                else this.$router.push({name: 'lista-pacientes-prof'})
             },
 
             registrar_consulta(){
                 /*this.$router.push({name: 'registro-consulta', params:{
                     id: this.id
                 }})*/
-                this.$router.push({name: 'datos-historial-consultas-admin', params:{
-                    id: this.id
-                }})
+
+                if(this.role === 1) {
+                    this.$router.push({name: 'datos-historial-consultas-admin', params:{
+                        id: this.id
+                    }})
+                } else {
+                    this.$router.push({name: 'datos-historial-consultas-prof', params:{
+                        id: this.id
+                    }})
+                }
+
             },
 
             async get_lista(){

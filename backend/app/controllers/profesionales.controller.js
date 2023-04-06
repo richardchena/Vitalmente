@@ -5,7 +5,7 @@ const generator = require('generate-password');
 
 //Lista Profesionales
 exports.lista_profesionales = async (req, res) => {
-    const query = 'SELECT * FROM LISTA_PROFESIONALES'
+    const query = 'SELECT * FROM LISTA_PROFESIONALES ORDER BY ID DESC'
     try {
         const datos = await db.sequelize.query(query);
         res.json(datos[0])
@@ -264,3 +264,19 @@ exports.dias = async (req, res) => {
         res.json(error);
     }
 };
+
+exports.obtener_id_profesional = async (req, res) => {
+    const usr = req.query.username
+    const query = `SELECT A.ID_PROFESIONAL 
+                   FROM PROFESIONALES A
+                   INNER JOIN USERS B ON B.ID = A.ID_USUARIO
+                   WHERE LOWER(B.USERNAME) = LOWER('${usr}')`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0][0]);
+
+    } catch (error) {
+        res.json(error);
+    }
+}

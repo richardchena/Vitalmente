@@ -96,7 +96,12 @@ export default {
 
     methods: {
         regresar_atras(){
-            this.$router.push({ name: 'lista-profesionales-admin' })
+            if(this.role === 1) {
+                this.$router.push({ name: 'lista-profesionales-admin' })
+            } else {
+                this.$router.push({ name: 'menu-profesional' })
+            }
+            
         },
 
         nuevo_horario(){
@@ -195,6 +200,7 @@ export default {
 
     computed:{
         ...mapGetters('auth', ['accessToken']),
+        ...mapGetters('auth', ['role']),
     },
 
     data() {

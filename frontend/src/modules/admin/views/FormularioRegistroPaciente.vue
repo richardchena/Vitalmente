@@ -268,7 +268,7 @@ export default {
     },
 
     computed:{
-        ...mapGetters('auth', ['accessToken']),
+        ...mapGetters('auth', ['accessToken', 'role']),
     },
 
     methods:{
@@ -398,7 +398,8 @@ export default {
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK',
                 }).then(() => {
-                    this.$router.push({name: 'lista-pacientes-admin'})
+                    if( this.role === 1) this.$router.push({ name: 'lista-pacientes-admin' }).then(() => { this.$router.go() })
+                    else this.$router.push({ name: 'lista-pacientes-prof' }).then(() => { this.$router.go() })
                 });
             } else if(cod === '999'){
                 const {response} = msg
@@ -472,7 +473,9 @@ export default {
         },
 
         regresar_atras(){
-            this.$router.push({ name: 'lista-pacientes-admin' })
+            console.log(this.role)
+            if( this.role === 1) this.$router.push({ name: 'lista-pacientes-admin' })
+            else this.$router.push({ name: 'lista-pacientes-prof' })
         }
     }
 }

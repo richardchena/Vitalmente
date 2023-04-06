@@ -167,7 +167,7 @@ async function eliminar_paciente_bd(user) {
 
 //Lista Paciente
 async function lista_pacientes_bd() {
-    const query = 'SELECT * FROM LISTA_PACIENTES'
+    const query = 'SELECT * FROM LISTA_PACIENTES ORDER BY ID DESC'
     try {
         const datos = await db.sequelize.query(query);
         return datos[0]

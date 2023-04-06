@@ -111,7 +111,7 @@ export default {
     },
 
     computed:{
-        ...mapGetters('auth', ['accessToken'])
+        ...mapGetters('auth', ['accessToken', 'role'])
     },
 
     methods: {
@@ -130,11 +130,14 @@ export default {
         },
 
         registrar_paciente(){
-            this.$router.push({ name: 'registrar-paciente-admin' })
+            if(this.role === 1) this.$router.push({ name: 'registrar-paciente-admin' })
+            else this.$router.push({ name: 'registrar-paciente-prof' })
         },
 
         expediente(id){
-            this.$router.push({ name: 'historial-consultas-admin', params: { id } })
+            if(this.role === 1) this.$router.push({ name: 'historial-consultas-admin', params: { id } })
+            else this.$router.push({ name: 'historial-consultas-prof', params: { id } })
+            
         },
 
         eliminar(id_paciente, nombre){
@@ -192,10 +195,11 @@ export default {
         },
 
         funcion_reserva(id){
-            this.$router.push({ name: 'reserva-cita', params: { id_paciente: id } })
+            if(this.role === 1) this.$router.push({ name: 'reserva-cita', params: { id_paciente: id } })
+            else this.$router.push({ name: 'reserva-cita-prof', params: { id_paciente: id } })
         }
     },
-  
+
     async mounted(){
         await this.get_pacientes();
 
@@ -213,11 +217,12 @@ export default {
                     url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json"
                 },
                 fixedColumns: true,
-                pageLength: 10,
+                pageLength: 8,
                 lengthChange: false,
                 searching: true,
                 searchDelay: 0,
                 dom: 'lrtip',
+                order: [],
                 columns:[
                     {a: "id"},
                     {c: "name"},
@@ -235,7 +240,7 @@ export default {
                         render: function (data, type, row) {
                             let mod, file, dis, del, reserva;
 
-                            if(row[7] === 'Activa') {
+                            if(row[6] === 'Activa') {
                                 reserva = '<button class="btn btn-success boton" title="Reserva"><i class="fas fa-calendar-plus"></i></button>';
                                 file = '<button class="btn btn-secondary boton" title="Ver expediente"><i class="far fa-file-alt"></i></button>';
                                 mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';

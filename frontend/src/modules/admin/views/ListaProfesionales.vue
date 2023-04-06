@@ -210,10 +210,11 @@
                         url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json"
                     },
                     fixedColumns: true,
-                    pageLength: 10,
+                    pageLength: 8,
                     lengthChange: false,
                     searching: true,
                     searchDelay: 0,
+                    order: [],
                     dom: 'lrtip',
                     columns:[
                         {a: "id"},

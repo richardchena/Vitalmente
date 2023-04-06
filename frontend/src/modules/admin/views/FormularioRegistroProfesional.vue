@@ -398,7 +398,7 @@ export default {
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK',
                 }).then(() => {
-                    this.$router.push({name: 'lista-profesionales-admin'})
+                    this.$router.push({name: 'lista-profesionales-admin'}).then(() => { this.$router.go() })
                 });
             } else if(cod === '999'){
                 const {response} = msg

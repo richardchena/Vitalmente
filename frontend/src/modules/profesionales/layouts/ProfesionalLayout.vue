@@ -3,6 +3,8 @@
         <Navbar/>
         <div class="super">
             <div class="contenedor">
+                <!--<router-view/>-->
+
                 <router-view v-slot="{ Component }">
                     <keep-alive>
                         <component :is="Component" />

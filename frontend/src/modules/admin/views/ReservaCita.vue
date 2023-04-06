@@ -28,7 +28,7 @@
                         <strong><p class="text-center">Número expediente: {{nro_exp}}</p></strong>
                     </div>
                     <div class="col-sm">
-                        <strong><p class="text-center">Número documento: {{nro_doc}}</p></strong>
+                        <strong><p class="text-center">Tipo y nro. doc: ({{tipo_doc}}) {{nro_doc}}</p></strong>
                     </div>
                 </div>
             </div>
@@ -113,6 +113,7 @@ export default {
             profesionales: [{'id': 0, 'nombre': '-- TODOS --'}],
             especialidades: [{'id': 0, 'nombre': '-- TODOS --'}],
             fechas_reserva: [{'id': '0', 'nombre': '-- TODOS --'}],
+            tipo_doc: null,
 
             //Selecciones
             selectTurno: 0,
@@ -145,7 +146,10 @@ export default {
         regresar_atras(){
             if(this.role === 3) {
                 this.$router.push({ name: 'menu-paciente' });
-            } else {
+            } else if(this.role === 2) {
+                this.$router.push({ name: 'lista-pacientes-prof' });
+            }
+            else {
                 this.$router.push({ name: 'lista-pacientes-admin' });
             }
         },
@@ -358,6 +362,7 @@ export default {
 
             this.nombre = data.nombre_completo
             this.nro_doc = data.nro_doc
+            this.tipo_doc = data.tipo_doc
         },
 
         iniciar(){

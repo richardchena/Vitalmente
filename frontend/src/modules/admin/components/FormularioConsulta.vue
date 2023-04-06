@@ -61,12 +61,13 @@ import 'bootstrap';
 
 
 export default {
-    created(){
-        this.obtener_especialidades();
+    async created(){
+        await this.obtener_especialidades();
+        await this.obtener_id_prof();
     },
 
     computed:{
-        ...mapGetters('auth', ['accessToken']),
+        ...mapGetters('auth', ['accessToken', 'role', 'username']),
     },
 
     methods: {
@@ -80,20 +81,40 @@ export default {
             this.especialidades = data
         },
 
+        async obtener_id_prof(){
+            const {data} = await authApi.get('/profesionales/obtener_id', {
+                params: {
+                    username: this.username
+                },
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            this.id_profesional = data.id_profesional
+            console.log(this.id_profesional)
+        },
+
         validar(){
-            if(!this.diagnostico_consulta || !this.motivo_consulta){
+            if(this.role === 1) {
                 Swal.fire({
-                text: "Debe completar el motivo de consulta y diagnóstico actual",
-                icon: 'warning'})
+                html: "<h4>Solo un profesional logeado puede registrar consultas</h4>",
+                icon: 'error'})
             } else {
-                this.registrar()   
+                if(!this.diagnostico_consulta || !this.motivo_consulta){
+                    Swal.fire({
+                    html: "<h4>Debe completar el motivo de consulta y diagnóstico actual</h4>",
+                    icon: 'warning'})
+                } else {
+                    this.registrar()   
+                }
             }
         },
 
         obtener_object(){
             let obj = {}
             obj.id_paciente = +this.$route.params.id
-            obj.id_profesional = 10 //CAMBIARRRRR
+            obj.id_profesional = +this.id_profesional
             obj.id_especialidad = this.select_especialidad
             obj.motivo = this.motivo_consulta
             obj.diagnostico = this.diagnostico_consulta
@@ -112,9 +133,15 @@ export default {
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'OK',
                 }).then(() => {
-                    this.$router.push({name: 'historial-consultas-admin', params:{
-                        id: this.$route.params.id
-                    }})
+                    if(this.role === 1) {
+                        this.$router.push({name: 'historial-consultas-admin', params:{
+                            id: this.$route.params.id
+                        }}).then(() => { this.$router.go() })
+                    } else {
+                        this.$router.push({name: 'historial-consultas-prof', params:{
+                            id: this.$route.params.id
+                        }}).then(() => { this.$router.go() })
+                    }
                 });
             } else if(cod === '999'){
                 const {response} = msg
@@ -169,7 +196,8 @@ export default {
             diagnostico_consulta: null,
             antecedente_consulta: null,
 
-            isLoading: false
+            isLoading: false,
+            id_profesional: null
         }
     }
 }

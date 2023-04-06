@@ -61,15 +61,15 @@
         <div class="container text-center">
             <div class="row">
                 <div class="col-md">
-                    <button class="btn btn-success mx-2 btn-lg btn-block" @click="pagina_reserva">
-                        Reservar Turno&nbsp;
-                        <i class="far fa-calendar-plus"></i>
+                    <button class="btn btn-primary mx-2 btn-lg btn-block" @click="pagina_paciente">
+                        Pacientes&nbsp;
+                        <i class="fas fa-users"></i>
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-primary mx-2 btn-lg btn-block" @click="pagina_agendas">
-                        Turnos Agendados&nbsp;
-                        <i class="far fa-calendar-check"></i>
+                    <button class="btn btn-success mx-2 btn-lg btn-block" @click="pagina_agendas">
+                        Mi Agenda&nbsp;
+                        <i class="fas fa-calendar-alt"></i>
                     </button>
                 </div>
                 <div class="col-md">
@@ -92,7 +92,7 @@ import Swal  from 'sweetalert2'
 export default {
     data(){
         return {
-            id_paciente: null,
+            id_profesional: null,
             pass_new_verif: null,
             pass_new: null,
             pass_actual: null,
@@ -113,6 +113,15 @@ export default {
     },
 
     methods: {
+        pagina_paciente(){
+            //this.$router.push({ name: 'lista-pacientes-prof' }).then(() => { this.$router.go() })
+            this.$router.push({ path: '/profesional/lista_pacientes' })
+        },
+
+        pagina_agendas(){
+            this.$router.push({name: 'agenda-profesional-prof', params: {id_profesional: +this.id_profesional}})
+        },
+
         pagina_clave(){
             this.$refs.boton.click();
         },
@@ -136,7 +145,7 @@ export default {
         },
 
         async obtener_id(){
-            const {data} = await authApi.get('/obtener_id_paciente', {
+            const {data} = await authApi.get('/profesionales/obtener_id', {
                 params: {
                     username: this.username,
                 },
@@ -145,7 +154,7 @@ export default {
                 }
             })
 
-            this.id_paciente = +data.id_paciente
+            this.id_profesional = +data.id_profesional
         },
 
         async cambiar_pass(){
@@ -183,16 +192,6 @@ export default {
                 }
             });
         },
-
-        pagina_reserva(){
-            this.$router.push({ name: 'reserva-cita-paciente', params: {id_paciente: this.id_paciente} })
-        },
-
-        pagina_agendas(){
-            this.$router.push({ name: 'agenda-paciente', params: {id_paciente: this.id_paciente} })
-        },
-
-        
     }
 }
 </script>

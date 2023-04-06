@@ -68,7 +68,8 @@
                 } else if (this.role === 3){
                     this.$router.push({name: 'menu-paciente'})
                 } else {
-                    this.$router.push({name: 'paciente-home'})
+                    //this.$router.push({name: 'menu-profesional'})
+                    this.$router.push({path: '/'})
                 }
             },
 

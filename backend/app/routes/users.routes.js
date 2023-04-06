@@ -14,27 +14,27 @@ router.get('/pacientes',
 
 router.post('/pacientes', 
     passport.authenticate('jwt', {session: false}), //VALIDACION DEL TOKEN (USUARIO AUTENTICADO)
-    checkRoles('admin'), //VALIDAR SI EL USUARIO LOGEADO CUENTA CON EL ROL CORRECTO PARA ACCEDER A ESTA RUTA
+    checkRoles('admin', 'profesional'), //VALIDAR SI EL USUARIO LOGEADO CUENTA CON EL ROL CORRECTO PARA ACCEDER A ESTA RUTA
     validar_datos_post(crear_usuario),
     users.crear_paciente);
 
 router.delete('/pacientes/:username',
     passport.authenticate('jwt', {session: false}),
-    checkRoles('admin'),
+    checkRoles('admin', 'profesional'),
     validar_datos(usuario_datos, 'params'),
     users.eliminar_paciente
 );
 
 router.post('/pacientes/cambiar_estado/:id_paciente',
     passport.authenticate('jwt', {session: false}),
-    checkRoles('admin'),
+    checkRoles('admin', 'profesional'),
     validar_datos(paciente, 'params'),
     users.cambiar_estado_paciente
 );
 
 router.delete('/pacientes/eliminar_paciente/:id_paciente',
     passport.authenticate('jwt', {session: false}),
-    checkRoles('admin'),
+    checkRoles('admin', 'profesional'),
     validar_datos(paciente, 'params'),
     users.baja_paciente
 );

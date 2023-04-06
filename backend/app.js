@@ -11,6 +11,7 @@ const corsOptions = {
     origin: ['http://localhost:82',
     'http://localhost:8080',
     'http://localhost:80',
+    'http://localhost:85',
     'http://localhost',
     'https://clinicavitalmente.com',
     'https://www.clinicavitalmente.com']

@@ -24,6 +24,7 @@ export const isSuspended = async (to, from, next) => {
 export const role = async (to, from, next) => {
     const role = store.getters['auth/role']
     if(role === 1) next({name: 'menu-admin'})
+    else if (role === 2) next({name: 'menu-profesional'})
     else next({name: 'menu-paciente'})
 }
 
@@ -47,9 +48,25 @@ export const isAuthenticatedPaciente = async (to, from, next) => {
     const {ok, cuenta} = await store.dispatch('auth/checkAuthentication')
     if(ok && cuenta === 'A') {
         const role = store.getters['auth/role']
-        if(role === 3 || role === 2) next()
-        else next({name: 'menu-admin'}) //profesional
+        if(role === 3) next()
+        else if (role === 2) next({name: 'menu-admin'})
+        else next({name: 'menu-profesional'}) //profesional
         //else next({name: 'paciente-home'})
+    }
+    else if (ok && cuenta !== 'A') {
+        next({path: '/suspended-account'})}
+    else {
+        next({path: '/login'})
+    }
+}
+
+export const isAuthenticatedProf = async (to, from, next) => {
+    const {ok, cuenta} = await store.dispatch('auth/checkAuthentication')
+    if(ok && cuenta === 'A') {
+        const role = store.getters['auth/role']
+        if(role === 2) next()
+        else if (role === 1) next({name: 'menu-admin'}) //profesional
+        else next({name: 'menu-paciente'})
     }
     else if (ok && cuenta !== 'A') {
         next({path: '/suspended-account'})}
