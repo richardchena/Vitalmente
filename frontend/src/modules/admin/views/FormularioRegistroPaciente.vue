@@ -259,6 +259,7 @@ export default {
     },
 
     created () {
+        document.title = 'Registrar Paciente'
         this.obtener_fecha_hoy()
         this.get_paises()
         this.get_departamentos()
@@ -324,29 +325,33 @@ export default {
         },
 
         async get_ciudades(){
-            const {data} = await authApi.get('/obtener_ciudades', {
-                params: {
-                    cod: this.selectedDep
-                },
-                headers: {
-                    'Authorization': `Bearer ${this.accessToken}`
-                }
-            })
+            //if(this.selectedDep){
+                const {data} = await authApi.get('/obtener_ciudades', {
+                    params: {
+                        cod: this.selectedDep
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`
+                    }
+                })
 
-            this.ciudades = data
+                this.ciudades = data
+            //}
         },
 
         async get_ciudades_residencia(){
-            const {data} = await authApi.get('/obtener_ciudades', {
-                params: {
-                    cod: this.selectedDepResi
-                },
-                headers: {
-                    'Authorization': `Bearer ${this.accessToken}`
-                }
-            })
+            //if(this.selectedDepResi){
+                const {data} = await authApi.get('/obtener_ciudades', {
+                    params: {
+                        cod: this.selectedDepResi
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`
+                    }
+                })
 
-            this.ciudades_residencia = data
+                this.ciudades_residencia = data
+            //}
         },
 
         cambiar_pais(){

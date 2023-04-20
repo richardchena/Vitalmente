@@ -17,7 +17,6 @@
                                     Por favor ingrese la contraseña actual
                                 </div>
                             </div>
-                            <br>
                             <div class="form-outline mb-4">
                                 <label for="exampleFormControlInput1">&nbsp;Nueva contraseña</label>
                                 <input v-model="pass_new" type="password" :class="input_pass2" required>
@@ -75,12 +74,17 @@
             <br>
             <div class="row">
                 <div class="col-md">
-                    <button class="btn btn-info mx-2 btn-lg btn-block" @click="pagina_clave">
+                    <button class="btn btn-info mx-2 btn-lg btn-block" @click="pagina_sala">
+                        Atenciones del día&nbsp;
+                        <i class="fas fa-clinic-medical"></i>
+                    </button>
+                </div>
+                <div class="col-md">
+                    <button class="btn btn-dark mx-2 btn-lg btn-block" @click="pagina_clave">
                         Cambiar Clave&nbsp;
                         <i class="fas fa-key"></i>
                     </button>
                 </div>
-                <div class="col-md"></div>
                 <div class="col-md"></div>
             </div>
         </div>
@@ -168,6 +172,10 @@ export default {
                     this.$router.go(0)
                 }
             });
+        },
+
+        pagina_sala(){
+            this.$router.push({ name: 'tabla-lista-pacientes-reserva-hoy' })
         },
 
         pagina_paciente(){

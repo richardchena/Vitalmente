@@ -121,12 +121,16 @@ export default {
         },
 
         async get_pacientes(){
-            const {data} = await authApi.get('/pacientes', {
-                headers: {
-                    'Authorization': `Bearer ${this.accessToken}`
-                }
-            })
-            this.users = data
+            try {
+                const {data} = await authApi.get('/pacientes', {
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`
+                    }
+                })
+                this.users = data
+            } catch (error) {
+                console.log(error)
+            }
         },
 
         registrar_paciente(){
@@ -195,10 +199,23 @@ export default {
         },
 
         funcion_reserva(id){
-            if(this.role === 1) this.$router.push({ name: 'reserva-cita', params: { id_paciente: id } })
-            else this.$router.push({ name: 'reserva-cita-prof', params: { id_paciente: id } })
+            if(this.role === 1) {
+                //window.location.href = './reserva/' + id
+                this.$router.push({ name: 'reserva-cita', params: { id_paciente: id } })//.then(() => { this.$router.go() })
+            }
+            else {
+                this.$router.push({ name: 'reserva-cita-prof', params: { id_paciente: id } })//.then(() => { this.$router.go() })
+            }
         }
     },
+
+    created(){
+        document.title = 'Lista de Pacientes'
+    },
+
+    /*beforeUnmount() {  
+        console.log(this.tabla)
+    },*/
 
     async mounted(){
         await this.get_pacientes();
@@ -210,7 +227,7 @@ export default {
         const funcion_reserva = this.funcion_reserva;
 
         $(document).ready(function(){
-            var tabla = $('#tabla').dataTable({
+            let tabla = $('#tabla').dataTable({
                 responsive: true,
                 destroy: true,
                 language: {

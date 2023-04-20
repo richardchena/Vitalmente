@@ -109,6 +109,7 @@ export default {
             if(this.datos_citas !== undefined){
                 let obj = this.datos_citas[id]
 
+                console.log(obj)
                 Swal.fire({
                 title: '<strong>Confirme la reserva</strong>',
                 icon: 'question',

@@ -53,4 +53,31 @@ export default {
             name: 'historial-consultas-prof',
             component: () => import(/* webpackChunkName: "historial-consultas-prof" */ '@/modules/admin/components/HistorialConsultas'),
         },
+        {
+            path: 'citas_agendadas/:id_profesional',
+            name: 'citas-agendadas-prof',
+            component: () => import(/* webpackChunkName: "citas-agendadas-prof" */ '@/modules/profesionales/views/TurnosAgendados'),
+        },
+        {
+            path: 'atenciones',
+            name: 'atenciones-prof',
+            component: () => import(/* webpackChunkName: "atenciones-prof" */ '@/modules/profesionales/views/AtencionDia'),
+            children: [
+                {
+                    path: '',
+                    name: 'atencion-atendidos-prof',
+                    component: () => import(/* webpackChunkName: "atencion-atendidos-prof" */ '@/modules/profesionales/components/Atendidos'),
+                },
+                {
+                    path: 'curso',
+                    name: 'atencion-curso-prof',
+                    component: () => import(/* webpackChunkName: "atencion-curso-prof" */ '@/modules/profesionales/components/Curso'),
+                },
+                {
+                    path: 'espera',
+                    name: 'atencion-espera-prof',
+                    component: () => import(/* webpackChunkName: "atencion-espera-prof" */ '@/modules/profesionales/components/Espera'),
+                },
+            ]
+        },
     ]}

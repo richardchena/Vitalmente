@@ -92,7 +92,6 @@ export default {
             })
 
             this.id_profesional = data.id_profesional
-            console.log(this.id_profesional)
         },
 
         validar(){

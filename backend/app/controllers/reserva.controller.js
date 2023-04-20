@@ -635,10 +635,49 @@ exports.obtener_citas_agendadas = async (req, res) => {
     }
 };
 
+//CITAS VISTA PROFESIONAL
+exports.obtener_citas_agendadas_prof = async (req, res) => {
+    const cod = req.query.id_profesional
+    const fecha = req.query.fecha
+    let variable, uso;
+
+    if(!fecha){
+        variable = `'0'`
+        uso = '0'
+    } else {
+        variable = 'FECHA_FILTRO'
+        uso = fecha
+    }
+
+    const query = `SELECT * FROM LISTA_AGENDAS_PROFESIONAL WHERE ID_PROFESIONAL = ${cod} AND ${variable} = '${uso}'`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0]);
+
+    } catch (error) {
+        res.json(error);
+    }
+};
+
 //CANCELAR CITA
 exports.cancelar_cita_paciente = async (req, res) => {
     const cod = req.body.id_cita
     const query = `UPDATE CITAS SET ESTADO = 2 WHERE ID_CITA = ${cod}`
+
+    try {
+        await db.sequelize.query(query);
+        res.json({cod: 0, msg: "Se ha cancelado correctamente"});
+
+    } catch (error) {
+        res.json({cod: 1, msg: "Hubo un error al modificar el registro. Intente más tarde"});
+    }
+};
+
+//CANCELAR CITA X PROFESIONAL
+exports.cancelar_cita_prof = async (req, res) => {
+    const cod = req.body.id_cita
+    const query = `UPDATE CITAS SET ESTADO = 3 WHERE ID_CITA = ${cod}`
 
     try {
         await db.sequelize.query(query);

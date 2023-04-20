@@ -68,8 +68,23 @@
                 </div>
                 <div class="col-md">
                     <button class="btn btn-success mx-2 btn-lg btn-block" @click="pagina_agendas">
-                        Mi Agenda&nbsp;
+                        Mis horarios&nbsp;
                         <i class="fas fa-calendar-alt"></i>
+                    </button>
+                </div>
+                <div class="col-md">
+                    <button class="btn btn-secondary mx-2 btn-lg btn-block" @click="pagina_citas">
+                        Citas Agendadas&nbsp;
+                        <i class="fas fa-calendar-check"></i>
+                    </button>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md">
+                    <button class="btn btn-warning mx-2 btn-lg btn-block" @click="pagina_atencion">
+                        Atenciones del día&nbsp;
+                        <i class="fas fa-clinic-medical"></i>
                     </button>
                 </div>
                 <div class="col-md">
@@ -78,6 +93,7 @@
                         <i class="fas fa-key"></i>
                     </button>
                 </div>
+                <div class="col-md"></div>
             </div>
         </div>
     </div>
@@ -116,6 +132,14 @@ export default {
         pagina_paciente(){
             //this.$router.push({ name: 'lista-pacientes-prof' }).then(() => { this.$router.go() })
             this.$router.push({ path: '/profesional/lista_pacientes' })
+        },
+
+        pagina_citas(){
+            this.$router.push({ name: 'citas-agendadas-prof', params: {id_profesional: +this.id_profesional}})
+        },
+
+        pagina_atencion(){
+            this.$router.push({ name: 'atencion-atendidos-prof'})
         },
 
         pagina_agendas(){

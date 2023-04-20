@@ -64,6 +64,7 @@
                     <td>{{dato.fecha_desde}}</td>
                     <td>{{dato.fecha_hasta}}</td>
                     <td v-if="dato.estado === 'POR VENCER'" style="color: #dc3545">{{dato.estado}}</td>
+                    <td v-else-if="dato.estado === 'VENCIDO'" style="color: black">{{dato.estado}}</td>
                     <td v-else style="color: #1d6042">{{dato.estado}}</td>
                     <th></th>
                 </tr>
@@ -109,7 +110,14 @@ export default {
 
             if(this.bandera !== 1) {
                 const id_prof = this.$route.params.id_profesional
-                this.$router.push({name: 'gestionar-horario', params: {id_profesional: id_prof}})
+                
+
+                if(this.role === 1) {
+                    this.$router.push({name: 'gestionar-horario', params: {id_profesional: id_prof}})
+                } else {
+                    this.$router.push({name: 'gestionar-horario-prof', params: {id_profesional: id_prof}})
+                }
+
             } else {
                 Swal.fire({
                 html: '<h4>Aún existen fechas vigentes</h4>',

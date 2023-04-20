@@ -960,12 +960,17 @@ export default {
 
     computed:{
         ...mapGetters('auth', ['accessToken']),
+        ...mapGetters('auth', ['role']),
     },
 
     methods: {
         regresar_atras(){
             const id_prof = this.$route.params.id_profesional
-            this.$router.push({name: 'agenda-profesional', params: {id_profesional: id_prof}})
+            if(this.role === 1){
+                this.$router.push({name: 'agenda-profesional', params: {id_profesional: id_prof}})
+            } else {
+                this.$router.push({name: 'agenda-profesional-prof', params: {id_profesional: id_prof}})
+            }
         },
         
         async registro_agenda(){
@@ -1009,7 +1014,11 @@ export default {
                 icon: 'success'})
                 .then(() => {
                     const id_prof = this.$route.params.id_profesional
-                    this.$router.push({name: 'agenda-profesional', params: {id_profesional: id_prof}})
+                    if(this.role === 1){
+                        this.$router.push({name: 'agenda-profesional', params: {id_profesional: id_prof}})
+                    } else {
+                        this.$router.push({name: 'agenda-profesional-prof', params: {id_profesional: id_prof}})
+                    }
                 })
             }
 

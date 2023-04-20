@@ -96,6 +96,10 @@
             Consulta: defineAsyncComponent(() => import ('@/modules/admin/components/Consulta'))
         },
 
+        created(){
+            document.title = 'Historial de consultas'
+        },
+
         methods:{
             iniciar(){
                 if(isNaN(this.$route.params.id)) {
@@ -112,6 +116,7 @@
             },
 
             atras(){
+                //window.location.href = '../lista_pacientes'
                 if(this.role === 1) this.$router.push({name: 'lista-pacientes-admin'})
                 else this.$router.push({name: 'lista-pacientes-prof'})
             },
@@ -151,9 +156,9 @@
                 this.$refs.boton.click();
             }
         },
-
+  
         async mounted(){
-            //this.iniciar()
+            this.iniciar()
             await this.get_lista()
             const funcion_ver = this.ver_detalles; 
 

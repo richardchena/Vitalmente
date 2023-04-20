@@ -3,20 +3,19 @@
         <table class="table table-hover table-cell-border table-striped" id="tabla2">
             <thead>
             <tr>
-                <th>ID</th>
+                <th>Día</th>
                 <th>Turno mañana</th>
                 <th>Turno tarde</th>
                 <th>Especialidad</th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="dato in agendas" :key="dato.id">
-                <td>{{dato.dia}}</td>
-                <td >{{dato.turno_man}}</td>
-                <td>{{dato.turno_tar}}</td>
-                <td>{{dato.especialidad}}</td>
-            </tr>
-            
+                <tr v-for="dato in agendas" :key="dato.id_dia">
+                    <td>{{dato.dia}}</td>
+                    <td >{{dato.turno_man}}</td>
+                    <td>{{dato.turno_tar}}</td>
+                    <td>{{dato.especialidad}}</td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -51,7 +50,6 @@ export default {
 
     watch: {
         async id_agenda() {
-
             await this.get_lista();
         }
     },
@@ -62,16 +60,18 @@ export default {
 
     methods: {
         async get_lista(){
-            const {data} = await authApi.get('/profesionales/agenda/dias', {
-                params: {
-                    id_agenda: this.id_agenda
-                },
-                headers: {
-                    'Authorization': `Bearer ${this.accessToken}`
-                }
-            })
+            if(this.id_agenda){
+                const {data} = await authApi.get('/profesionales/agenda/dias', {
+                    params: {
+                        id_agenda: this.id_agenda
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`
+                    }
+                })
 
-            this.agendas = await data
+                this.agendas = data
+            }
         },
 
         async inicio_tabla(){
@@ -91,13 +91,19 @@ export default {
                     searching: true,
                     //searchDelay: 0,
                     dom: '',
+                    columnDefs: [
+                        {"className": "text-center"},
+                        {"className": "text-center"},
+                        {"className": "text-center"},
+                        {"className": "text-center"}
+                    ],
                     columns:[
                         {"className": "dt-center", "targets": "_all"},
                         {"className": "dt-center", "targets": "_all"},
                         {"className": "dt-center", "targets": "_all"},
                         {"className": "dt-center", "targets": "_all"}
                     ]
-                });
+                }).api();
             });
         }
     }

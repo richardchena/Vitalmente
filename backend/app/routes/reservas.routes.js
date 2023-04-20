@@ -46,6 +46,16 @@ router.get('/reservas/agendas/paciente',
     controller.obtener_citas_agendadas
 );
 
+router.get('/reservas/agendas/profesional',
+    passport.authenticate('jwt', {session: false}),
+    controller.obtener_citas_agendadas_prof
+);
+
+router.put('/reservas/agendas/profesional/cancelar',
+    passport.authenticate('jwt', {session: false}),
+    controller.cancelar_cita_prof
+);
+
 router.put('/reservas/agendas/paciente/cancelar',
     passport.authenticate('jwt', {session: false}),
     controller.cancelar_cita_paciente

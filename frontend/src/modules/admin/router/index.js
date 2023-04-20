@@ -1,19 +1,28 @@
+import ListaPacientesVista from '@/modules/admin/views/ListaPacientes'
+import RegistroPacienteVista from '@/modules/admin/views/FormularioRegistroPaciente'
+import MenuVista from '@/modules/admin/views/Menu'
+import ReservaCitaVista from '@/modules/admin/views/ReservaCita'
+import HistorialConsultasVista from '@/modules/admin/components/HistorialConsultas'
+
 export default {
     children: [
         {
             path: '',
             name: 'menu-admin',
-            component: () => import(/* webpackChunkName: "menu-admin" */ '@/modules/admin/views/Menu'),
+            component: MenuVista
+            //component: () => import(/* webpackChunkName: "menu-admin" */ '@/modules/admin/views/Menu'),
         },
         {
             path: 'registrar_paciente',
             name: 'registrar-paciente-admin',
-            component: () => import(/* webpackChunkName: "registrar-paciente-admin" */ '@/modules/admin/views/FormularioRegistroPaciente'),
+            component: RegistroPacienteVista
+            //component: () => import(/* webpackChunkName: "registrar-paciente-admin" */ '@/modules/admin/views/FormularioRegistroPaciente'),
         },
         {
             path: 'lista_pacientes',
             name: 'lista-pacientes-admin',
-            component: () => import(/* webpackChunkName: "lista-pacientes-admin" */ '@/modules/admin/views/ListaPacientes'),
+            component: ListaPacientesVista
+            //component: () => import(/* webpackChunkName: "lista-pacientes-admin" */ '@/modules/admin/views/ListaPacientes'),
         },
         {
             path: 'lista_profesionales',
@@ -28,7 +37,8 @@ export default {
         {
             path: 'historial_consultas/:id',
             name: 'historial-consultas-admin',
-            component: () => import(/* webpackChunkName: "historial-consultas-admin" */ '@/modules/admin/components/HistorialConsultas'),
+            component: HistorialConsultasVista
+            //component: () => import(/* webpackChunkName: "historial-consultas-admin" */ '@/modules/admin/components/HistorialConsultas'),
         },
         {
             path: 'registro_consulta',
@@ -50,7 +60,8 @@ export default {
         {
             path: 'reserva/:id_paciente',
             name: 'reserva-cita',
-            component: () => import(/* webpackChunkName: "reserva-cita" */ '@/modules/admin/views/ReservaCita')
+            component: ReservaCitaVista
+            //component: () => import(/* webpackChunkName: "reserva-cita" */ '@/modules/admin/views/ReservaCita')
         },
         {
             path: 'gestionar_horario/:id_profesional',
@@ -61,6 +72,23 @@ export default {
             path: 'agenda/:id_profesional',
             name: 'agenda-profesional',
             component: () => import(/* webpackChunkName: "agenda-profesional" */ '@/modules/admin/views/ListaAgenda')
+        },
+        {
+            path: 'sala',
+            name: 'sala',
+            component: () => import(/* webpackChunkName: "sala" */ '@/modules/admin/views/SalaEspera'),
+            children: [
+                {
+                    path: '',
+                    name: 'tabla-lista-pacientes-reserva-hoy',
+                    component: () => import(/* webpackChunkName: "tabla-lista-pacientes-reserva-hoy" */ '@/modules/admin/components/TablaListaCitasHoy'),
+                },
+                {
+                    path: 'en_espera',
+                    name: 'tabla-lista-pacientes-reserva-hoy-en-espera',
+                    component: () => import(/* webpackChunkName: "tabla-lista-pacientes-reserva-hoy-en-espera" */ '@/modules/admin/components/TablaEnSalaEspera'),
+                },
+            ]
         },
     ]
 }

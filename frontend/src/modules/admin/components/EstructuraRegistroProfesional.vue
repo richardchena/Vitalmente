@@ -341,7 +341,7 @@ import 'bootstrap'
                 this.selectedCiuResi = user.lugar_residencia;
 
                 if(this.selectedPais !== 139) {
-                    this.get_ciudades_residencia();
+                    //this.get_ciudades_residencia();
                     this.desactivar = true
                 } else {
                     this.desactivar = false
@@ -359,16 +359,18 @@ import 'bootstrap'
             },
 
             async get_ciudades_residencia(){
-                const {data} = await authApi.get('/obtener_ciudades', {
-                    params: {
-                        cod: this.selectedDepResi
-                    },
-                    headers: {
-                        'Authorization': `Bearer ${this.accessToken}`
-                    }
-                })
+                //if(this.selectedDepResi){
+                    const {data} = await authApi.get('/obtener_ciudades', {
+                        params: {
+                            cod: this.selectedDepResi || 0
+                        },
+                        headers: {
+                            'Authorization': `Bearer ${this.accessToken}`
+                        }
+                    })
 
-                this.ciudades_residencia = data
+                    this.ciudades_residencia = data
+                //}
             },
 
             cambiar_ciudad_residencia(){
@@ -400,16 +402,19 @@ import 'bootstrap'
             },
 
             async get_ciudades(){
-                const {data} = await authApi.get('/obtener_ciudades', {
-                    params: {
-                        cod: this.selectedDep
-                    },
-                    headers: {
-                        'Authorization': `Bearer ${this.accessToken}`
-                    }
-                })
+                if(this.selectedPais === 139){
+                    if(!this.selectedDep) this.selectedDep = 0
+                    const {data} = await authApi.get('/obtener_ciudades', {
+                        params: {
+                            cod: this.selectedDep
+                        },
+                        headers: {
+                            'Authorization': `Bearer ${this.accessToken}`
+                        }
+                    })
 
-                this.ciudades = data
+                    this.ciudades = data
+                }
             },
 
             cambiar_pais(){

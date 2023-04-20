@@ -133,6 +133,7 @@ import 'bootstrap';
 
 export default {
     created(){
+        document.title = 'Registrar nueva consulta'
         this.iniciar()
     },
 

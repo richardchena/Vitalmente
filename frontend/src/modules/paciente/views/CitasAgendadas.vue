@@ -19,6 +19,7 @@
             <table class="table table-hover table-cell-border table-striped" id="tabla">
                 <thead>
                     <tr>
+                        <th>Nro. Reserva</th>
                         <th>Paciente</th>
                         <th>Fecha Reserva</th>
                         <th>Fecha Turno</th>
@@ -29,6 +30,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="dato in datos" :key="dato.id_cita">
+                        <td>{{dato.id_cita}}</td>
                         <td>{{dato.paciente}}</td>
                         <td>{{dato.fecha_reserva}}</td>
                         <td>{{dato.fecha_turno}}</td>
@@ -183,6 +185,7 @@ export default {
                     {"className": "dt-center", "targets": "_all"},
                     {"className": "dt-center", "targets": "_all"},
                     {"className": "dt-center", "targets": "_all"},
+                    {"className": "dt-center", "targets": "_all"},
                     {
                         className: "dt-center",
                         title: 'Control',
@@ -202,7 +205,6 @@ export default {
 
             $(".btn-info").click(function(){
                 let index = $(this).parents("tr")[0].__vnode.key;
-
                 funcion_cancelar(index);
             });
         });

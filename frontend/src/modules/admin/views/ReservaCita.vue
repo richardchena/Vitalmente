@@ -104,6 +104,24 @@ import Swal  from 'sweetalert2'
 import authApi from '@/api/authApi'
 
 export default {
+    created(){
+        document.title = 'Reservar turno';
+    },
+
+    //Cuando esta activado el Keep
+    /*async activated () {
+        await this.validar_role();
+        this.valores_iniciales();
+        this.iniciar();
+        await this.obtener_datos_paciente();
+        this.validar_paciente();
+        await this.obtener_datos_lista_desplegable();
+    },*/
+
+    /*deactivated(){
+        console.log('Desactivado');
+    },*/
+
     data(){
         return{
             nombre: null,
