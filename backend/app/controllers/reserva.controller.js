@@ -237,6 +237,7 @@ exports.distinct_fecha_v2 = async (req, res) => {
         res.json(datos[0]);
             
     } catch (error) {
+        console.log(error)
         res.json(datos[0]);
     }
 }

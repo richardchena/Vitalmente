@@ -404,7 +404,7 @@ export default {
                 confirmButtonText: 'OK',
                 }).then(() => {
                     if( this.role === 1) this.$router.push({ name: 'lista-pacientes-admin' }).then(() => { this.$router.go() })
-                    else this.$router.push({ name: 'lista-pacientes-prof' }).then(() => { this.$router.go() })
+                    else this.$router.push({ name: 'lista-pacientes-prof' }).then(() => { this.$router.go() }) //VER!!!
                 });
             } else if(cod === '999'){
                 const {response} = msg

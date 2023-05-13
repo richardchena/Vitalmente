@@ -38,7 +38,8 @@ exports.obtener_ciudades = async (req, res) => {
 };
 
 exports.obtener_especialidades = async (req, res) => {
-    const query = `SELECT ID_ESPECIALIDAD, DESCRIPCION FROM ESPECIALIDADES ORDER BY DESCRIPCION`
+    //const query = `SELECT ID_ESPECIALIDAD, DESCRIPCION FROM ESPECIALIDADES ORDER BY DESCRIPCION`
+    const query = `SELECT * FROM ESPECIALIDADES ORDER BY ID_ESPECIALIDAD`
 
     try {
         const especialidades = await db.sequelize.query(query);
@@ -71,4 +72,8 @@ exports.obtener_tipo_documento = async (req, res) => {
     } catch (error) {
         res.json(error);
     }
+};
+
+exports.page404 = (req, res) => {
+    res.redirect('https://www.clinicavitalmente.com')
 };

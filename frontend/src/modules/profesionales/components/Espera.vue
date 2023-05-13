@@ -22,7 +22,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="dato in atendidos" :key="dato.id_cita">
+                    <tr v-for="dato in atendidos" :key="dato.id_cita" :id="dato.id_cita">
                         <td>{{dato.orden}}</td>
                         <td>{{dato.paciente}}</td>
                         <td>{{dato.tipo_doc}}</td>
@@ -213,7 +213,7 @@ export default {
             });
 
             $(".btn-success").click(function(){
-                let index = $(this).parents("tr")[0].__vnode.key;
+                let index = $(this).parents("tr")[0].id;
                 funcion_iniciar(index);
             });
         })

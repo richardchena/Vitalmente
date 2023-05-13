@@ -5,6 +5,7 @@ import authAdmin from '@/modules/admin/router'
 import authPaciente from '@/modules/paciente/router'
 import authProf from '@/modules/profesionales/router'
 import principalRouter from '@/modules/principal/router'
+import PagosRouter from '@/modules/pagos/router'
 
 import { isAuthenticated, isLoginRequired, isSuspended, role, isAuthenticatedAdmin, isAuthenticatedPaciente, isAuthenticatedProf} from '@/modules/auth/router/isAuthenticated'
 
@@ -53,6 +54,15 @@ const routes = [
     beforeEnter: [isAuthenticatedProf],
     component: () => import(/* webpackChunkName: "profesional-home" */ '@/modules/profesionales/layouts/ProfesionalLayout'),
     ...authProf
+  },
+
+  //Pagos
+  {
+    path: '/pagos',
+    name: 'pagos-home',
+    beforeEnter: [isAuthenticatedAdmin],
+    component: () => import(/* webpackChunkName: "pagos-home" */ '@/modules/pagos/layouts/PagosLayouts'),
+    ...PagosRouter
   },
 
   // Redirección paginas no encontradas

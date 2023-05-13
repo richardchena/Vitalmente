@@ -56,7 +56,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="dato in datos" :key="dato.id_cita">
+                    <tr v-for="dato in datos" :key="dato.id_cita" :id="dato.id_cita">
                         <td>{{dato.id_cita}}</td>
                         <td>{{dato.paciente}}</td>
                         <td>{{dato.fecha_reserva}}</td>
@@ -150,7 +150,7 @@ export default {
             }).api();
 
             $(".btn-info").click(function(){
-                let index = $(this).parents("tr")[0].__vnode.key;
+                let index = $(this).parents("tr")[0].id;
                 funcion_cancelar(index);
             });
         });

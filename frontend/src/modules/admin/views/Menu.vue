@@ -65,10 +65,23 @@
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-success mx-2 btn-lg btn-block" @click="gestion_administracion">
+                    <!--<button class="btn btn-success mx-2 btn-lg btn-block" @click="gestion_administracion">
                         Administradores&nbsp;
                         <i class="fas fa-users-cog"></i> 
-                    </button>
+                    </button>-->
+                    <div class="dropdown">
+                        <a class="btn btn-success mx-2 btn-lg btn-block dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Parámetros&nbsp;
+                            <i class="fas fa-cog"></i>
+                        </a>
+
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" @click="contribuyentes">Contribuyentes</a></li>
+                            <li><a class="dropdown-item" @click="timbrados">Timbrados</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" @click="admins">Usuarios administradores</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <br>
@@ -80,12 +93,17 @@
                     </button>
                 </div>
                 <div class="col-md">
+                    <button class="btn btn-warning mx-2 btn-lg btn-block" @click="pagina_pagos">
+                        Facturación&nbsp;
+                        <i class="fas fa-cash-register"></i>
+                    </button>
+                </div>
+                <div class="col-md">
                     <button class="btn btn-dark mx-2 btn-lg btn-block" @click="pagina_clave">
                         Cambiar Clave&nbsp;
                         <i class="fas fa-key"></i>
                     </button>
                 </div>
-                <div class="col-md"></div>
             </div>
         </div>
     </div>
@@ -181,8 +199,25 @@ export default {
         pagina_paciente(){
             this.$router.push({ name: 'lista-pacientes-admin' })
         },
+
         pagina_profesional(){
             this.$router.push({ name: 'lista-profesionales-admin' })
+        },
+
+        contribuyentes(){
+            this.$router.push({ name: 'lista-contribuyentes' })
+        },
+
+        timbrados(){
+            this.$router.push({ name: 'timbrados' })
+        },
+
+        admins(){
+            alert('EN CONTRUCCIÓN...')
+        },
+
+        pagina_pagos(){
+            this.$router.push({ name: 'pagos-estados' })
         },
     }
 }

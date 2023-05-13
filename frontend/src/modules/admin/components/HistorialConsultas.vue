@@ -176,6 +176,7 @@
                     searching: true,
                     searchDelay: 0,
                     dom: 'lrtip',
+                    order: [],
                     columns:[
                         {a: "id"},
                         {b: "fecha"},

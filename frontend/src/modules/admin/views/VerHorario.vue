@@ -1,6 +1,6 @@
 <template>
     <div>
-        <table class="table table-hover table-cell-border table-striped" id="tabla2">
+        <!--<table class="table table-hover table-cell-border table-striped" id="tabla2">
             <thead>
             <tr>
                 <th>Día</th>
@@ -17,17 +17,39 @@
                     <td>{{dato.especialidad}}</td>
                 </tr>
             </tbody>
-        </table>
+        </table>-->
+        <VueGoodTable
+            :columns="columns"
+            :rows="rows"
+            styleClass="vgt-table condensed"
+            :pagination-options="{
+                enabled: false,
+                mode: 'pages',
+                perPageDropdownEnabled: false,
+                perPage: 9,
+                nextLabel: 'Siguiente',
+                ofLabel: 'de',
+                pageLabel: 'Pagina',
+                prevLabel: 'Anterior',    
+            }"
+        >
+            <template #emptystate>
+                <div class="text-center">No hay datos para mostrar :(</div>
+            </template>
+        </VueGoodTable>
+
     </div>
 </template>
 
 <script>
-    //Bootstrap and jQuery libraries
-    import 'jquery/dist/jquery.min.js';
-    //Datatable Modules
+    /*import 'jquery/dist/jquery.min.js';
     import "datatables.net-dt/js/dataTables.dataTables"
     import "datatables.net-dt/css/jquery.dataTables.min.css"
-    import * as $ from 'jquery';
+    import * as $ from 'jquery';*/
+
+    import { VueGoodTable } from 'vue-good-table-next';
+    import 'vue-good-table-next/dist/vue-good-table-next.css'
+
     import {mapGetters} from 'vuex'
     import authApi from '@/api/authApi'
 export default {
@@ -37,7 +59,29 @@ export default {
 
     data() {
        return {
-            agendas: null
+            agendas: null,
+
+
+            columns: [
+                {
+                    label: 'Día',
+                    field: 'dia',
+                },
+                {
+                    label: 'Turno mañana',
+                    field: 'turno_man'
+                },
+                {
+                    label: 'Turno tarde',
+                    field: 'turno_tar'
+                },
+                {
+                    label: 'Especialidad',
+                    field: 'especialidad'
+                }
+            ],
+
+            rows: [],
        } 
     },
 
@@ -54,8 +98,16 @@ export default {
         }
     },
 
-    async mounted() {
+    /*async mounted() {
         await this.inicio_tabla()
+    },*/
+
+    async created(){
+        await this.get_lista();
+    },
+
+    components: {
+        VueGoodTable,
     },
 
     methods: {
@@ -70,11 +122,12 @@ export default {
                     }
                 })
 
-                this.agendas = data
+                this.rows = data
+                //this.agendas = data
             }
         },
 
-        async inicio_tabla(){
+        /*async inicio_tabla(){
             await this.get_lista();
             $(document).ready(function(){
                 $('#tabla2').dataTable({
@@ -105,7 +158,7 @@ export default {
                     ]
                 }).api();
             });
-        }
+        }*/
     }
 }
 </script>

@@ -1,6 +1,7 @@
 const express = require('express');
 const api = require('./app/routes');
 const cors = require("cors");
+const page404 = require('./app/controllers/parametros.controller');
 
 const app = express();
 
@@ -28,5 +29,7 @@ require('./app/controllers/passport')
 
 // Definición de ruta principal y sucundarias
 app.use('/api/v1', api);
+app.use('*', page404.page404)
+
 
 module.exports = app;
