@@ -22,19 +22,27 @@
                     hide-offset-dates
                     :clearable="false"
                 >
-                <template #calendar-header="{  day }">
-                    <div v-if="day === 'Do'" class="text-danger">
-                        {{ day }}
-                    </div>
-                    <div v-else>
-                        {{ day }}
-                    </div>
-                </template>
+                    <template #calendar-header="{  day }">
+                        <div v-if="day === 'Do'" class="text-danger">
+                            {{ day }}
+                        </div>
+                        <div v-else>
+                            {{ day }}
+                        </div>
+                    </template>
                 </VueDatePicker>
+            </div>
+            <div style="margin-left: -400px;">
+                <button class="btn btn-success " @click="ver_todos">
+                    VER TODAS LAS FECHAS
+                </button>
             </div>
             <div class="d-flex flex-row align-items-center justify-content-center">
                 <div class="d-flex flex-row align-items-center justify-content-center">
                     <div style="margin-right: 10px">
+                        <!--<button style="margin-right: 10px" class="btn btn-success " @click="ver_todos">
+                            VER TODAS LAS FECHAS
+                        </button>-->
                         <button class="btn btn-danger " @click="regresar_atras">
                             IR A INICIO
                         </button>
@@ -47,8 +55,8 @@
                 <thead>
                     <tr>
                         <th>Nro. Reserva</th>
-                        <th>Paciente</th>
                         <th>Fecha Reserva</th>
+                        <th>Paciente</th>
                         <th>Fecha Turno</th>
                         <th>Especialidad</th>
                         <th>Status</th>
@@ -58,8 +66,8 @@
                 <tbody>
                     <tr v-for="dato in datos" :key="dato.id_cita" :id="dato.id_cita">
                         <td>{{dato.id_cita}}</td>
-                        <td>{{dato.paciente}}</td>
                         <td>{{dato.fecha_reserva}}</td>
+                        <td>{{dato.paciente}}</td>
                         <td>{{dato.fecha_turno}}</td>
                         <td>{{dato.especialidad}}</td>
                         <td>{{dato.estado_cita}}</td>
@@ -94,7 +102,8 @@ export default {
 
     data(){
         return{
-            fecha: !this.$route.query.fecha ? new Date(): new Date(this.$route.query.fecha),
+            //fecha: !this.$route.query.fecha ? new Date(): new Date(this.$route.query.fecha),
+            fecha: this.$route.query.fecha,
             fecha_fin: null,
             dias_semana: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
             marcadores: [],
@@ -183,6 +192,11 @@ export default {
     },
 
     methods: {
+        async ver_todos(){
+            await this.$router.replace({query: {  }})
+            this.$router.go(0);
+        },
+
         async cancelar_reserva(id_cita){
             Swal.fire({
             //title: '<strong>Cancelar reserva</strong>',
@@ -222,19 +236,23 @@ export default {
         },
 
         async obtener_lista(){
-            let f;
+            //let f;
 
-            if(!this.$route.query.fecha) {
+            /*if(!this.$route.query.fecha) {
                 f = format(new Date(), 'yyyy/MM/dd')
             } else {
                 f = this.$route.query.fecha
+            }*/
+
+            let obj = {}
+            obj.id_profesional = +this.$route.params.id_profesional
+            
+            if(this.$route.query.fecha){
+                obj.fecha = this.$route.query.fecha
             }
 
             const {data} = await authApi.get('/reservas/agendas/profesional', {
-                params: {
-                    id_profesional: +this.$route.params.id_profesional,
-                    fecha: f
-                },
+                params: obj,
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`
                 }

@@ -4,6 +4,19 @@
             <div style="margin-left: 15px; margin-top: 7px; height: 30px">
                 <strong>Citas del hoy - {{hoy}}</strong>
             </div>
+
+            <div class="d-flex flex-row align-items-center justify-content-center">
+                <div class="d-flex flex-row align-items-center justify-content-center">
+                    <div style="margin-right: 10px">
+                        <button style="margin-right: 10px" class="btn btn-info text-white " @click="ver_todos_002">
+                            VER CITAS AGENDADAS
+                        </button>
+                        <button class="btn btn-danger" @click="regresar_atras_002">
+                            IR A INICIO
+                        </button>
+                    </div>
+                </div>
+            </div>
         </nav>
         <div class="btn-group d-flex w-100" role="group">
             <router-link
@@ -34,6 +47,16 @@ export default {
     data(){
         return{
             hoy: format(new Date(), 'dd/MM/yyyy'),
+        }
+    },
+    
+    methods: {
+        regresar_atras_002(){
+            this.$router.push('/')
+        },
+
+        ver_todos_002(){
+            this.$router.push('citas_agendadas')
         }
     }
 }

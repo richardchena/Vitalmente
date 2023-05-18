@@ -661,6 +661,67 @@ exports.obtener_citas_agendadas_prof = async (req, res) => {
     }
 };
 
+//CITAS VISTA ADMIN
+exports.obtener_citas_agendadas_admin = async (req, res) => {
+    const cod = req.query.cod
+    const fecha = req.query.fecha
+    let variable, uso;
+    let v2, u2;
+
+    if(!fecha){
+        variable = `'0'`
+        uso = '0'
+    } else {
+        variable = 'FECHA_FILTRO'
+        uso = fecha
+    }
+
+    if(!cod || cod === 0 ||cod === '0'){
+        v2 = `'0'`
+        u2 = '0'
+    } else {
+        v2 = 'ID_PROFESIONAL'
+        u2 = cod
+    }
+
+    const query = `SELECT * FROM LISTA_AGENDAS_PROFESIONAL WHERE ${v2} = ${u2} AND ${variable} = '${uso}'`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0]);
+
+    } catch (error) {
+        res.json(error);
+    }
+};
+
+exports.distinct_profs_admin = async (req, res) => {
+    const fecha = req.query.fecha
+    let variable, uso;
+
+    if(!fecha){
+        variable = `'0'`
+        uso = '0'
+    } else {
+        variable = 'FECHA_FILTRO'
+        uso = fecha
+    }
+    
+    const query = `SELECT 
+                        DISTINCT ID_PROFESIONAL AS ID, 
+                        PROFESIONAL AS NOMBRE 
+                   FROM LISTA_AGENDAS_PROFESIONAL
+                   WHERE ${variable} = '${uso}'`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0]);
+
+    } catch (error) {
+        res.json(error);
+    }
+}
+
 //CANCELAR CITA
 exports.cancelar_cita_paciente = async (req, res) => {
     const cod = req.body.id_cita

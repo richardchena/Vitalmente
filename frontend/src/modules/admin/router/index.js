@@ -74,6 +74,16 @@ export default {
             component: () => import(/* webpackChunkName: "agenda-profesional" */ '@/modules/admin/views/ListaAgenda')
         },
         {
+            path: 'citas_agendadas',
+            name: 'citas-agendadas-admin',
+            component: () => import(/* webpackChunkName: "citas-agendadas-admin" */ '@/modules/admin/views/CitasAgendadesAdmin')
+        },
+        {
+            path: 'caja',
+            name: 'caja',
+            component: () => import(/* webpackChunkName: "caja" */ '@/modules/admin/views/MovimientoCaja')
+        },
+        {
             path: 'sala',
             name: 'sala',
             component: () => import(/* webpackChunkName: "sala" */ '@/modules/admin/views/SalaEspera'),

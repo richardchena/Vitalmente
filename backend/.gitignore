@@ -7,6 +7,9 @@ node_modules/
 # Archivos de node
 package-lock.json
 
+#PDF
+app/assets/facturas/
+
 # Otros
 init_visual_code.bat
 app/utils/DER/DER.architect~

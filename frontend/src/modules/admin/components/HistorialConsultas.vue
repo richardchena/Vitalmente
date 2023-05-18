@@ -132,7 +132,7 @@
                     }})
                 } else {
                     this.$router.push({name: 'datos-historial-consultas-prof', params:{
-                        id: this.id
+                        id: this.id, id_esp: 0
                     }})
                 }
 

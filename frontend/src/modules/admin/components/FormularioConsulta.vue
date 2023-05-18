@@ -11,7 +11,7 @@
         <div class="container">
             <div style="margin-top: 15px; margin-bottom: 15px; display: flex">
                 <strong><label style="margin-top: 7px; margin-right: 10px">Especialidad: </label></strong>
-                <select v-model="select_especialidad">
+                <select v-model="select_especialidad" :disabled="decision_disabled">
                     <option 
                         v-for="item in especialidades" 
                         :key="item.id_especialidad"
@@ -64,6 +64,9 @@ export default {
     async created(){
         await this.obtener_especialidades();
         await this.obtener_id_prof();
+        this.select_especialidad = +this.$route.params.id_esp || 1
+
+        if(+this.$route.params.id_esp === 0) this.decision_disabled = false
     },
 
     computed:{
@@ -118,7 +121,7 @@ export default {
             obj.motivo = this.motivo_consulta
             obj.diagnostico = this.diagnostico_consulta
 
-            if(this.tecnica && this.tecnica.trim().length !== 0) obj.tecnica = this.tecnica.trim(); else delete obj.tecnica;
+            if(this.tecnica_consulta && this.tecnica_consulta.trim().length !== 0) obj.tecnica = this.tecnica_consulta.trim(); else delete obj.tecnica;
             if(this.antecedente_consulta && this.antecedente_consulta.trim().length !== 0) obj.antecedente = this.antecedente_consulta.trim(); else delete obj.antecedente;
 
             return obj
@@ -189,6 +192,7 @@ export default {
         return {
             select_especialidad: 1,
             especialidades: null,
+            decision_disabled: true,
 
             motivo_consulta: null,
             tecnica_consulta: null,

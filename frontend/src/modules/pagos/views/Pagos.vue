@@ -58,7 +58,7 @@
                     prevLabel: 'Anterior',    
                 }"
                 :search-options="{
-                    enabled: true,
+                    enabled: false,
                     externalQuery: filtro
                 }"
             >

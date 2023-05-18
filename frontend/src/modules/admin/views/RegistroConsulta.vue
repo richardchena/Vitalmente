@@ -107,7 +107,7 @@
                 </router-link>
                 <router-link 
                     :to="{ name: 'datos-historial-consultas-texto-prof',
-                           params: { id: $route.params.id}}"
+                           params: { id: $route.params.id, id_esp: $route.params.id_esp}}"
                     tag="button" 
                     class="btn btn-b_no_act w-100">
                     Historial clínico

@@ -99,11 +99,27 @@
                     </button>
                 </div>
                 <div class="col-md">
+                    <button class="btn btn-primary mx-2 btn-lg btn-block" @click="pagina_citas_agendadas">
+                        Citas Agendadas&nbsp;
+                        <i class="fas fa-calendar-check"></i>
+                    </button>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md">
+                    <button class="btn btn-success mx-2 btn-lg btn-block" @click="pagina_caja">
+                        Movimientos&nbsp;
+                        <i class="fas fa-wallet"></i>
+                    </button>
+                </div>
+                <div class="col-md">
                     <button class="btn btn-dark mx-2 btn-lg btn-block" @click="pagina_clave">
                         Cambiar Clave&nbsp;
                         <i class="fas fa-key"></i>
                     </button>
                 </div>
+                <div class="col-md"></div>
             </div>
         </div>
     </div>
@@ -212,6 +228,10 @@ export default {
             this.$router.push({ name: 'timbrados' })
         },
 
+        pagina_caja(){
+            this.$router.push({ name: 'caja' })
+        },
+
         admins(){
             alert('EN CONTRUCCIÓN...')
         },
@@ -219,6 +239,10 @@ export default {
         pagina_pagos(){
             this.$router.push({ name: 'pagos-estados' })
         },
+
+        pagina_citas_agendadas(){
+            this.$router.push({ name: 'citas-agendadas-admin' })
+        }
     }
 }
 </script>

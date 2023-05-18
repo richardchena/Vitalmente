@@ -8,6 +8,7 @@ const reservas = require('./reservas.routes');
 const sala = require('./sala.routes');
 const pagos = require('./pagos.routes');
 const factura = require('./factura.routes');
+const mov = require('./movimiento.routes');
 
 // Rutas sobre el login del sistema
 router.use(auth);
@@ -19,5 +20,6 @@ router.use(reservas);
 router.use(sala);
 router.use(pagos);
 router.use(factura);
+router.use(mov);
 
 module.exports = router;

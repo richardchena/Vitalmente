@@ -36,12 +36,12 @@ export default {
             component: () => import(/* webpackChunkName: "registro-consulta-prof" */ '@/modules/admin/views/RegistroConsulta'),
             children: [
                 {
-                    path: ':id',
+                    path: ':id/:id_esp',
                     name: 'datos-historial-consultas-prof',
                     component: () => import(/* webpackChunkName: "datos-historial-consultas-prof" */ '@/modules/admin/components/FormularioConsulta'),
                 },
                 {
-                    path: ':id/historial',
+                    path: ':id/:id_esp/historial',
                     name: 'datos-historial-consultas-texto-prof',
                     component: () => import(/* webpackChunkName: "datos-historial-consultas-texto-prof" */ '@/modules/admin/components/HistorialTexto'),
                 },

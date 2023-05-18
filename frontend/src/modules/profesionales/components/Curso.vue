@@ -28,7 +28,7 @@
                                 <!--<button class="btn btn-success"><i class="far fa-file-alt"></i>&nbsp;&nbsp;Expediente</button>-->
                                 <router-link class="btn btn-success" 
                                 :to="{ name: 'datos-historial-consultas-prof',
-                                    params: { id: this.id_paciente}}"
+                                    params: { id: this.id_paciente, id_esp: this.id_esp_cita || 1}}"
                                     target="_blank"
                                 >
                                     <i class="far fa-file-alt"></i>
@@ -73,6 +73,7 @@ export default {
             id_paciente: 0,
             id_cita: null,
             bandera: false,
+            id_esp_cita: null,
 
             especialidad: null,
             nombre_paciente: null,
@@ -104,6 +105,7 @@ export default {
                 }
             })
 
+            this.id_esp_cita = data.id_esp_cita,
             this.id_cita = data.id_cita
             this.especialidad = data.especialidad
             this.nombre_paciente = data.nombre_paciente

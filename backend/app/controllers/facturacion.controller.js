@@ -115,6 +115,7 @@ exports.obtener_clientes_pendientes_pago = async (req, res) => {
     INNER JOIN SALA_ESPERA C ON C.ID_CITA = A.ID_CITA
     INNER JOIN PACIENTES D ON D.ID_PACIENTE = A.ID_PACIENTE
     INNER JOIN PERSONAS E ON E.ID_PERSONA = D.ID_PERSONA
+    WHERE C.ID_ESTADO = 3
     ORDER BY C.FECHA_FINALIZACION`
 
     try {
