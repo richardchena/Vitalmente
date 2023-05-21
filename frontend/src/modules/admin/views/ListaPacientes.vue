@@ -255,23 +255,23 @@ export default {
                         searchable: false,
                         //wrap: true, 
                         render: function (data, type, row) {
-                            let mod, file, dis, del, reserva;
+                            let mod, file, /*dis,*/ del, reserva;
 
                             if(row[6] === 'Activa') {
                                 reserva = '<button class="btn btn-success boton" title="Reserva"><i class="fas fa-calendar-plus"></i></button>';
                                 file = '<button class="btn btn-secondary boton" title="Ver expediente"><i class="far fa-file-alt"></i></button>';
                                 mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
-                                dis = '<button class="btn btn-warning boton" title="Desactivar cuenta"><i class="fas fa-user-slash"></i></button>';
+                                //dis = '<button class="btn btn-warning boton" title="Desactivar cuenta"><i class="fas fa-user-slash"></i></button>';
                                 del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
                             } else {
                                 reserva = '<button class="btn btn-success boton" title="Reserva"><i class="fas fa-calendar-plus"></i></button>';
                                 file = '<button class="btn btn-secondary boton" title="Ver expediente"><i class="far fa-file-alt"></i></button>';
                                 mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
-                                dis = '<button class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user"></i></button>';
+                                //dis = '<button class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user"></i></button>';
                                 del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
                             }
 
-                            return reserva + file + mod + dis + del;
+                            return reserva + file + mod + /*dis +*/ del;
                         }
                     }
                 ]

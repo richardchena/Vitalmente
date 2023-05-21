@@ -34,7 +34,7 @@ exports.registrar_consulta = async (req, res) => {
 
 exports.obtener_historial = async (req, res) => {
     const cod = req.query.id_paciente
-    const query = `SELECT * FROM CONSULTAS_PACIENTE WHERE ID_PACIENTE = ${cod} ORDER BY ID DESC`
+    const query = `SELECT * FROM CONSULTAS_PACIENTE WHERE ID_PACIENTE = ${cod} ORDER BY FECHA_CONSULTA DESC`
 
     try {
         const datos = await db.sequelize.query(query);

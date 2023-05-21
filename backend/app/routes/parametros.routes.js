@@ -26,4 +26,8 @@ router.get('/obtener_tipos_documento',
        passport.authenticate('jwt', {session: false}),
        parametros.obtener_tipo_documento);
 
+router.get('/obtener_correo',
+       //passport.authenticate('jwt', {session: false}),
+       parametros.obtener_correo);
+
 module.exports = router;

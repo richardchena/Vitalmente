@@ -56,7 +56,8 @@ exports.obtener_movimientos = async (req, res) => {
                    FROM MOVIMIENTOS_REGISTRADOS
                    WHERE ${variable} = ${uso} AND 
                          ${variable2} = ${uso2} AND
-                         FECHA_FILTRO BETWEEN '${desde}' AND '${hasta}'`
+                         FECHA_FILTRO BETWEEN '${desde}' AND '${hasta}'
+                   ORDER BY ID DESC`
 
     try {
         const data = await db.sequelize.query(query);

@@ -58,27 +58,30 @@
             </div>
         </nav>
         <br><br>
-        <div class="container text-center">
+        <div class="container text-center cuadro_menu">
             <div class="row">
                 <div class="col-md">
-                    <button class="btn btn-success mx-2 btn-lg btn-block" @click="pagina_reserva">
+                    <button class="btn btn-lg b1" @click="pagina_reserva">
                         Reservar Turno&nbsp;
                         <i class="far fa-calendar-plus"></i>
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-primary mx-2 btn-lg btn-block" @click="pagina_agendas">
+                    <button class="btn btn-lg b1" @click="pagina_agendas">
                         Turnos Agendados&nbsp;
                         <i class="far fa-calendar-check"></i>
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-info mx-2 btn-lg btn-block" @click="pagina_clave">
+                    <button class="btn btn-lg b1" @click="pagina_clave">
                         Cambiar Clave&nbsp;
                         <i class="fas fa-key"></i>
                     </button>
                 </div>
             </div>
+        </div>
+        <div class="text-center" style="font-size: 12px; margin-top: 10px; color: gray;">
+            <strong>Vitalmente Software © 2023</strong>
         </div>
     </div>
 </template>
@@ -198,6 +201,8 @@ export default {
 </script>
 
 <style scoped>
+    @import '../../../styles/menu.css';
+
    .spinner-wrapper {
         background-color: gray;
         opacity:0.9;

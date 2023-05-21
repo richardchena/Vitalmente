@@ -22,7 +22,7 @@ const telf_numb = joi.string().regex(/^[0-9]{4}-[0-9]{3}-[0-9]{3}$/).required().
 });
 
 //DATOS DEL USUARIO
-const username = joi.string().min(4).required();
+const username = joi.string().min(3).required();
 const email = joi.string().email().required();
 const role = joi.number().integer().min(1).max(3).required();
 

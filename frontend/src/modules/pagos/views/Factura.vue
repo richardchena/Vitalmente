@@ -324,10 +324,11 @@ export default {
         await this.inicial()
         this.calcular_cantidad()
         await this.obtener_id_timbrado()
+        console.log(await this.obtener_correo())
     },
 
     computed:{
-        ...mapGetters('auth', ['accessToken']),
+        ...mapGetters('auth', ['accessToken', 'username']),
     },
 
     components: {
@@ -375,7 +376,8 @@ export default {
                 },
                 {
                     label: 'Controles',
-                    field: 'controles'
+                    field: 'controles',
+                    sortable: false
                 },
             ],
 
@@ -544,16 +546,22 @@ export default {
                                     Swal.fire({
                                     html: `<h4>Se ha generado la factura <br>#${nro_fac_generado}<br>Código: ${data.id_pdf}</h4>`,
                                     icon: 'success',
+                                    showDenyButton: true,
                                     showCancelButton: true,
                                     confirmButtonColor: '#3085d6',
                                     cancelButtonColor: '#d33',
+                                    denyButtonColor: '#198754',
+                                    denyButtonText: 'Ver y enviar comprobante',
                                     confirmButtonText: 'Ver factura',
                                     cancelButtonText: 'Ir a pagos'})
                                     .then((result) => {
-                                        if (!result.isConfirmed) {
-                                            this.$router.push({ path: '/pagos' });
-                                        } else {
+                                        if (result.isConfirmed) {
                                             this.$router.push({ path: '/pagos/consulta_factura/' + this.$route.params.id })
+                                        } else if (result.isDenied) {
+                                            this.enviar_comprobante(nro_fac_generado, data.id_pdf)
+                                            this.$router.push({ path: '/pagos/consulta_factura/' + this.$route.params.id })
+                                        } else {
+                                            this.$router.push({ path: '/pagos' });
                                         }
                                     })
                                 }
@@ -566,6 +574,33 @@ export default {
                     }
                 }
             }
+        },
+
+        async obtener_correo(){
+            const {data} = await authApi.get('/obtener_correo?id_cita=' + this.$route.params.id, {              
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            return data;
+        },
+
+        async enviar_comprobante(nro_factura, id_pdf){
+            const email = await this.obtener_correo();
+
+            const {data} = await authApi.get('/facturacion/prueba', {
+                params: {
+                    email,
+                    nro_factura,
+                    id_pdf
+                },
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            console.log(data)
         },
 
         async obtener_nro_factura(id){

@@ -231,17 +231,17 @@
                             orderable: false,
                             searchable: false,
                             render: function (data, type, row) {
-                                let mod, dis, del, cal;
+                                let mod, dis = '', del, cal;
 
                                 if(row[8] === 'Activa') {
                                     cal = '<button class="btn btn-success boton" title="Agenda profesional"><i class="far fa-calendar-alt"></i></button>'
                                     mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
-                                    dis = '<button class="btn btn-warning boton" title="Desactivar cuenta"><i class="fas fa-user-slash"></i></button>';
+                                    //dis = '<button class="btn btn-warning boton" title="Desactivar cuenta"><i class="fas fa-user-slash"></i></button>';
                                     del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
                                 } else {
                                     cal = '<button class="btn btn-success boton" title="Agenda profesional"><i class="far fa-calendar-alt"></i></button>'
                                     mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
-                                    dis = '<button class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user"></i></button>';
+                                    //dis = '<button class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user"></i></button>';
                                     del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
                                 }
 

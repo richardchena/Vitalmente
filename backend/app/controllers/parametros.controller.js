@@ -74,6 +74,26 @@ exports.obtener_tipo_documento = async (req, res) => {
     }
 };
 
+exports.obtener_correo = async (req, res) => {
+    /*const query = `SELECT EMAIL
+                   FROM USERS
+                   WHERE LOWER(USERNAME) = LOWER('${req.query.username}')`*/
+
+    const query = `SELECT U.EMAIL
+    FROM CITAS C
+    INNER JOIN PACIENTES P ON P.ID_PACIENTE = C.ID_PACIENTE
+    INNER JOIN USERS U ON U.ID = P.ID_USUARIO
+    WHERE C.ID_CITA = ${+req.query.id_cita}`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0][0].email);
+
+    } catch (error) {
+        res.json(error);
+    }
+};
+
 exports.page404 = (req, res) => {
     res.redirect('https://www.clinicavitalmente.com')
 };

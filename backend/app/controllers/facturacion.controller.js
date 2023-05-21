@@ -1,8 +1,53 @@
 const db = require('../models');
-const generator = require('generate-password');
 const PdfPrinter = require('pdfmake');
 const path = require('path');
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
+const mail = require("../config/mailer");
+
+exports.correo = async (req, res) => {
+    try {
+        const resp = await enviar_comprobante(req.query.email, req.query.nro_factura, req.query.id_pdf);
+        res.json({id: resp});
+
+    } catch (error) {
+        res.json({id: 1});
+    }
+}
+
+async function enviar_comprobante(email, nro_factura, id_pdf){
+    let resp;
+    let pdf = path.join(__dirname, `../assets/facturas/${id_pdf}.pdf`)
+
+    await mail.transporter.sendMail({
+        from: '"facturas" tparqweb@gmail.com>',
+        to: email,
+        subject: `Factura Digital ${nro_factura}`,
+        html: `
+            <p>Estimado cliente,
+            <p>Adjuntamos su factura digital, agradecemos su pago :D
+
+            <strong><p>Si tiene dificultad para visualizar el documento favor contactar con atención al cliente.</p></strong>
+            <p>Saludos cordiales</p>
+            <p>Atte. Clínica VitalMente</p>
+        `,
+        attachments: [
+            {
+                filename: `${id_pdf}.pdf`,
+                path: pdf,
+                cid: `${id_pdf}.pdf`
+            }
+        ]
+    })
+    .then(data => {
+        resp = {id: 0, msg: data}
+    })
+    .catch(err => {
+        resp = {id: 1, msg: err}
+    });
+
+    return resp
+}
 
 exports.generar_factura = async (req, res) => {
     const id_timbrado = req.body.id_timbrado;
@@ -98,25 +143,69 @@ exports.consulta_vinculo = async (req, res) => {
 }
 
 exports.obtener_clientes_pendientes_pago = async (req, res) => {
-    const query = `SELECT
+    const id_estado_pago = req.query.id_estado_pago || 0;
+    const mes = req.query.mes //|| new Date().getMonth() + 1;
+    const anho = req.query.anho //|| new Date().getFullYear();
+
+    let variable, uso;
+    let v, u;
+    let v2, u2;
+
+    if(!mes){
+        v = `'0'`
+        u = `'0'`
+    } else {
+        v = 'EXTRACT(MONTH FROM FECHA_CONSULTA)'
+        u = mes
+    }
+
+    if(!anho){
+        v2 = `'0'`
+        u2 = `'0'`
+    } else {
+        v2 = 'EXTRACT(YEAR FROM FECHA_CONSULTA)'
+        u2 = anho
+    }
+
+    if(id_estado_pago === 0 || id_estado_pago === '0'){
+        variable = `'0'`
+        uso = '0'
+    } else {
+        variable = 'ID_ESTADO_PAGO'
+        uso = id_estado_pago
+    }
+
+    const query = `WITH TEMP AS (
+    SELECT
     A.ID_CITA,
     A.ID_PACIENTE AS NRO_EXP,
     INITCAP(E.PRIMER_NOMBRE || ' ' || E.PRIMER_APELLIDO) AS PACIENTE,
     B.ID_ESPECIALIDAD,
     B.DESCRIPCION AS ESPECIALIDAD,
     TO_CHAR(C.FECHA_FINALIZACION, 'DD/MM/YYYY HH24:MI') AS FECHA,
+    COALESCE(TO_CHAR(F.FECHA_EMISION, 'DD/MM/YYYY HH24:MI'), 'No aplica') AS FECHA_PAGO,
+    C.FECHA_FINALIZACION AS FECHA_CONSULTA,
     trim(TO_CHAR(B.PRECIO, '999G999')) || ' Gs.' AS TOTAL,
+    CASE
+        WHEN A.COD_FACTURA IS NULL THEN 1
+        ELSE 2
+    END AS ID_ESTADO_PAGO,
     CASE
         WHEN A.COD_FACTURA IS NULL THEN 'Pendiente'
         ELSE 'Finalizado'
-    END AS ESTADO
+    END AS ESTADO,
+    COALESCE(F.NUMERO_FACTURA, 'No aplica') AS NUMERO_FACTURA
     FROM CITAS A
     INNER JOIN ESPECIALIDADES B ON B.ID_ESPECIALIDAD = A.ID_ESPECIALIDAD
     INNER JOIN SALA_ESPERA C ON C.ID_CITA = A.ID_CITA
     INNER JOIN PACIENTES D ON D.ID_PACIENTE = A.ID_PACIENTE
     INNER JOIN PERSONAS E ON E.ID_PERSONA = D.ID_PERSONA
-    WHERE C.ID_ESTADO = 3
-    ORDER BY C.FECHA_FINALIZACION`
+    LEFT JOIN FACTURAS_VENTA F ON F.COD_FACTURA = A.COD_FACTURA
+    WHERE C.ID_ESTADO = 3)
+    
+    SELECT * FROM TEMP
+    WHERE ${variable} = ${uso} AND ${v} = ${u} AND ${v2} = ${u2}
+    ORDER BY FECHA_CONSULTA DESC`
 
     try {
         const data = await db.sequelize.query(query);
@@ -177,12 +266,14 @@ exports.obtener_timbrado = async (req, res) => {
 }
 
 function generar_id(){
-    const id = generator.generate({
+    /*const id = generator.generate({
         length: 20,
         numbers: true,
     });
 
-    return id
+    return id*/
+
+    return uuidv4();
 }
 
 exports.generar_pdf_get = async (req, res) => {

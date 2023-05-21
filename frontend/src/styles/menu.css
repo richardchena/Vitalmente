@@ -1,0 +1,20 @@
+.cuadro_menu{
+    margin-top: 00px;
+    padding: 50px;
+    border: 1px solid black;
+    border-radius:  10px;
+    width: 75%;
+}
+
+.b1{
+    width: 100%;
+    /*background: linear-gradient(to right, #7cd175, #74d36c, #4f9e48, #2a8222);*/
+    background: linear-gradient(to top, #7cd175, #8dc26f);
+    border: transparent;
+    color: black;
+}
+
+.b1:hover{
+    opacity: 0.8;
+    color: white;
+}

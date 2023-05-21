@@ -7,11 +7,11 @@
                 height="30"
                 class="d-inline-block align-text-top mx-2"
             >
-            <strong>Vitalmente&nbsp;&nbsp;</strong>
+            <strong style="margin-top: 10px;">Vitalmente&nbsp;&nbsp;</strong>
         </a>
 
-        <div class="d-flex justify-content-center border border-dark rounded w-25 h-50">
-            <strong>PORTAL {{rol}}</strong>
+        <div class="d-flex justify-content-center border border-dark w-25 h-50" style="border-radius: 8px;">
+            <strong>{{rol}}</strong>
         </div>
 
         <div class="d-flex flex-row align-items-center justify-content-center">

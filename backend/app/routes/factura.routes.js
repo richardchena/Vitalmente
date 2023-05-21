@@ -64,4 +64,10 @@ router.get('/facturacion',
             fact.generar_pdf_get
 );
 
+router.get('/facturacion/prueba',
+            passport.authenticate('jwt', {session: false}),
+            checkRoles('admin'), 
+            fact.correo
+);
+
 module.exports = router;

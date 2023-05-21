@@ -123,66 +123,70 @@
                 <strong>Movimiento de caja</strong>
             </div>
 
-            <div style="position: absolute; margin-left: 180px; width: 150px;">
-                <VueDatePicker 
-                    v-model="fecha"
-                    locale="es-PY"
-                    :enable-time-picker="false"
-                    :max-date="new Date()"
-                    week-start="0"
-                    :format="formato_fecha"
-                    :day-names="dias_semana"
-                    select-text="OK"
-                    cancel-text="Cancelar"
-                    hide-offset-dates
-                    :clearable="false"
-                    required 
-                >
-                    <template #calendar-header="{  day }">
-                        <div v-if="day === 'Do'" class="text-danger">
-                            {{ day }}
-                        </div>
-                        <div v-else>
-                            {{ day }}
-                        </div>
-                    </template>
-                </VueDatePicker>
-            </div>
+            <div class="row posicionar">
+                <div class="col" style="margin-left: 10px; width: 250px;">
+                    <VueDatePicker 
+                        v-model="fecha"
+                        locale="es-PY"
+                        :enable-time-picker="false"
+                        :max-date="new Date()"
+                        week-start="0"
+                        :format="formato_fecha"
+                        :day-names="dias_semana"
+                        select-text="OK"
+                        cancel-text="Cancelar"
+                        hide-offset-dates
+                        :clearable="false"
+                        required 
+                    >
+                        <template #calendar-header="{  day }">
+                            <div v-if="day === 'Do'" class="text-danger">
+                                {{ day }}
+                            </div>
+                            <div v-else>
+                                {{ day }}
+                            </div>
+                        </template>
+                    </VueDatePicker>
+                </div>
 
-            <div style="position: absolute; margin-left: 340px; width: 150px;">
-                <VueDatePicker 
-                    v-model="fecha_hasta"
-                    locale="es-PY"
-                    :enable-time-picker="false"
-                    :max-date="new Date()"
-                    week-start="0"
-                    :format="formato_fecha"
-                    :day-names="dias_semana"
-                    select-text="OK"
-                    cancel-text="Cancelar"
-                    hide-offset-dates
-                    :clearable="false"
-                    required 
-                >
-                    <template #calendar-header="{  day }">
-                        <div v-if="day === 'Do'" class="text-danger">
-                            {{ day }}
-                        </div>
-                        <div v-else>
-                            {{ day }}
-                        </div>
-                    </template>
-                </VueDatePicker>
-            </div>
+                <div class="col" style="width: 250px; margin-left: -15px;">
+                    <VueDatePicker 
+                        v-model="fecha_hasta"
+                        locale="es-PY"
+                        :enable-time-picker="false"
+                        :max-date="new Date()"
+                        week-start="0"
+                        :format="formato_fecha"
+                        :day-names="dias_semana"
+                        select-text="OK"
+                        cancel-text="Cancelar"
+                        hide-offset-dates
+                        :clearable="false"
+                        required 
+                    >
+                        <template #calendar-header="{  day }">
+                            <div v-if="day === 'Do'" class="text-danger">
+                                {{ day }}
+                            </div>
+                            <div v-else>
+                                {{ day }}
+                            </div>
+                        </template>
+                    </VueDatePicker>
+                </div>
 
-            <!--<div style="margin-left: -205px;">-->
-            <div style="z-index: 999; margin-left: -155px;">
-                <button class="btn btn-success" style="margin-right: 10px;" @click="seleccionar_fecha">
-                    <i class="far fa-calendar-check"></i>&nbsp;&nbsp;SELECCIONAR PERIODO
-                </button>
-                <button class="btn btn-warning" style="margin-right: 10px;" @click="restablecer">
-                    <i class="fas fa-undo-alt"></i>
-                </button>
+                <div class="col" style="margin-left: -15px;">
+                    <button class="btn btn-success" @click="seleccionar_fecha">
+                        <i class="far fa-calendar-check"></i>&nbsp;&nbsp;SELECCIONAR
+                    </button>
+                </div>
+
+                <div class="col" style="margin-left: -25px;" >
+                    <button class="btn btn-warning" @click="restablecer">
+                        <i class="fas fa-undo-alt"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="d-flex flex-row align-items-center justify-content-center">
@@ -228,28 +232,27 @@
                         <option value=1>Efectivo</option>
                     </select>
                 </div>
-
-                    <div class="col">
-                        <div>
-                            <label><strong>Ingreso</strong></label><br>
-                            <label style="font-size: 20px;"><strong style="color: rgb(2, 162, 69)">{{ separador(ingresos, 1)}}</strong></label>
-                        </div>
+                
+                <div class="col">
+                    <div>
+                        <label><strong>Ingreso</strong></label><br>
+                        <label style="font-size: 20px;"><strong style="color: rgb(2, 162, 69)">{{ separador(ingresos, 1)}}</strong></label>
                     </div>
+                </div>
 
-                    <div class="col">
-                        <div>
-                            <label><strong>Egreso</strong></label><br>
-                            <label style="font-size: 20px;"><strong style="color: rgb(162, 18, 2)">{{ separador(egresos, 2)}}</strong></label>
-                        </div>
+                <div class="col">
+                    <div>
+                        <label><strong>Egreso</strong></label><br>
+                        <label style="font-size: 20px;"><strong style="color: rgb(162, 18, 2)">{{ separador(egresos, 2)}}</strong></label>
                     </div>
+                </div>
 
-                    <div class="col">
-                        <div>
-                            <label><strong>Saldo actual</strong></label><br>
-                            <label style="font-size: 20px;"><strong style="color: black">{{ separador_general(saldo_actual)}}</strong></label>
-                        </div>
+                <div class="col">
+                    <div>
+                        <label><strong>Saldo actual</strong></label><br>
+                        <label style="font-size: 20px;"><strong style="color: black">{{ separador_general(saldo_actual)}}</strong></label>
                     </div>
-
+                </div>
             </div>
         </div>
 
@@ -270,7 +273,7 @@
                 }"
             >
                 <template #emptystate>
-                    <div class="text-center">No hay movimientos registrados</div>
+                    <div class="text-center">{{texto_tabla}}</div>
                 </template>
 
                 <template #table-row="props">
@@ -323,23 +326,13 @@ export default {
 
     async created(){
         document.title = 'Movimiento de caja'
-        this.get_lista_tipos()
-        this.get_lista_categorias()
-        await this.get_mov()
-        await this.get_dist_tipos_mov() 
-        await this.get_dist_cats_mov()
-        await this.get_saldo()
-        await this.get_ingreso_egreso()
 
-        const obj = {
-                fecha_desde: this.$route.query.fecha_desde || format(this.fecha, 'yyyy-MM-dd'),
-                fecha_hasta: this.$route.query.fecha_hasta || format(this.fecha_hasta, 'yyyy-MM-dd'),
-                tipo: this.$route.query.tipo || 0,
-                categ: this.$route.query.categ || 0,
-                forma: this.$route.query.forma || 0
-        }
-        
-        await this.$router.replace({query: obj})
+        //Para el modal
+        await this.get_lista_tipos()
+        await this.get_lista_categorias()
+
+        //Otros
+        await this.init()
     },
 
     watch: {
@@ -388,7 +381,7 @@ export default {
             }
 
             await this.$router.replace({query: obj})
-            this.$router.go(0);
+            await this.init()
         },
 
         async select_cat_dist(){
@@ -401,7 +394,7 @@ export default {
             }
 
             await this.$router.replace({query: obj})
-            this.$router.go(0);
+            await this.init()
         },
 
         async select_form_dist(){
@@ -414,21 +407,22 @@ export default {
             }
 
             await this.$router.replace({query: obj})
-            this.$router.go(0);
+            await this.init()
         }
-
     },
 
     data(){
         return{
+            texto_tabla: null,
+
             ingresos: 0,
             egresos: 0,
             saldo_actual: 0,
 
-            tipos_movimientos: [{id: 0, tipo: '-- TIPO MOV. --'}],
+            tipos_movimientos: null,
             select_tipo_dist: +this.$route.query.tipo || 0,
 
-            categoria_movimientos: [{id: 0, categoria: '--  CATEGORIA --'}],
+            categoria_movimientos: null,
             select_cat_dist: +this.$route.query.categ || 0,
 
             select_form_dist: +this.$route.query.forma || 0,
@@ -489,6 +483,42 @@ export default {
     },
 
     methods: {
+        async init(){
+            this.datos = []
+
+            this.categoria_movimientos = [{id: 0, categoria: '--  CATEGORIA --'}],
+            this.tipos_movimientos = [{id: 0, tipo: '-- TIPO MOV. --'}],
+
+            await this.get_dist_tipos_mov() 
+            await this.get_dist_cats_mov()
+
+            this.select_tipo_dist = +this.$route.query.tipo || 0
+            this.select_cat_dist = +this.$route.query.categ || 0
+            this.select_form_dist = +this.$route.query.forma || 0
+
+            this.ingresos = 0
+            this.egresos = 0
+            this.saldo_actual = 0
+
+            this.texto_tabla = 'Cargando... Por favor espere'
+
+            //AWAIT PROMISE
+            await this.get_mov()
+            await this.get_saldo()
+            await this.get_ingreso_egreso()
+
+            const obj = {
+                    fecha_desde: this.$route.query.fecha_desde || format(this.fecha, 'yyyy-MM-dd'),
+                    fecha_hasta: this.$route.query.fecha_hasta || format(this.fecha_hasta, 'yyyy-MM-dd'),
+                    tipo: this.$route.query.tipo || 0,
+                    categ: this.$route.query.categ || 0,
+                    forma: this.$route.query.forma || 0
+            }
+            
+            await this.$router.replace({query: obj})
+            this.texto_tabla = 'No hay movimientos registrados :('
+        },
+
         async restablecer(){
             const obj = {
                 fecha_desde: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
@@ -499,7 +529,7 @@ export default {
             }
             
             await this.$router.replace({query: obj})
-            this.$router.go()
+            await this.init()
         },
 
         set_fecha_format(fecha){
@@ -516,14 +546,14 @@ export default {
             }
         },
 
-        seleccionar_fecha(){
+        async seleccionar_fecha(){
             if (this.fecha > this.fecha_hasta){
                 Swal.fire({
                     html: '<h4>Las fecha inicio debe ser menor a la fecha hasta</h4>',
                     icon: 'error'
                 })
             } else {
-                this.$router.go()
+                await this.init()
             }
         },
 
@@ -632,6 +662,9 @@ export default {
         },
 
         async get_mov(){
+            await new Promise(resolve => setTimeout(resolve, 1000)); 
+            //TODO: ELIMINAR DESPUES EN PRODUCCION
+
             const {data} = await authApi.get('/movimientos', {
                 params: {
                     id_tipo: +this.$route.query.tipo || 0,
@@ -784,5 +817,9 @@ export default {
 
     table {
         text-align: center;
+    }
+
+    .posicionar{
+        margin-right: auto;
     }
 </style>

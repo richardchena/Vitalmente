@@ -147,7 +147,8 @@ exports.iniciar_consulta = async (req, res) => {
 //FINALIZAR CONSULTA
 exports.finalizar_consulta = async (req, res) => {
     const id = req.query.id_cita
-    const query = `UPDATE SALA_ESPERA SET ID_ESTADO = 3, FECHA_FINALIZACION = CURRENT_TIMESTAMP WHERE ID_CITA = ${id}`
+    const query = `UPDATE SALA_ESPERA SET ID_ESTADO = 3, FECHA_FINALIZACION = CURRENT_TIMESTAMP WHERE ID_CITA = ${id};
+                   UPDATE CITAS SET ESTADO = 4 WHERE ID_CITA = ${id}`
 
     try {
         await db.sequelize.query(query);

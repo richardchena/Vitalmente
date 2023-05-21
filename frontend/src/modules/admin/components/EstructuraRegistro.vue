@@ -14,30 +14,30 @@
             <div class="row">
                 <div class="col-sm">
                     <label for="primer_nombre">Primer nombre <label style="color: red">*</label></label>
-                    <input v-model="pri_nom" type="text" class="form-control" id="primer_nombre">
+                    <input v-model="pri_nom" type="text" class="form-control" id="primer_nombre" :disabled="this.role !== 1">
                 </div>
                 <div class="col-sm">
                     <label for="segundo_nombre">Segundo nombre</label>
-                    <input v-model="seg_nom" type="text" class="form-control" id="segundo_nombre">
+                    <input v-model="seg_nom" type="text" class="form-control" id="segundo_nombre" :disabled="this.role !== 1">
                 </div>
                 <div class="col-sm">
                     <label for="tercer_nombre">Tercer nombre</label>
-                    <input v-model="ter_nom" type="text" class="form-control" id="tercer_nombre">
+                    <input v-model="ter_nom" type="text" class="form-control" id="tercer_nombre" :disabled="this.role !== 1">
                 </div>
             </div>
             <br>
             <div class="row">
                 <div class="col-sm">
                     <label for="primer_apellido">Primer apellido <label style="color: red">*</label></label>
-                    <input v-model="pri_ape" type="text" class="form-control" id="primer_apellido">
+                    <input v-model="pri_ape" type="text" class="form-control" id="primer_apellido" :disabled="this.role !== 1">
                 </div>
                 <div class="col-sm">
                     <label for="segundo_apellido">Segundo apellido</label>
-                    <input v-model="seg_ape" type="text" class="form-control" id="segundo_apellido">
+                    <input v-model="seg_ape" type="text" class="form-control" id="segundo_apellido" :disabled="this.role !== 1">
                 </div>
                 <div class="col-sm-2">
                     <label for="inputState">Tipo Doc. <label style="color: red">*</label></label>
-                    <select v-model="selectedDoc" class="form-select">
+                    <select v-model="selectedDoc" class="form-select" :disabled="this.role !== 1">
                         <option 
                             v-for="item in tipos_docs" 
                             :key="item.id"
@@ -49,7 +49,7 @@
                 </div>
                 <div class="col-sm-2">
                     <label for="doc">Nro. del doc. <label style="color: red">*</label></label>
-                    <input v-model="nro_doc" type="text" class="form-control" id="doc" placeholder="Nro. de identificación">
+                    <input v-model="nro_doc" type="text" class="form-control" id="doc" placeholder="Nro. de identificación" :disabled="this.role !== 1">
                 </div>
             </div>
             <br>
@@ -209,7 +209,7 @@ import 'bootstrap'
         },
 
         computed:{
-            ...mapGetters('auth', ['accessToken']),
+            ...mapGetters('auth', ['accessToken', 'role']),
         },
 
         watch: {

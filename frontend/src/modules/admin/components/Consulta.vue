@@ -10,7 +10,7 @@
         <div class="container">
             <div style="margin-top: 15px; margin-bottom: 15px; display: flex">
                 <strong><label style="margin-top: 1px; margin-right: 10px">Especialidad: </label></strong>
-                <select v-model="select_especialidad">
+                <select v-model="select_especialidad" :disabled="this.role === 1">
                     <option 
                         v-for="item in especialidades" 
                         :key="item.id_especialidad"
@@ -20,28 +20,32 @@
                     </option>
                 </select>
             </div>
-            
+            <hr>
             <div class="row">
                 <div class="col-sm">
                     <div class="mb-3">
-                        <textarea v-model="motivo" class="form-control" rows="5" placeholder="Motivo de consulta"></textarea>
+                        <label style="font-weight: bold;">Motivo de consulta</label>
+                        <textarea v-model="motivo" class="form-control" rows="5" placeholder="" :disabled="this.role === 1"></textarea>
                     </div>
                 </div>
                 <div class="col-sm">
                     <div class="mb-3">
-                        <textarea v-model="tecnica" class="form-control" rows="5" placeholder="Técnica utilizada/Sintomas actuales"></textarea>
+                        <label style="font-weight: bold;">Técnica utilizada/Sintomas actuales</label>
+                        <textarea v-model="tecnica" class="form-control" rows="5" placeholder="" :disabled="this.role === 1"></textarea>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm">
                     <div class="mb-3">
-                        <textarea v-model="diagnostico" class="form-control" rows="5" placeholder="Diagnóstico actual"></textarea>
+                        <label style="font-weight: bold;">Diagnóstico actual</label>
+                        <textarea v-model="diagnostico" class="form-control" rows="5" placeholder="" :disabled="this.role === 1"></textarea>
                     </div>
                 </div>
                 <div class="col-sm">
                     <div class="mb-3">
-                        <textarea v-model="antecedente" class="form-control" rows="5" placeholder="Antecedentes"></textarea>
+                        <label style="font-weight: bold;">Antecedentes</label>
+                        <textarea v-model="antecedente" class="form-control" rows="5" placeholder="" :disabled="this.role === 1"></textarea>
                     </div>
                 </div>
             </div>
@@ -49,7 +53,7 @@
         <br>
         <div class="modal-footer">
             <button class="btn" data-bs-dismiss="modal" style="background-color: #dc3545; color: white">Cancelar</button>
-            <button class="btn" style="background-color: #f0820d; color: white" @click="validar">Modificar</button>
+            <button class="btn" style="background-color: #f0820d; color: white" @click="validar" :disabled="this.role === 1">Modificar</button>
         </div>
     </div>
 </template>
@@ -72,7 +76,7 @@ export default {
     },
 
     computed:{
-        ...mapGetters('auth', ['accessToken']),
+        ...mapGetters('auth', ['accessToken', 'role']),
     },
 
     data() {

@@ -170,6 +170,7 @@ export default {
     },
 
     created(){
+        document.title = 'Turnos agendados'
         this.obtener_feriados();
         /*if(!this.$route.query.fecha){
             this.fecha = new Date(this.$route.query.fecha)

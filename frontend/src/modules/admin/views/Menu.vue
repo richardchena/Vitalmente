@@ -50,36 +50,32 @@
             </div>
         </nav>
         <br><br>
-        <div class="container text-center">
+        <div class="container text-center cuadro_menu">
             <div class="row">
                 <div class="col-md">
-                    <button class="btn btn-primary mx-2 btn-lg btn-block" @click="pagina_paciente">
+                    <button class="btn btn-lg b1" @click="pagina_paciente">
                         Pacientes&nbsp;
                         <i class="fas fa-users"></i>
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-secondary mx-2 btn-lg btn-block" @click="pagina_profesional">
+                    <button class="btn btn-lg b1" @click="pagina_profesional">
                         Profesionales&nbsp;
                         <i class="fas fa-hospital-user"></i>
                     </button>
                 </div>
                 <div class="col-md">
-                    <!--<button class="btn btn-success mx-2 btn-lg btn-block" @click="gestion_administracion">
-                        Administradores&nbsp;
-                        <i class="fas fa-users-cog"></i> 
-                    </button>-->
                     <div class="dropdown">
-                        <a class="btn btn-success mx-2 btn-lg btn-block dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="btn btn-lg dropdown-toggle b1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Parámetros&nbsp;
                             <i class="fas fa-cog"></i>
                         </a>
 
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" @click="contribuyentes">Contribuyentes</a></li>
-                            <li><a class="dropdown-item" @click="timbrados">Timbrados</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" @click="admins">Usuarios administradores</a></li>
+                            <li><a class="dropdown-item" style="font-weight: normal;" @click="contribuyentes">Contribuyentes</a></li>
+                            <li><a class="dropdown-item" style="font-weight: normal;" @click="timbrados">Timbrados</a></li>
+                            <!--<li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" @click="admins">Usuarios administradores</a></li>-->
                         </ul>
                     </div>
                 </div>
@@ -87,19 +83,19 @@
             <br>
             <div class="row">
                 <div class="col-md">
-                    <button class="btn btn-info mx-2 btn-lg btn-block" @click="pagina_sala">
+                    <button class="btn btn-lg b1" @click="pagina_sala">
                         Atenciones del día&nbsp;
                         <i class="fas fa-clinic-medical"></i>
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-warning mx-2 btn-lg btn-block" @click="pagina_pagos">
+                    <button class="btn btn-lg b1" @click="pagina_pagos">
                         Facturación&nbsp;
                         <i class="fas fa-cash-register"></i>
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-primary mx-2 btn-lg btn-block" @click="pagina_citas_agendadas">
+                    <button class="btn btn-lg b1" @click="pagina_citas_agendadas">
                         Citas Agendadas&nbsp;
                         <i class="fas fa-calendar-check"></i>
                     </button>
@@ -108,19 +104,22 @@
             <br>
             <div class="row">
                 <div class="col-md">
-                    <button class="btn btn-success mx-2 btn-lg btn-block" @click="pagina_caja">
+                    <button class="btn btn-lg b1" @click="pagina_caja">
                         Movimientos&nbsp;
                         <i class="fas fa-wallet"></i>
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-dark mx-2 btn-lg btn-block" @click="pagina_clave">
+                    <button class="btn btn-lg b1" @click="pagina_clave">
                         Cambiar Clave&nbsp;
                         <i class="fas fa-key"></i>
                     </button>
                 </div>
                 <div class="col-md"></div>
             </div>
+        </div>
+        <div class="text-center" style="font-size: 12px; margin-top: 10px; color: gray;">
+            <strong>Vitalmente Software © 2023</strong>
         </div>
     </div>
 </template>
@@ -246,3 +245,26 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+    .cuadro_menu{
+        margin-top: 00px;
+        padding: 50px;
+        border: 1px solid black;
+        border-radius:  10px;
+        width: 75%;
+    }
+
+    .b1{
+        width: 100%;
+        /*background: linear-gradient(to right, #7cd175, #74d36c, #4f9e48, #2a8222);*/
+        background: linear-gradient(to top, #7cd175, #8dc26f);
+        border: transparent;
+        color: black;
+    }
+
+    .b1:hover{
+        opacity: 0.8;
+        color: white;
+    }
+</style>

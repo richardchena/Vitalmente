@@ -28,22 +28,22 @@
             </div>
 
             <div class="d-flex flex-row align-items-center justify-content-center">
-                <button class="btn btn-outline-danger" style="margin-right: 20px" @click="atras">ATRÁS</button>
-
-                <button class="btn btn-outline-dark" style="margin-right: 20px" @click="registrar_consulta">
+                <button class="btn btn-outline-dark" style="margin-right: 20px" @click="registrar_consulta" v-show="this.role === 2">
                     <i class="fas fa-notes-medical"></i>&nbsp;&nbsp;&nbsp;Nueva consulta
                 </button>
 
                 <div class="form-group" style="margin-right: 12px">
                     <input type="text" class="form-control" id="buscador" style="width: 225px" placeholder='&#x1F50E;&#xFE0E; Realiza una búsqueda aquí' v-model="filtro">
                 </div>
+
+                <button class="btn btn-danger" style="margin-right: 20px" @click="atras">ATRÁS</button>
             </div>
         </nav>
-        <div class="contendor_tabla">
+        <div class="contendor_tabla" style="padding: 20px 100px 0px 100px;">
             <table class="table table-hover table-cell-border table-striped" id="tabla">
                 <thead>
                     <tr>
-                        <th>ID Consulta</th>
+                        <th>Nro. consulta</th>
                         <th>Fecha y hora</th>
                         <th>Profesional</th>
                         <th>Especialidad</th>
@@ -171,7 +171,7 @@
                         emptyTable: "No hay consultas previas del paciente seleccionado"
                     },
                     fixedColumns: true,
-                    pageLength: 10,
+                    pageLength: 8,
                     lengthChange: false,
                     searching: true,
                     searchDelay: 0,

@@ -58,22 +58,22 @@
             </div>
         </nav>
         <br><br>
-        <div class="container text-center">
+        <div class="container text-center cuadro_menu">
             <div class="row">
                 <div class="col-md">
-                    <button class="btn btn-primary mx-2 btn-lg btn-block" @click="pagina_paciente">
+                    <button class="btn btn-lg b1" @click="pagina_paciente">
                         Pacientes&nbsp;
                         <i class="fas fa-users"></i>
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-success mx-2 btn-lg btn-block" @click="pagina_agendas">
+                    <button class="btn btn-lg b1" @click="pagina_agendas">
                         Mis horarios&nbsp;
                         <i class="fas fa-calendar-alt"></i>
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-secondary mx-2 btn-lg btn-block" @click="pagina_citas">
+                    <button class="btn btn-lg b1" @click="pagina_citas">
                         Citas Agendadas&nbsp;
                         <i class="fas fa-calendar-check"></i>
                     </button>
@@ -82,19 +82,22 @@
             <br>
             <div class="row">
                 <div class="col-md">
-                    <button class="btn btn-warning mx-2 btn-lg btn-block" @click="pagina_atencion">
+                    <button class="btn btn-lg b1" @click="pagina_atencion">
                         Atenciones del día&nbsp;
                         <i class="fas fa-clinic-medical"></i>
                     </button>
                 </div>
                 <div class="col-md">
-                    <button class="btn btn-info mx-2 btn-lg btn-block" @click="pagina_clave">
+                    <button class="btn btn-lg b1" @click="pagina_clave">
                         Cambiar Clave&nbsp;
                         <i class="fas fa-key"></i>
                     </button>
                 </div>
                 <div class="col-md"></div>
             </div>
+        </div>
+        <div class="text-center" style="font-size: 12px; margin-top: 10px; color: gray;">
+            <strong>Vitalmente Software © 2023</strong>
         </div>
     </div>
 </template>
@@ -221,6 +224,7 @@ export default {
 </script>
 
 <style scoped>
+    @import '../../../styles/menu.css';
    .spinner-wrapper {
         background-color: gray;
         opacity:0.9;
@@ -242,5 +246,26 @@ export default {
 
     .text-otros {
         font-size: 30px;
+    }
+
+    .cuadro_menu{
+        margin-top: 00px;
+        padding: 50px;
+        border: 1px solid black;
+        border-radius:  10px;
+        width: 75%;
+    }
+
+    .b1{
+        width: 100%;
+        /*background: linear-gradient(to right, #7cd175, #74d36c, #4f9e48, #2a8222);*/
+        background: linear-gradient(to top, #7cd175, #8dc26f);
+        border: transparent;
+        color: black;
+    }
+
+    .b1:hover{
+        opacity: 0.8;
+        color: white;
     }
 </style>
