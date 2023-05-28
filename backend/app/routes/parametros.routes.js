@@ -18,6 +18,18 @@ router.get('/obtener_especialidades',
        passport.authenticate('jwt', {session: false}),
        parametros.obtener_especialidades);
 
+router.post('/obtener_especialidades',
+       passport.authenticate('jwt', {session: false}),
+       parametros.registrar_especialidades);
+
+router.delete('/obtener_especialidades',
+       passport.authenticate('jwt', {session: false}),
+       parametros.eliminar_especialidades);
+
+router.put('/obtener_especialidades',
+       passport.authenticate('jwt', {session: false}),
+       parametros.modificar_especialidades);
+
 router.get('/obtener_feriados',
        passport.authenticate('jwt', {session: false}),
        parametros.obtener_feriados);
@@ -29,5 +41,37 @@ router.get('/obtener_tipos_documento',
 router.get('/obtener_correo',
        //passport.authenticate('jwt', {session: false}),
        parametros.obtener_correo);
+
+router.get('/obtener_motivos',
+       passport.authenticate('jwt', {session: false}),
+       parametros.motivos_consultas);
+
+router.post('/obtener_motivos',
+       passport.authenticate('jwt', {session: false}),
+       parametros.motivos_consultas_insertar);
+
+router.delete('/obtener_motivos',
+       passport.authenticate('jwt', {session: false}),
+       parametros.motivos_consultas_eliminar);
+
+router.put('/obtener_motivos',
+       passport.authenticate('jwt', {session: false}),
+       parametros.motivos_consultas_modificar);
+
+router.get('/obtener_diagnosticos',
+       passport.authenticate('jwt', {session: false}),
+       parametros.diagnosticos_consultas);
+
+router.post('/obtener_diagnosticos',
+       passport.authenticate('jwt', {session: false}),
+       parametros.diagnosticos_consultas_insertar);
+
+router.delete('/obtener_diagnosticos',
+       passport.authenticate('jwt', {session: false}),
+       parametros.diagnostico_consultas_eliminar);
+
+router.put('/obtener_diagnosticos',
+       passport.authenticate('jwt', {session: false}),
+       parametros.diagnostico_consultas_modificar);
 
 module.exports = router;

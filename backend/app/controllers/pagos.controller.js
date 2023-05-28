@@ -240,10 +240,27 @@ exports.datos_cliente = async (req, res) => {
             P.NRO_DOC,
             P.TIPO_DOC,
             P.DIRECCION,
+            P.LUGAR_RESIDENCIA AS CIUDAD,
+            C.ID_DEPARTAMENTO AS DEPARTAMENTO,
+            CASE 
+                WHEN U1.EMAIL IS NOT NULL THEN U1.EMAIL
+                WHEN U2.EMAIL IS NOT NULL THEN U2.EMAIL
+                WHEN U3.EMAIL IS NOT NULL THEN U3.EMAIL
+                ELSE 
+                    NULL
+            END EMAIL,
             'TABLA_PERSONAS' AS TABLA
         FROM PERSONAS P
-        INNER JOIN TIPOS_DOCUMENTO T ON T.ID = P.TIPO_DOC
+        LEFT JOIN TIPOS_DOCUMENTO T ON T.ID = P.TIPO_DOC
+        LEFT JOIN CIUDADES C ON C.COD_CONCATENADO = P.LUGAR_RESIDENCIA
+        LEFT JOIN PACIENTES PA ON PA.ID_PERSONA = P.ID_PERSONA
+        LEFT JOIN PROFESIONALES PR ON PR.ID_PERSONA = P.ID_PERSONA
+        LEFT JOIN ADMINISTRADORES AD ON AD.ID_PERSONA = P.ID_PERSONA
+        LEFT JOIN USERS U1 ON U1.ID = PA.ID_USUARIO
+        LEFT JOIN USERS U2 ON U2.ID = PR.ID_USUARIO
+        LEFT JOIN USERS U3 ON U3.ID = AD.ID_USUARIO
         UNION
+
         SELECT
             P.NRO_DOC || ' ' || INITCAP(P.PRIMER_NOMBRE || ' ' || COALESCE(P.SEGUNDO_NOMBRE, '') || ' ' || COALESCE(P.TERCER_NOMBRE, '')  || ' ' || P.PRIMER_APELLIDO || ' ' || COALESCE(P.SEGUNDO_APELLIDO, '')) COMPLETO,
             P.ID AS ID_PERSONA,
@@ -256,14 +273,16 @@ exports.datos_cliente = async (req, res) => {
             P.NRO_DOC,
             P.TIPO_DOC,
             P.DIRECCION,
+            P.CIUDAD AS CIUDAD,
+            C.ID_DEPARTAMENTO AS DEPARTAMENTO,
+            P.EMAIL,
             'TABLA_CLIENTES' AS TABLA
         FROM CLIENTE_FACTURA P
-        INNER JOIN TIPOS_DOCUMENTO T ON T.ID = P.TIPO_DOC)
-    
+        INNER JOIN TIPOS_DOCUMENTO T ON T.ID = P.TIPO_DOC
+        INNER JOIN CIUDADES C ON C.COD_CONCATENADO = P.CIUDAD)
     
     SELECT * FROM TABLA
-    WHERE NRO_DOC = '${req.query.nro_doc}'
-    `
+    WHERE NRO_DOC = '${req.query.nro_doc}'`
 
     try {
         const data = await db.sequelize.query(query);
@@ -283,6 +302,8 @@ exports.registrar_cliente = async (req, res) => {
     const tipo_doc = req.body.tipo_doc
     const nro_doc = req.body.nro_doc
     const dir = req.body.dir
+    const lug = req.body.lug
+    const email = req.body.email
 
     let seg_nom_final, ter_nom_final, seg_ape_final;
 
@@ -302,8 +323,8 @@ exports.registrar_cliente = async (req, res) => {
         seg_ape_final = `'${seg_ape}'`
 
     const query = `WITH ROWS AS (	
-        INSERT INTO CLIENTE_FACTURA(PRIMER_NOMBRE, SEGUNDO_NOMBRE, TERCER_NOMBRE, PRIMER_APELLIDO, SEGUNDO_APELLIDO, TIPO_DOC, NRO_DOC, DIRECCION)
-        VALUES(UPPER('${pri_nom}'), UPPER(${seg_nom_final}), UPPER(${ter_nom_final}), UPPER('${pri_ape}'), UPPER(${seg_ape_final}), ${tipo_doc}, '${nro_doc}', '${dir}') RETURNING ID, NRO_DOC, PRIMER_NOMBRE, SEGUNDO_NOMBRE, TERCER_NOMBRE, PRIMER_APELLIDO, SEGUNDO_APELLIDO
+        INSERT INTO CLIENTE_FACTURA(PRIMER_NOMBRE, SEGUNDO_NOMBRE, TERCER_NOMBRE, PRIMER_APELLIDO, SEGUNDO_APELLIDO, TIPO_DOC, NRO_DOC, DIRECCION, CIUDAD, EMAIL)
+        VALUES(UPPER('${pri_nom}'), UPPER(${seg_nom_final}), UPPER(${ter_nom_final}), UPPER('${pri_ape}'), UPPER(${seg_ape_final}), ${tipo_doc}, '${nro_doc}', '${dir}', ${lug}, '${email}') RETURNING ID, NRO_DOC, PRIMER_NOMBRE, SEGUNDO_NOMBRE, TERCER_NOMBRE, PRIMER_APELLIDO, SEGUNDO_APELLIDO
     ) SELECT 
         ID, 
         'TABLA_CLIENTES' AS TABLA,
@@ -344,6 +365,8 @@ exports.modificar_cliente = async (req, res) => {
     const nro_doc = req.body.nro_doc
     const dir = req.body.dir
     const tabla = req.body.tabla
+    const lug = req.body.lug
+    const email = req.body.email
 
     let seg_nom_final, ter_nom_final, seg_ape_final, query;
 
@@ -364,11 +387,12 @@ exports.modificar_cliente = async (req, res) => {
 
     if(tabla === 'TABLA_PERSONAS'){
         query = `UPDATE PERSONAS
-                 SET PRIMER_NOMBRE = '${pri_nom}', SEGUNDO_NOMBRE = ${seg_nom_final}, TERCER_NOMBRE = ${ter_nom_final}, PRIMER_APELLIDO = '${pri_ape}', SEGUNDO_APELLIDO = ${seg_ape_final}, TIPO_DOC = ${tipo_doc}, NRO_DOC = '${nro_doc}', DIRECCION = '${dir}'
-                 WHERE ID_PERSONA = ${id}`
+                 SET PRIMER_NOMBRE = '${pri_nom}', SEGUNDO_NOMBRE = ${seg_nom_final}, TERCER_NOMBRE = ${ter_nom_final}, PRIMER_APELLIDO = '${pri_ape}', SEGUNDO_APELLIDO = ${seg_ape_final}, TIPO_DOC = ${tipo_doc}, NRO_DOC = '${nro_doc}', DIRECCION = '${dir}', LUGAR_RESIDENCIA = ${lug}
+                 WHERE ID_PERSONA = ${id};
+                 SELECT CAMBIAR_MAIL(${id}, '${email}');`
     } else {
         query = `UPDATE CLIENTE_FACTURA
-                 SET PRIMER_NOMBRE = '${pri_nom}', SEGUNDO_NOMBRE = ${seg_nom_final}, TERCER_NOMBRE = ${ter_nom_final}, PRIMER_APELLIDO = '${pri_ape}', SEGUNDO_APELLIDO = ${seg_ape_final}, TIPO_DOC = ${tipo_doc}, NRO_DOC = '${nro_doc}', DIRECCION = '${dir}'
+                 SET PRIMER_NOMBRE = '${pri_nom}', SEGUNDO_NOMBRE = ${seg_nom_final}, TERCER_NOMBRE = ${ter_nom_final}, PRIMER_APELLIDO = '${pri_ape}', SEGUNDO_APELLIDO = ${seg_ape_final}, TIPO_DOC = ${tipo_doc}, NRO_DOC = '${nro_doc}', DIRECCION = '${dir}', CIUDAD = ${lug}, EMAIL = '${email}'
                  WHERE ID = ${id}`
     }
 

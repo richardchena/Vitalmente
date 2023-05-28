@@ -95,7 +95,7 @@ exports.emitir = async (req, res) => {
         const data = await db.sequelize.query(query);
         const cabecera = await cabecera_factura(id_factura);
         const detalles = await detalle_factura(id_factura);
-        await generar_pdf(cabecera[0], detalles, id_pdf);
+        await generar_pdf(cabecera[0], detalles, id_pdf, id_factura);
         let resp = data[0][0].emitir_factura
         res.json({nro: resp, id_pdf: id_pdf});
 
@@ -111,7 +111,9 @@ exports.consulta_item = async (req, res) => {
     const query = `SELECT 
                         A.ID_ESPECIALIDAD,
                         B.ID_PERSONA,
-                        C.NRO_DOC || ' ' || UPPER(C.PRIMER_NOMBRE || ' ' || COALESCE(C.SEGUNDO_NOMBRE, '') || ' ' || COALESCE(C.TERCER_NOMBRE, '')  || ' ' || C.PRIMER_APELLIDO || ' ' || COALESCE(C.SEGUNDO_APELLIDO, '')) AS COMPLETO
+                        TO_CHAR(A.FECHA, 'DD/MM/YYYY') || ' ' || TO_CHAR(A.HORA, 'HH24:MI') AS FECHA,
+                        C.NRO_DOC || ' ' || UPPER(C.PRIMER_NOMBRE || ' ' || COALESCE(C.SEGUNDO_NOMBRE, '') || ' ' || COALESCE(C.TERCER_NOMBRE, '')  || ' ' || C.PRIMER_APELLIDO || ' ' || COALESCE(C.SEGUNDO_APELLIDO, '')) AS COMPLETO,
+                        UPPER(C.PRIMER_NOMBRE || ' ' || COALESCE(C.SEGUNDO_NOMBRE, '') || ' ' || COALESCE(C.TERCER_NOMBRE, '')  || ' ' || C.PRIMER_APELLIDO || ' ' || COALESCE(C.SEGUNDO_APELLIDO, '')) AS NOMBRE
                    FROM CITAS A
                    INNER JOIN PACIENTES B ON B.ID_PACIENTE = A.ID_PACIENTE
                    INNER JOIN PERSONAS C ON C.ID_PERSONA = B.ID_PERSONA
@@ -328,8 +330,44 @@ async function detalle_factura (id){
     }
 }
 
-async function generar_pdf(factura, detalles, encriptado){
+async function detalle_pago (id){
+    const query = `SELECT 
+                    CASE FORMA_PAGO
+                        WHEN 'EF' THEN 'Efectivo'
+                        WHEN 'TC' THEN 'Tarjeta de Crédito'
+                        WHEN 'TD' THEN 'Tarjeta de Débito'
+                        WHEN 'TR' THEN 'Transferencia bancaria'
+                        WHEN 'BI' THEN 'Billetera Electrónica'
+                        ELSE 'Otros'
+                    END FORMA,
+                    MONTO
+                FROM DETALLES_PAGO WHERE COD_FACTURA = ${id}`
+
+    try {
+        const data = await db.sequelize.query(query);
+        return data[0]
+        //res.json(data[0]);
+
+    } catch (error) {
+        return null
+    }
+}
+
+async function generar_pdf(factura, detalles, encriptado, cod_fac){
     /* */
+    let pagos_metodos = await detalle_pago(cod_fac);
+    
+    let items_pagos = [
+        [
+            {text: 'Método de Pago', style: 'tableHeader'},
+            {text: 'Cantidad', style: 'tableHeader'}
+        ],
+    ]
+
+    for (let i = 0; i < pagos_metodos.length; i++) {
+        items_pagos.push([pagos_metodos[i].forma, pagos_metodos[i].monto])
+    }
+
     let items = [
         [
             {text: 'Código Item', style: 'tableHeader', rowSpan: 2, alignment: 'left'}, 
@@ -445,7 +483,7 @@ async function generar_pdf(factura, detalles, encriptado){
                     widths: [150,150,150],
                     body: [
                         ['FECHA EMISIÓN', 'CONDICIÓN DE VENTA', 'MONEDA'],
-                        [factura.emision, factura.condicion, 'Guaraní'],
+                        [factura.emision, 'Contado', 'Guaraní'],
                     ]
                 },
                 layout: {
@@ -501,18 +539,53 @@ async function generar_pdf(factura, detalles, encriptado){
                 }
                 //layout: 'headerLineOnly'
             },
+
+            {
+                style: 'tableExample4',
+                table: {
+                    //headerRows: 2,
+                    widths: [105, 50],
+                    body: items_pagos
+                },
+                layout: {
+                    fillColor: function (rowIndex, node, columnIndex) {
+                        return (rowIndex === 0) ? '#7cd175' : null;
+                    }
+                }
+            },
+
             {
                 style: 'tableExample3',
                 table: {
                     //headerRows: 2,
                     widths: [50,150,35,70,40,40,40],
-                    body: [
+                    /*body: [
                         [{qr: encriptado, fit: '50', version: 2, eccLevel: 'M', rowSpan: 3},{text: 'SUBTOTAL', colSpan: 3},{},{},{text: 0},{text: 0},{text: factura.total_factura}],
                         [{},{text: 'TOTAL A PAGAR:', colSpan: 5},{},{},{},{},{text: factura.total_factura}],
                         [{},{text: 'LIQUIDACION DEL IVA: (5%) 0', border: [true, true, false, true]},{text: '', border: [false, true, false, true]},{text: '(10%) ' + factura.iva, colSpan: 2, border: [false, true, false, true]},{},{text: 'TOTAL IVA: ' + factura.iva, colSpan: 2, border: [false, true, true, true]},{}]
+                    ]*/
+                    body: [
+                        [{text: 'SUBTOTAL', colSpan: 4},{},{},{},{text: 0},{text: 0},{text: factura.total_factura}],
+                        [{text: 'TOTAL A PAGAR:', colSpan: 6},{},{},{},{},{},{text: factura.total_factura}],
+                        [{text: 'LIQUIDACION DEL IVA: (5%) 0', border: [true, true, false, true], colSpan: 2},{text: '', border: [false, true, false, true]},{text: '(10%) ' + factura.iva, colSpan: 2, border: [false, true, false, true]},{text: '', border: [false, true, false, true]},{text: 'TOTAL IVA: ' + factura.iva, colSpan: 3, border: [false, true, true, true]},{},{}],
+                        /*[{
+                            text: [
+                                {text: 'Código del verificación: ', bold: true, italics: true, fontSize: 9, style: 'texto_style'},
+                                {text: encriptado, fontSize: 8},
+                            ],
+                            colSpan: 7,
+                            border: [false, true, false, false]
+                        },
+                        {},
+                        {},
+                        {},
+                        {},
+                        {},
+                        {}
+                        ]*/
                     ]
                 },
-            },
+            }
         ],
         styles: {
             tableExample: {
@@ -524,9 +597,16 @@ async function generar_pdf(factura, detalles, encriptado){
                 fontSize: 9,
             },
             tableExample3: {
-                margin: [25, 30, 40, 10],
+                margin: [25, 10, 20, 10],
                 fontSize: 9,
             },
+            tableExample4: {
+                margin: [25, 5, 20, 10],
+                fontSize: 9,
+            },
+            texto_style: {
+                margin: [25, 0 , 0, 0]
+            }
         },
     }
 
@@ -535,4 +615,54 @@ async function generar_pdf(factura, detalles, encriptado){
     let pdfDoc = printer.createPdfKitDocument(contenido, {});
     pdfDoc.pipe(fs.createWriteStream(ubi + encriptado + '.pdf'));
     pdfDoc.end();
+}
+
+
+exports.reg_forma_pago = async (req, res) => {
+    const cod_factura = req.body.cod_factura;
+    const forma_pago = req.body.forma_pago;
+    const monto = req.body.monto;
+    const marca = req.body.marca;
+    const nro_tar = req.body.nro_tar;
+    const cod_referencia = req.body.cod_referencia;
+    const nro_cuenta = req.body.nro_cuenta;
+    const nro_telefono = req.body.nro_telefono;
+
+    const efectivo = `INSERT INTO DETALLES_PAGO(COD_FACTURA, FORMA_PAGO, MONTO)
+                            VALUES(${cod_factura}, '${forma_pago}', ${monto})`;
+
+    const tarjetas = `INSERT INTO DETALLES_PAGO(COD_FACTURA, FORMA_PAGO, MONTO, MARCA_TARJETA, NUMERO_TARJETA, COD_REFERENCIA)
+                    VALUES(${cod_factura}, '${forma_pago}', ${monto}, '${marca}', '${nro_tar}', '${cod_referencia}')`;
+                    
+    const transferencia = `INSERT INTO DETALLES_PAGO(COD_FACTURA, FORMA_PAGO, MONTO, MARCA_TARJETA, NRO_CUENTA, COD_REFERENCIA)
+                           VALUES(${cod_factura}, '${forma_pago}', ${monto}, '${marca}', '${nro_cuenta}', '${cod_referencia}')`
+
+    const billetera = `INSERT INTO DETALLES_PAGO(COD_FACTURA, FORMA_PAGO, MONTO, MARCA_TARJETA, NRO_TELEFONO, COD_REFERENCIA)
+                       VALUES(${cod_factura}, '${forma_pago}', ${monto}, '${marca}', '${nro_telefono}', '${cod_referencia}');`
+
+    if(forma_pago === 'EF') {
+        res.json(await reg_mov_bd(efectivo))
+
+    } else if (forma_pago === 'TC' || forma_pago === 'TD') {
+        res.json(await reg_mov_bd(tarjetas))
+
+    } else if (forma_pago === 'TR') {
+        res.json(await reg_mov_bd(transferencia))
+
+    } else if (forma_pago === 'BI') {
+        res.json(await reg_mov_bd(billetera))
+
+    } else {
+        res.json({id: 1, msg: 'Hubo un error inesperado'})
+    }
+}
+
+async function reg_mov_bd(query) {
+    try {
+        await db.sequelize.query(query);
+        return {id: 0, msg: 'ok'};
+
+    } catch (error) {
+        return {id: 1, msg: error};
+    }
 }

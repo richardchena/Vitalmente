@@ -1,5 +1,141 @@
 <template>
     <div>
+        <!--MODAL MEDIO DE PAGO-->
+        <div class="modal fade bd-example-modal-lg" id="modal_medio_pago" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Opciones de pago (Pagado {{separador_miles(this.valor_actual_pago)}} Gs.)</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ref="cerrar_pagos_modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-3">
+                                <label>&nbsp;Saldo a pagar</label>
+                                <input v-model="saldo_texto" type="text" class="form-control" disabled>
+                            </div>
+                            <div class="col-3">
+                                <label>&nbsp;Monto pago</label>
+                                <input v-model="monto_pago" class="form-control" type="number">
+                            </div>
+                            <div class="col-4">
+                                <label>&nbsp;Medio de pago</label>
+                                <select v-model="medio_pago" class="form-select" @change="cambiar_medio_pago">
+                                    <option value=1 selected>Efectivo</option>
+                                    <option value=2>Tarjeta de Crédito</option>
+                                    <option value=3>Tarjeta de Débito</option>
+                                    <option value=4>Transferencia</option>
+                                    <option value=5>Billetera Electrónica</option>
+                                </select>
+                            </div>
+                            <div class="col-2">
+                                <br>
+                                <button type="button" class="btn btn-success text-white" @click="agregar_item_pago()" style="width: 100%;">Agregar</button>
+                            </div>
+                        </div>
+
+                        <br>
+
+                        <div>
+                            <div class="row">
+                                <div class="col-3" v-show="mostrar_deno_pago">
+                                    <label>&nbsp;Denominación</label>
+                                    <select v-model="denominacion_pago" class="form-select">
+                                        <option value=1 selected>Visa</option>
+                                        <option value=2>Mastercard</option>
+                                        <option value=3>American Express</option>
+                                        <option value=4>Maestro</option>
+                                        <option value=5>Panal</option>
+                                        <option value=6>Cabal</option>
+                                        <option value=7>Otro</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-3" v-show="mostrar_deno_bill_pago">
+                                    <label>&nbsp;Denominación</label>
+                                    <select v-model="bill_pago" class="form-select">
+                                        <option value=1 selected>Zimple</option>
+                                        <option value=2>Tigo</option>
+                                        <option value=3>Personal</option>
+                                        <option value=4>Claro</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-3" v-show="mostrar_banco_pago">
+                                    <label>&nbsp;Entidad</label>
+                                    <select v-model="entidad" class="form-select">
+                                        <option value=1 selected>Banco</option>
+                                        <option value=2>Financiera</option>
+                                        <option value=3>Cooperativa</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-3" v-show="mostrar_nro_tarj_pago">
+                                    <label>&nbsp;Nro tarjeta (4 úl. dígitos)</label>
+                                    <input v-model="nro_tar_pago" class="form-control" type="number">
+                                </div>
+
+                                <div class="col-3" v-show="mostrar_cuenta_pago">
+                                    <label>&nbsp;Cuenta</label>
+                                    <input v-model="cuenta_pago" class="form-control" type="number">
+                                </div>
+
+                                <div class="col-3" v-show="mostrar_telefono_pago">
+                                    <label>&nbsp;Teléfono</label>
+                                    <input v-model="telef_pago" class="form-control" type="number">
+                                </div>
+
+                                <div class="col-3" v-show="mostrar_auto_pago">
+                                    <label>&nbsp;Código Autorización</label>
+                                    <input v-model="cod_aut" class="form-control" type="number">
+                                </div>
+
+                            </div>
+                        </div>  
+
+                        <br>
+
+                        <div>
+                            <VueGoodTable
+                                :columns="co_formas"
+                                :rows="ro_formas"
+                                styleClass="vgt-table condensed bordered striped"
+                                :pagination-options="{
+                                    enabled: false 
+                                }"
+                            >
+                                <template #emptystate>
+                                    <div class="text-center">No hay información de pago</div>
+                                </template>
+
+                                <template #table-row="props">
+                                    <div v-if="props.column.field == 'controles'" class="text-center">
+                                        <button class="btn btn-danger" @click="delete_item_medio_pago(props.row.id)">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+
+                                    <div v-if="props.column.field == 'monto'">
+                                        {{ separador_miles(props.row.monto) + ' GS.'}}
+                                    </div>
+                                </template>
+
+                            </VueGoodTable>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" @click="cancelar_pagos">Cancelar</button>
+                        <button type="button" class="btn btn-success" @click="confirmar_pago">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_medio_pago" ref="boton_medio_pago" style="display: none;">
+            boton oculto
+        </button>
+        <!--FIN MEDIO DE PAGO-->
+
         <!--MODAL MODIFICAR ITEM-->
         <div class="modal fade bd-example-modal-lg" id="modal_modificar_item" data-bs-backdrop="static">
             <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -188,10 +324,44 @@
 
                                 <br>
                                 <div class="row">
-                                    <div class="col-sm">
+                                    <div class="col-6">
                                         <label for="primer_apellido">Dirección <label style="color: red">*</label></label>
                                         <input v-model="direccion" type="text" class="form-control" :disabled="desactivado">
                                     </div>
+
+                                    <div class="col-3">
+                                        <label>Departamento <label style="color: red">*</label></label>
+                                        <select v-model="selectedDep" class="form-select" :disabled="desactivado" @change="cambiar_ciudad">
+                                            <option 
+                                                v-for="item in departamentos" 
+                                                :key="item.id_departamento"
+                                                :value="item.id_departamento"
+                                            >
+                                                {{item.descripcion}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Ciudad <label style="color: red">*</label></label>
+                                        <select v-model="selectedCiu" class="form-select" :disabled="desactivado"> 
+                                            <option 
+                                                v-for="item in ciudades" 
+                                                :key="item.cod_concatenado"
+                                                :value="item.cod_concatenado"
+                                            >
+                                                {{item.descripcion}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br>
+
+                                <div class="row">
+                                    <div class="col">
+                                        <label>Correo Electrónico <label style="color: red">*</label></label>
+                                        <input v-model="correo_envio" type="email" class="form-control" :disabled="desactivado">
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -229,23 +399,22 @@
             <div class="container">
                 <br>
                 <strong><p class="text-center">Datos de la factura</p></strong>
+                <i><p class="text-center">{{msg}}</p></i>
 
                 <div class="row">
                     <div class="col-sm">
-                        <label>&nbsp;Cliente <label style="color: red">*</label></label>
+                        <strong><label>&nbsp;Cliente <label style="color: red">*</label></label></strong>
                         <input v-model="cliente" class="form-select" @click="menu_cliente" readonly>
                     </div>
                     <div class="col-sm">
-                        <label>&nbsp;Condición de Venta <label style="color: red">*</label></label>
+                        <strong><label>&nbsp;Condición de Venta <label style="color: red">*</label></label></strong>
                         <select class="form-select"> 
                             <option selected>CONTADO</option>
                         </select>
                     </div>
                     <div class="col-sm">
-                        <label>&nbsp;Medio de pago <label style="color: red">*</label></label>
-                        <select class="form-select"> 
-                            <option selected>EFECTIVO</option>
-                        </select>
+                        <strong><label>&nbsp;Metodos de pago <label style="color: red">*</label></label></strong>
+                        <input v-model="selectPago" class="form-select" @click="menu_medio_pago" readonly>
                     </div>
                 </div>
             </div>
@@ -315,6 +484,8 @@ import Swal  from 'sweetalert2'
 import 'jquery/dist/jquery.min.js';
 //import * as $ from 'jquery';
 
+import MailChecker from 'mailchecker'
+
 
 export default {
     async created(){
@@ -324,7 +495,12 @@ export default {
         await this.inicial()
         this.calcular_cantidad()
         await this.obtener_id_timbrado()
-        console.log(await this.obtener_correo())
+
+        this.saldo_pagar = this.total_general
+        this.saldo_texto = this.separador_miles(this.total_general) + ' GS.'
+
+        this.get_departamentos()
+        this.get_ciudades()
     },
 
     computed:{
@@ -335,8 +511,74 @@ export default {
         VueGoodTable,
     },
 
+    watch: {
+        saldo_pagar() {
+            this.saldo_texto = this.separador_miles(this.saldo_pagar) + ' GS.'
+        },
+
+        total_general() {
+            this.actualizar_total_pago()
+        }
+    },
+
     data() {
         return {
+            correo_envio: null,
+            msg: null,
+            departamentos: null,
+            ciudades: null,
+            selectedDep: 0,
+            selectedCiu: 0,
+
+            //MEDIOS DE PAGO
+            selectPago: 'PENDIENTE',
+            saldo_pagar: null,
+            monto_pago: null,
+            medio_pago: 1,
+            valor_actual_pago: 0,
+            saldo_texto: null,
+
+            denominacion_pago: 1,
+            cuenta_pago: null,
+            telef_pago: null,
+            cod_aut: null,
+            nro_tar_pago: null,
+            entidad: 1,
+            bill_pago: 1,
+
+            mostrar_deno_pago: false,
+            mostrar_cuenta_pago: false,
+            mostrar_telefono_pago: false,
+            mostrar_auto_pago: false,
+            mostrar_deno_bill_pago: false,
+            mostrar_nro_tarj_pago: false,
+            mostrar_banco_pago: false,
+
+            ro_formas: [],
+            co_formas: [
+                {
+                    label: 'Monto',
+                    field: 'monto',
+                },
+                {
+                    label: 'Tipo',
+                    field: 'tipo'
+                },
+                {
+                    label: 'Denominación',
+                    field: 'denominacion'
+                },
+                {
+                    label: 'Autorización',
+                    field: 'cod_aut'
+                },
+                {
+                    label: '',
+                    field: 'controles',
+                    sortable: false,
+                }
+            ],
+
             //BOTONES
             b_seleccionar: true,
             b_modificar: false,
@@ -429,14 +671,150 @@ export default {
     },
 
     methods: {
+        zeroFill( number, width ) {
+            width -= number.toString().length;
+            if ( width > 0 ) {
+                return new Array( width + (/\./.test( number ) ? 2 : 1) ).join( '0' ) + number;
+            }
+
+            return number + ""; // siempre devuelve tipo cadena
+        },
+
+        async cambiar_ciudad(){
+            await this.get_ciudades()
+
+            if(this.selectedDep === 0) {
+                this.selectedCiu = 0
+            } else {
+                this.selectedCiu = (this.zeroFill(this.selectedDep, 2) + '01')*1
+            }
+        },
+
+        async get_departamentos(){
+            const {data} = await authApi.get('/obtener_departamentos', {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            this.departamentos = data
+        },
+
+        async get_ciudades(){
+            const {data} = await authApi.get('/obtener_ciudades', {
+                params: {
+                    cod: this.selectedDep
+                },
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            this.ciudades = data
+        },
+
+
+        confirmar_pago(){
+            if(+this.saldo_pagar !== 0){
+                Swal.fire({
+                    html: "<h4>El saldo debe estar en 0 GS.</h4>",
+                    icon: 'error'
+                })
+            } else {
+                this.$refs.cerrar_pagos_modal.click();
+                this.selectPago = 'COBRADO'
+            }
+        },
+
+        actualizar_total_pago() {
+            let aux = 0;
+
+            if(this.ro_formas.length === 0){
+                this.valor_actual_pago = 0
+                this.saldo_pagar = this.total_general
+            } else {
+                for (let i = 0; i < this.ro_formas.length; i++) {
+                    aux += this.ro_formas[i].monto
+                }
+
+                this.valor_actual_pago = aux;
+                this.saldo_pagar = this.total_general - aux;
+            }
+
+            this.selectPago = 'PENDIENTE'
+        },
+
+        cambiar_medio_pago(){
+            this.denominacion_pago = 1
+            this.cuenta_pago = null
+            this.telef_pago = null
+            this.cod_aut = null
+            this.nro_tar_pago = null
+            this.entidad = 1
+            this.bill_pago = 1
+
+
+            if(+this.medio_pago === 1) {
+                this.mostrar_deno_pago = false;
+                this.mostrar_cuenta_pago = false;
+                this.mostrar_telefono_pago = false;
+                this.mostrar_auto_pago = false;
+                this.mostrar_deno_bill_pago = false;
+                this.mostrar_nro_tarj_pago = false;
+                this.mostrar_banco_pago = false;
+    
+
+            } else if (+this.medio_pago === 2 || +this.medio_pago === 3) {
+                this.mostrar_deno_pago = true;
+                this.mostrar_cuenta_pago = false;
+                this.mostrar_telefono_pago = false;
+                this.mostrar_auto_pago = true;
+                this.mostrar_deno_bill_pago = false;
+                this.mostrar_nro_tarj_pago = true;
+                this.mostrar_banco_pago = false;
+
+            } else if (+this.medio_pago === 4) {
+                this.mostrar_deno_pago = false;
+                this.mostrar_cuenta_pago = true;
+                this.mostrar_telefono_pago = false;
+                this.mostrar_auto_pago = true;
+                this.mostrar_deno_bill_pago = false;
+                this.mostrar_nro_tarj_pago = false;
+                this.mostrar_banco_pago = true;
+
+            } else if (+this.medio_pago === 5) {
+                this.denominacion_pago = 8;
+
+                this.mostrar_deno_pago = false;
+                this.mostrar_cuenta_pago = false;
+                this.mostrar_telefono_pago = true;
+                this.mostrar_auto_pago = true;
+                this.mostrar_deno_bill_pago = true;
+                this.mostrar_nro_tarj_pago = false;
+                this.mostrar_banco_pago = false;
+            }
+        },
+
+        cancelar_pagos(){
+            this.$refs.cerrar_pagos_modal.click();
+
+            this.mostrar_deno_pago = false;
+                this.mostrar_cuenta_pago = false;
+                this.mostrar_telefono_pago = false;
+                this.mostrar_auto_pago = false;
+                this.mostrar_deno_bill_pago = false;
+                this.mostrar_nro_tarj_pago = false;
+                this.mostrar_banco_pago = false;
+        },
+        
         regresar_atras(){
             this.$router.push({ path: '/pagos' });
         },
 
         async modificar_reg(){
-            if(!this.pri_nom || !this.pri_ape || !this.nro_doc || !this.direccion){
+            if(!this.pri_nom || !this.pri_ape || !this.nro_doc || !this.direccion || !MailChecker.isValid(this.correo_envio)){
                 Swal.fire({
-                html: "<h4>Debe completar todos los campos</h4>",
+                html: "<h4>Debe completar todos los campos y ser válidos</h4>",
                 icon: 'error'})
 
             } else {
@@ -450,7 +828,9 @@ export default {
                     seg_ape: this.seg_ape,
                     tipo_doc: this.selectedDoc,
                     nro_doc: this.nro_doc,
-                    dir: this.direccion
+                    dir: this.direccion,
+                    lug: this.selectedCiu,
+                    email: this.correo_envio
                 }
 
                 authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
@@ -479,25 +859,54 @@ export default {
             }
         },
 
-        confirmar_generacion() {
-            if(this.rows.length === 0){
+        async insert_reg_pagos(nro_factura) {
+            let resp = 1;
+
+            for (let i = 0; i < this.ro_formas.length; i++) {
+                authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
+
+                const {data} = await authApi.post('/facturacion/pagos', {
+                    cod_factura: nro_factura,
+                    forma_pago: this.ro_formas[i].forma_pago,
+                    monto: this.ro_formas[i].monto,
+                    marca: this.ro_formas[i].marca,
+                    nro_tar: this.ro_formas[i].nro_tar,
+                    nro_cuenta: this.ro_formas[i].nro_cuenta,
+                    nro_telefono: this.ro_formas[i].nro_telefono,
+                    cod_referencia: this.ro_formas[i].cod_referencia
+                })
+
+                resp = +data.id;
+            }
+
+            return resp;
+        },
+
+        async confirmar_generacion() {
+            if(this.saldo_pagar !== 0){
                 Swal.fire({
-                html: "<h4>No hay items para esta factura</h4>",
+                html: "<h4>Aún no se ha ingresado el método de pago</h4>",
                 icon: 'error'})
             } else {
-                Swal.fire({
-                html: `<h4>Favor confirmar el cobro de ${this.separador_miles(this.total_general)} GS.</h4>`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Confirmar',
-                cancelButtonText: 'Cancelar'})
-                .then((result) => {
-                    if (result.isConfirmed) {
-                        this.generar_factura_pdf()
-                    }
-                })
+                if(this.rows.length === 0){
+                    Swal.fire({
+                    html: "<h4>No hay items para esta factura</h4>",
+                    icon: 'error'})
+                } else {
+                    Swal.fire({
+                    html: `<h4>Favor confirmar el cobro de ${this.separador_miles(this.total_general)} GS.</h4>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Confirmar',
+                    cancelButtonText: 'Cancelar'})
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            this.generar_factura_pdf()
+                        }
+                    })
+                }
             }
         },
 
@@ -534,13 +943,18 @@ export default {
                             items = await this.agregar_items(id_factura);
 
                             if(items === 1) {
-                                let data;
+                                let data, resp_pagos;
+                                resp_pagos = await this.insert_reg_pagos(id_factura);
                                 data = await this.obtener_nro_factura(id_factura)
                                 nro_fac_generado = data.nro
 
                                 if(!nro_fac_generado) {
                                     Swal.fire({
                                     html: "<h4>No se pudo obtener el número de factura generado<br>Intentelo más tarde</h4>",
+                                    icon: 'error'})
+                                } else if(resp_pagos !== 0) {
+                                    Swal.fire({
+                                    html: "<h4>Hubo un error al ingresar los pagos a la factura</h4>",
                                     icon: 'error'})
                                 } else {
                                     Swal.fire({
@@ -576,8 +990,16 @@ export default {
             }
         },
 
-        async obtener_correo(){
-            const {data} = await authApi.get('/obtener_correo?id_cita=' + this.$route.params.id, {              
+        async obtener_correo(nro_factura){
+            /*const {data} = await authApi.get('/obtener_correo?id_cita=' + this.$route.params.id, {              
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            return data;*/
+
+            const {data} = await authApi.get('/obtener_correo?nro_factura=' + nro_factura, {              
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`
                 }
@@ -587,7 +1009,7 @@ export default {
         },
 
         async enviar_comprobante(nro_factura, id_pdf){
-            const email = await this.obtener_correo();
+            const email = await this.obtener_correo(nro_factura);
 
             const {data} = await authApi.get('/facturacion/prueba', {
                 params: {
@@ -668,10 +1090,13 @@ export default {
                 this.$router.push({ path: '/pagos' });
             }
 
+            let nom = data.nombre.split(' ').filter((item) => item.length !== 0).join(' ')
+
             this.cod_especialidad_validar = data.id_especialidad
             this.cliente = data.completo.split(' ').filter((item) => item.length !== 0).join(' ')
             this.id_persona = data.id_persona
             this.tabla = 'TABLA_PERSONAS'
+            this.msg = 'Consulta de ' + nom + ' del día ' + data.fecha
         },
 
         modificar_item_factura_rows(){
@@ -765,6 +1190,163 @@ export default {
                 }
             })
         },
+        
+        agregar_item_pago_array(){
+            let max;
+
+            if(this.ro_formas.length === 0){
+                max = 0
+            } else {
+                max = Math.max.apply(Math, this.ro_formas.map(function(o) { return o.id; }))
+            }
+
+            let medios_let = ['Efectivo', 'Tarjeta de Crédito', 'Tarjeta de Débito', 'Transferencia', 'Billetera Electrónica']
+            let denominacion = ['Visa', 'Mastercard', 'American Express', 'Maestro', 'Panal', 'Cabal', 'Otro']
+            let entidad = ['Banco', 'Financiera', 'Cooperativa']
+            let bill = ['Zimple', 'Tigo', 'Personal', 'Claro']
+
+            if(+this.medio_pago === 1) {
+                this.ro_formas.push({
+                    id: max + 1,
+                    monto: this.monto_pago,
+                    forma_pago: 'EF',
+                    tipo: medios_let[+this.medio_pago - 1],
+                    denominacion: 'No aplica',
+                    cod_aut: this.cod_aut || 'No aplica'
+                })
+            } else if(+this.medio_pago === 2 || +this.medio_pago === 3){
+                this.ro_formas.push({
+                    id: max + 1,
+                    monto: this.monto_pago,
+                    forma_pago: +this.medio_pago === 2 ? 'TC': 'TD',
+                    marca: denominacion[+this.denominacion_pago - 1],
+                    nro_tar: this.nro_tar_pago,
+                    cod_referencia: this.cod_aut,
+                    tipo: medios_let[+this.medio_pago - 1],
+                    denominacion: denominacion[+this.denominacion_pago - 1] + ' - ' + this.nro_tar_pago,
+                    cod_aut: this.cod_aut || 'No aplica'
+                })
+            } else if(+this.medio_pago === 4){
+                this.ro_formas.push({
+                    id: max + 1,
+                    monto: this.monto_pago,
+                    forma_pago: 'TR',
+                    marca: entidad[+this.entidad - 1],
+                    nro_cuenta: this.cuenta_pago,
+                    cod_referencia: this.cod_aut,
+                    tipo: medios_let[+this.medio_pago - 1],
+                    denominacion: entidad[+this.entidad - 1] + ' - ' + this.cuenta_pago,
+                    cod_aut: this.cod_aut || 'No aplica'
+                })
+            } else if(+this.medio_pago === 5){
+                this.ro_formas.push({
+                    id: max + 1,
+                    monto: this.monto_pago,
+                    forma_pago: 'BI',
+                    marca: bill[+this.bill_pago - 1],
+                    nro_telefono: this.telef_pago,
+                    cod_referencia: this.cod_aut,
+                    tipo: medios_let[+this.medio_pago - 1],
+                    denominacion: bill[+this.bill_pago - 1] + ' - ' + this.telef_pago,
+                    cod_aut: this.cod_aut || 'No aplica'
+                })
+            }
+            
+            this.monto_pago = null;
+            this.medio_pago = 1;
+            this.denominacion_pago = 1
+            this.nro_tar_pago = null
+            this.cod_aut = null
+
+            /* */
+            this.mostrar_deno_pago = false;
+            this.mostrar_cuenta_pago = false;
+            this.mostrar_telefono_pago = false;
+            this.mostrar_auto_pago = false;
+            this.mostrar_deno_bill_pago = false;
+            this.mostrar_nro_tarj_pago = false;
+            this.mostrar_banco_pago = false;
+
+            this.actualizar_total_pago()
+        },
+
+        agregar_item_pago(){
+            if(+this.medio_pago === 1){
+                if(!this.monto_pago || +this.monto_pago <= 0) {
+                    Swal.fire({
+                        html: "<h4>Debe ingresar todos los campos y ser válidos</h4>",
+                        icon: 'error'
+                    })
+                } else {
+                    this.agregar_item_pago_array()
+                }
+            }
+
+            if(+this.medio_pago === 2 || +this.medio_pago === 3){
+                if(!this.monto_pago || !this.nro_tar_pago || !this.cod_aut || +this.monto_pago <= 0) {
+                    Swal.fire({
+                        html: "<h4>Debe ingresar todos los campos y ser válidos</h4>",
+                        icon: 'error'
+                    })
+                } else {
+                    if(this.nro_tar_pago.toString().length !== 4) {
+                        Swal.fire({
+                            html: "<h4>Solo ingresar los últimos 4 dígitos de la tarjeta</h4>",
+                            icon: 'error'
+                        })
+                    } else {
+                        this.agregar_item_pago_array()
+                    }
+                }
+            }
+
+            if(+this.medio_pago === 4){
+                if(!this.monto_pago || !this.cuenta_pago || !this.cod_aut || +this.monto_pago <= 0) {
+                    Swal.fire({
+                        html: "<h4>Debe ingresar todos los campos y ser válidos</h4>",
+                        icon: 'error'
+                    })
+                } else {
+                    this.agregar_item_pago_array()
+                }
+            }
+
+            if(+this.medio_pago === 5 || +this.monto_pago < 0){
+                if(!this.monto_pago || !this.telef_pago || !this.cod_aut || +this.monto_pago <= 0) {
+                    Swal.fire({
+                        html: "<h4>Debe ingresar todos los campos y ser válidos</h4>",
+                        icon: 'error'
+                    })
+                } else {
+                    this.agregar_item_pago_array()
+                }
+            }
+        },
+
+        delete_item_medio_pago(id){
+            Swal.fire({
+            html: "<h4>¿Desea eliminar este medio de pago?</h4>",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancelar'})
+            .then((result) => {
+                if (result.isConfirmed) {
+                    const objWithIdIndex = this.ro_formas.findIndex((obj) => obj.id === id);
+                    this.ro_formas = this.ro_formas.slice(0,objWithIdIndex).concat(this.ro_formas.slice(objWithIdIndex+1))
+
+                    //Modificar orden
+                    for (var i = 0; i < this.ro_formas.length; i++) {
+                        this.ro_formas[i].id = i + 1
+                    }
+
+                    this.actualizar_total_pago()
+                    this.selectPago = 'PENDIENTE'
+                }
+            })
+        },
 
         async registrar_bd (){
             const {data} = await authApi.get('/pagos/datos_cliente/consulta?nro_doc=' + this.nro_doc + '&tipo_doc=' + this.selectedDoc, {
@@ -792,7 +1374,9 @@ export default {
                     seg_ape: this.seg_ape,
                     tipo_doc: this.selectedDoc,
                     nro_doc: this.nro_doc,
-                    dir: this.direccion
+                    dir: this.direccion,
+                    lug: this.selectedCiu,
+                    email: this.correo_envio
                     }
 
                     authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
@@ -816,6 +1400,10 @@ export default {
                             this.selectedDoc = 1
                             this.nro_doc = undefined
                             this.direccion = undefined
+                            this.selectedDep = 0
+                            this.get_ciudades()
+                            this.selectedCiu = 0
+                            this.correo_envio = undefined
                         })
                     } else {
                         Swal.fire({
@@ -843,6 +1431,7 @@ export default {
             this.selectedDoc = 1
             this.nro_doc = undefined
             this.direccion = undefined
+            this.correo_envio = undefined
         },
 
         async buscar_cliente(){
@@ -868,6 +1457,9 @@ export default {
                     nro_doc: this.nro_doc,
                     direccion: this.direccion,
                     id_persona: this.id_persona,
+                    selectedDep: this.selectedDep,
+                    selectedCiu: this.selectedCiu,
+                    email: this.correo_envio,
                 }
 
                 //DATOS RECIBIDOS
@@ -882,6 +1474,11 @@ export default {
                 this.nro_doc = data.nro_doc
                 this.direccion = data.direccion
                 this.id_persona = data.id_persona
+                this.selectedDep = data.departamento
+                await this.get_ciudades()
+                this.selectedCiu = data.ciudad
+                this.correo_envio = data.email
+
             } else {
                 this.pri_nom = null 
                 this.seg_nom = null
@@ -891,6 +1488,7 @@ export default {
                 this.selectedDoc = null
                 this.nro_doc = null
                 this.direccion = null
+                this.correo_envio = null
 
                 Swal.fire({
                     html: "<h4>No existe el cliente solicitado</h4>",
@@ -988,6 +1586,10 @@ export default {
 
         menu_cliente(){
             this.$refs.boton.click();
+        },
+
+        menu_medio_pago(){
+            this.$refs.boton_medio_pago.click();
         },
         
         menu_item(){

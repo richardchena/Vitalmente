@@ -128,18 +128,19 @@ import Swal  from 'sweetalert2'
 import authApi from '@/api/authApi'
 import { mapGetters} from 'vuex'
 
-import format from 'date-fns/format';
+//import format from 'date-fns/format';
 import endOfMonth from 'date-fns/endOfMonth';
 
 export default {
     data(){
         return{
-            texto_tabla: 'No hay datos para mostrar :(',
+            texto_tabla: 'No hay datos para mostrar',
             fin_mes: endOfMonth(new Date()),
 
-            fecha_seleccion: { "month": format(new Date(), 'MM') - 1, "year": +format(new Date(), 'yyyy') },
-            selectTipo: 0,
+            //fecha_seleccion: { "month": format(new Date(), 'MM') - 1, "year": +format(new Date(), 'yyyy') },
+            fecha_seleccion: null,
             tipos: [{id: 0, tipo: '-- ESTADO --'}, {id: 1, tipo: 'Pendientes'}, {id: 2, tipo: 'Finalizados'}],
+            selectTipo: 1,
 
             filtro: null,
             datos: null,
@@ -257,7 +258,7 @@ export default {
             })
 
             this.rows = data
-            this.texto_tabla = 'No hay datos para mostrar :('
+            this.texto_tabla = 'No hay datos para mostrar'
         },
 
         async vincular(){

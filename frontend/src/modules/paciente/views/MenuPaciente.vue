@@ -24,7 +24,6 @@
                                     Por favor ingrese la contraseña actual
                                 </div>
                             </div>
-                            <br>
                             <div class="form-outline mb-4">
                                 <label for="exampleFormControlInput1">&nbsp;Nueva contraseña</label>
                                 <input v-model="pass_new" type="password" :class="input_pass2" required>

@@ -84,6 +84,21 @@ export default {
             component: () => import(/* webpackChunkName: "caja" */ '@/modules/admin/views/MovimientoCaja')
         },
         {
+            path: 'especialidades',
+            name: 'especialidades',
+            component: () => import(/* webpackChunkName: "especialidades" */ '@/modules/admin/views/Especialidades')
+        },
+        {
+            path: 'parametros_consultas',
+            name: 'parametros-consultas',
+            component: () => import(/* webpackChunkName: "parametros_consultas" */ '@/modules/admin/views/ParametrosConsulta')
+        },
+        {
+            path: 'reports',
+            name: 'reports',
+            component: () => import(/* webpackChunkName: "reports" */ '@/modules/admin/views/Reportes')
+        },
+        {
             path: 'sala',
             name: 'sala',
             component: () => import(/* webpackChunkName: "sala" */ '@/modules/admin/views/SalaEspera'),

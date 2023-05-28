@@ -62,8 +62,9 @@
                                 <label style="margin-top: 5px;">Medio de pago <label style="color: red">*</label></label>
                             </div>
                             <div class="col">
-                                <select class="form-select">
-                                    <option selected>Efectivo</option>
+                                <select v-model="selectPagoNew" class="form-select">
+                                    <option value=1 selected>Efectivo</option>
+                                    <option value=2>Cuenta</option>
                                 </select>
                             </div>
                         </div>
@@ -230,6 +231,7 @@
                     <select v-model="select_form_dist" class="form-select" style="margin-top: 8px;">
                         <option value=0>-- FORMA PAGO --</option>
                         <option value=1>Efectivo</option>
+                        <option value=2>Cuenta</option>
                     </select>
                 </div>
                 
@@ -249,7 +251,7 @@
 
                 <div class="col">
                     <div>
-                        <label><strong>Saldo actual</strong></label><br>
+                        <label><strong>Saldo total acumulado</strong></label><br>
                         <label style="font-size: 20px;"><strong style="color: black">{{ separador_general(saldo_actual)}}</strong></label>
                     </div>
                 </div>
@@ -265,7 +267,7 @@
                     enabled: true,
                     mode: 'pages',
                     perPageDropdownEnabled: false,
-                    perPage: 4,
+                    perPage: 7,
                     nextLabel: 'Siguiente',
                     ofLabel: 'de',
                     pageLabel: 'Pagina',
@@ -413,6 +415,7 @@ export default {
 
     data(){
         return{
+            selectPagoNew: 1,
             texto_tabla: null,
 
             ingresos: 0,
@@ -492,8 +495,19 @@ export default {
             await this.get_dist_tipos_mov() 
             await this.get_dist_cats_mov()
 
-            this.select_tipo_dist = +this.$route.query.tipo || 0
-            this.select_cat_dist = +this.$route.query.categ || 0
+            if(this.tipos_movimientos.length === 1) {
+                this.select_tipo_dist = 0
+            } else {
+                this.select_tipo_dist = +this.$route.query.tipo || 0
+            }
+
+            if(this.categoria_movimientos.length === 1) {
+                this.select_cat_dist = 0
+            } else {
+                this.select_cat_dist = +this.$route.query.categ || 0
+            }  
+            
+            
             this.select_form_dist = +this.$route.query.forma || 0
 
             this.ingresos = 0
@@ -516,7 +530,7 @@ export default {
             }
             
             await this.$router.replace({query: obj})
-            this.texto_tabla = 'No hay movimientos registrados :('
+            this.texto_tabla = 'No hay movimientos registrados'
         },
 
         async restablecer(){
@@ -578,6 +592,7 @@ export default {
                     id_categoria: +this.$route.query.categ || 0,
                     desde: this.$route.query.fecha_desde || format(startOfMonth(new Date()), 'yyyy-MM-dd'),
                     hasta: this.$route.query.fecha_hasta || format(new Date(), 'yyyy-MM-dd'),
+                    forma: this.$route.query.forma || 0,
                 },
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`
@@ -622,6 +637,7 @@ export default {
                     id_categoria: +this.$route.query.categ || 0,
                     desde: this.$route.query.fecha_desde || format(startOfMonth(new Date()), 'yyyy-MM-dd'),
                     hasta: this.$route.query.fecha_hasta || format(new Date(), 'yyyy-MM-dd'),
+                    forma: this.$route.query.forma || 0,
                 },
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`
@@ -635,6 +651,9 @@ export default {
 
         async get_saldo(){
             const {data} = await authApi.get('/movimientos/saldo', {
+                params: {
+                    forma: this.$route.query.forma || 0
+                },
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`
                 }
@@ -650,6 +669,7 @@ export default {
                     id_categoria: +this.$route.query.categ || 0,
                     desde: this.$route.query.fecha_desde || format(startOfMonth(new Date()), 'yyyy-MM-dd'),
                     hasta: this.$route.query.fecha_hasta || format(new Date(), 'yyyy-MM-dd'),
+                    forma: this.$route.query.forma || 0,
                 },
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`
@@ -662,7 +682,7 @@ export default {
         },
 
         async get_mov(){
-            await new Promise(resolve => setTimeout(resolve, 1000)); 
+            await new Promise(resolve => setTimeout(resolve, 500)); 
             //TODO: ELIMINAR DESPUES EN PRODUCCION
 
             const {data} = await authApi.get('/movimientos', {
@@ -671,6 +691,7 @@ export default {
                     id_categoria: +this.$route.query.categ || 0,
                     desde: this.$route.query.fecha_desde || format(startOfMonth(new Date()), 'yyyy-MM-dd'),
                     hasta: this.$route.query.fecha_hasta || format(new Date(), 'yyyy-MM-dd'),
+                    forma: this.$route.query.forma || 0,
                 },
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`
@@ -690,9 +711,23 @@ export default {
             this.tipos_categ = data
         },
 
+        verificar_saldo(){
+            if(this.selectTipo === 2 && (this.saldo_actual < this.monto)) return true
+            else return false
+        },
+
         registrar(){
             if(this.verificar()){
-                this.reg_bd()
+                if(this.verificar_saldo()){
+                    Swal.fire({
+                        html: '<h4>Fondos insuficientes para realiazar la transacción</h4>',
+                        icon: 'error'
+                    })
+
+                } else {
+                    this.reg_bd()
+                }
+
             } else {
                 Swal.fire({
                     html: '<h4>Favor completar los campos requeridos</h4>',
@@ -709,7 +744,8 @@ export default {
                 tipo: this.selectTipo,
                 categoria: this.selectCat,
                 nro_factura: this.nro_factura_reg,
-                comentario: this.comentario
+                comentario: this.comentario,
+                forma: this.selectPagoNew
             }
 
             try {

@@ -70,4 +70,10 @@ router.get('/facturacion/prueba',
             fact.correo
 );
 
+router.post('/facturacion/pagos',
+            passport.authenticate('jwt', {session: false}),
+            checkRoles('admin'), 
+            fact.reg_forma_pago
+);
+
 module.exports = router;

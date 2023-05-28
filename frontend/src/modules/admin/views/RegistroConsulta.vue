@@ -40,6 +40,10 @@
             <div class="d-flex flex-row align-items-center justify-content-center">
                 <div class="d-flex flex-row align-items-center justify-content-center">
                     <div style="margin-right: 10px">
+                        <button class="btn btn-warning" @click="modificar_datos_paciente" style="margin-right: 10px;">
+                            MODIFICAR DATOS PACIENTE
+                        </button>
+
                         <button class="btn btn-danger " @click="regresar_atras">
                             CANCELAR
                         </button>
@@ -68,19 +72,10 @@
                     </div>
                 </div>
             </div>
-            <hr style="margin-top: 5px; margin-bottom: 3px">
-
-            <div class="d-flex flex-row-reverse">
-                <div style="margin-right: 55px">
-                    <button class="btn btn-warning" @click="modificar_datos_paciente">
-                        MODIFICAR DATOS PACIENTE
-                    </button>
-                </div>
-            </div>
-            <hr style="margin-top: 3px; margin-bottom: 2px">
+    
         </div>
 
-        <div style="padding: 20px 55px 0px 55px">
+        <div style="padding: 5px 55px 0px 55px">
             <div  v-if="role === 1" class="btn-group d-flex w-100" role="group"> 
                 <router-link 
                     :to="{ name: 'datos-historial-consultas-admin',
@@ -389,5 +384,6 @@ export default {
 
     a.router-link-exact-active {
         background-color: #8d8d8d;
+        color: white;
     }
 </style>

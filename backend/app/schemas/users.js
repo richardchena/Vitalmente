@@ -9,6 +9,10 @@ const antecedente = joi.string().max(2000);
 const diagnostico = joi.string().max(2000);
 const tecnica = joi.string().max(2000);
 
+const cod_motivo = joi.number().integer().required();
+const cod_diagnostico = joi.number().integer().required();
+
+
 //EXTRAS PACIENTE
 const lugar_residencia = joi.number().integer().min(0).max(9999).required();
 const direccion = joi.string().min(2).max(200).required();
@@ -167,7 +171,9 @@ const consulta = joi.object({
   motivo,
   antecedente,
   diagnostico,
-  tecnica
+  tecnica,
+  cod_motivo,
+  cod_diagnostico
 })
 
 const detalle_consulta = joi.object({
@@ -180,7 +186,9 @@ const modificar_consulta = joi.object({
   motivo,
   antecedente,
   tecnica,
-  diagnostico
+  diagnostico,
+  cod_motivo,
+  cod_diagnostico
 })
 
 

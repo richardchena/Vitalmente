@@ -24,13 +24,27 @@
             <div class="row">
                 <div class="col-sm">
                     <div class="mb-3">
-                        <label style="font-weight: bold;">Motivo de consulta</label>
+                        <div style="display: flex; margin-bottom: 5px;">
+                            <label style="font-weight: bold;">Motivo de consulta <label style="color: red">*</label></label>
+                            <select v-model="select_motivo" style="margin-left: 10px; background-color: #c6c6c6; border-radius: 10px;">
+                                <option 
+                                    v-for="item in motivos" 
+                                    :key="item.id"
+                                    :value="item.id"
+                                >
+                                    {{item.descripcion}}
+                                </option>
+                            </select>
+                            
+                        </div>
                         <textarea v-model="motivo" class="form-control" rows="5" placeholder="" :disabled="this.role === 1"></textarea>
                     </div>
                 </div>
                 <div class="col-sm">
                     <div class="mb-3">
-                        <label style="font-weight: bold;">Técnica utilizada/Sintomas actuales</label>
+                        <div style="margin-bottom: 5px;">
+                            <label style="font-weight: bold;">Técnica utilizada/Sintomas actuales</label>
+                        </div>
                         <textarea v-model="tecnica" class="form-control" rows="5" placeholder="" :disabled="this.role === 1"></textarea>
                     </div>
                 </div>
@@ -38,13 +52,26 @@
             <div class="row">
                 <div class="col-sm">
                     <div class="mb-3">
-                        <label style="font-weight: bold;">Diagnóstico actual</label>
+                        <div style="display: flex; margin-bottom: 5px;">
+                            <label style="font-weight: bold;">Diagnóstico actual <label style="color: red">*</label></label>
+                            <select v-model="select_diagnostico" style="margin-left: 10px; background-color: #c6c6c6; border-radius: 10px;">
+                                <option 
+                                    v-for="item in diagnosticos" 
+                                    :key="item.id"
+                                    :value="item.id"
+                                >
+                                    {{item.descripcion}}
+                                </option>
+                            </select>
+                        </div>
                         <textarea v-model="diagnostico" class="form-control" rows="5" placeholder="" :disabled="this.role === 1"></textarea>
                     </div>
                 </div>
                 <div class="col-sm">
                     <div class="mb-3">
-                        <label style="font-weight: bold;">Antecedentes</label>
+                        <div style="margin-bottom: 5px;">
+                            <label style="font-weight: bold;">Antecedentes</label>
+                        </div>
                         <textarea v-model="antecedente" class="form-control" rows="5" placeholder="" :disabled="this.role === 1"></textarea>
                     </div>
                 </div>
@@ -71,8 +98,10 @@ export default {
         },
     },
 
-    created(){
-        this.obtener_especialidades()
+    async created(){
+        await this.obtener_especialidades()
+        await this.obtener_motivos()
+        await this.obtener_diagnosticos()
     },
 
     computed:{
@@ -81,6 +110,12 @@ export default {
 
     data() {
         return {
+            motivos: [],
+            select_motivo: 0,
+
+            diagnosticos: [],
+            select_diagnostico: 0,
+
             motivo: null,
             diagnostico: null,
             tecnica: null,
@@ -104,10 +139,34 @@ export default {
     },
 
     methods: {
+        async obtener_motivos(){
+            const {data} = await authApi.get('/obtener_motivos', {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            for (let i = 0; i < data.length; i++) {
+                this.motivos.push({id: data[i].id, descripcion: data[i].descripcion})
+            }
+        },
+
+        async obtener_diagnosticos(){
+            const {data} = await authApi.get('/obtener_diagnosticos', {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            for (let i = 0; i < data.length; i++) {
+                this.diagnosticos.push({id: data[i].id, descripcion: data[i].descripcion})
+            }
+        },
+        
         validar(){
-            if(!this.diagnostico || !this.motivo){
+            if(!this.diagnostico || !this.motivo || !this.select_diagnostico || !this.select_motivo){
                 Swal.fire({
-                text: "Debe completar el motivo de consulta y diagnóstico actual",
+                html: "<h4>Debe completar el motivo de consulta y diagnóstico actual</h4>",
                 icon: 'warning'})
             } else {
                 this.modificar()   
@@ -121,6 +180,8 @@ export default {
             obj.id_especialidad = this.select_especialidad
             obj.motivo = this.motivo
             obj.diagnostico = this.diagnostico
+            obj.cod_motivo = this.select_motivo
+            obj.cod_diagnostico = this.select_diagnostico
             
             if(this.antecedente) {
                 obj.antecedente = this.antecedente
@@ -204,6 +265,8 @@ export default {
             this.diagnostico = data.diagnostico_actual
             this.tecnica = data.tecnica_aplicada
             this.antecedente = data.antecedente
+            this.select_diagnostico = +data.cod_diagnostico
+            this.select_motivo = +data.cod_motivo
 
             this.select_especialidad = data.id_especialidad
         },

@@ -72,10 +72,14 @@
                         </a>
 
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" style="font-weight: normal;" @click="especialidades">Especialidades</a></li>
+                            <li><hr class="dropdown-divider"></li>
+
+                            <li><a class="dropdown-item" style="font-weight: normal;" @click="pagina_parametros_consulta">Consultas</a></li>
+
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" style="font-weight: normal;" @click="contribuyentes">Contribuyentes</a></li>
                             <li><a class="dropdown-item" style="font-weight: normal;" @click="timbrados">Timbrados</a></li>
-                            <!--<li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" @click="admins">Usuarios administradores</a></li>-->
                         </ul>
                     </div>
                 </div>
@@ -110,12 +114,17 @@
                     </button>
                 </div>
                 <div class="col-md">
+                    <button class="btn btn-lg b1" @click="pagina_reports">
+                        Reportes y Estadísticas&nbsp;
+                        <i class="fas fa-table"></i>
+                    </button>
+                </div>
+                <div class="col-md">
                     <button class="btn btn-lg b1" @click="pagina_clave">
                         Cambiar Clave&nbsp;
                         <i class="fas fa-key"></i>
                     </button>
                 </div>
-                <div class="col-md"></div>
             </div>
         </div>
         <div class="text-center" style="font-size: 12px; margin-top: 10px; color: gray;">
@@ -131,6 +140,10 @@ import 'bootstrap';
 import Swal  from 'sweetalert2'
 
 export default {
+    created(){
+        document.title = 'Menú Principal'
+    },
+
     data(){
         return {
             id_paciente: null,
@@ -219,6 +232,14 @@ export default {
             this.$router.push({ name: 'lista-profesionales-admin' })
         },
 
+        pagina_reports(){
+            this.$router.push({ name: 'reports' })
+        },
+
+        pagina_parametros_consulta(){
+            this.$router.push({ name: 'parametros-consultas' })
+        },
+
         contribuyentes(){
             this.$router.push({ name: 'lista-contribuyentes' })
         },
@@ -241,6 +262,10 @@ export default {
 
         pagina_citas_agendadas(){
             this.$router.push({ name: 'citas-agendadas-admin' })
+        },
+
+        especialidades(){
+            this.$router.push({ name: 'especialidades' })
         }
     }
 }

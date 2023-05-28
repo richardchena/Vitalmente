@@ -24,28 +24,59 @@
                     REGISTRAR CONSULTA
                 </button>
             </div>
-            
+            <hr>
             <div class="row">
                 <div class="col-sm">
                     <div class="mb-3">
-                        <textarea v-model="motivo_consulta" class="form-control" rows="4" placeholder="Motivo de consulta"></textarea>
+                        <div style="display: flex; margin-bottom: 5px;">
+                            <label style="font-weight: bold;">Motivo de consulta <label style="color: red">*</label></label>
+                            <select v-model="select_motivo" style="margin-left: 10px; background-color: #c6c6c6; border-radius: 10px;">
+                                <option 
+                                    v-for="item in motivos" 
+                                    :key="item.id"
+                                    :value="item.id"
+                                >
+                                    {{item.descripcion}}
+                                </option>
+                            </select>
+                            
+                        </div>
+                        <textarea v-model="motivo_consulta" class="form-control" rows="4"></textarea>
                     </div>
                 </div>
                 <div class="col-sm">
                     <div class="mb-3">
-                        <textarea v-model="tecnica_consulta" class="form-control" rows="4" placeholder="Técnica utilizada/Sintomas actuales"></textarea>
+                        <div style="margin-bottom: 5px;">
+                            <label style="font-weight: bold;">Técnica utilizada/Sintomas actuales</label>
+                        </div>
+                        <textarea v-model="tecnica_consulta" class="form-control" rows="4"></textarea>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-sm">
                     <div class="mb-3">
-                        <textarea v-model="diagnostico_consulta" class="form-control" rows="4" placeholder="Diagnóstico actual"></textarea>
+                        <div style="display: flex; margin-bottom: 5px;">
+                            <label style="font-weight: bold;">Diagnóstico actual <label style="color: red">*</label></label>
+                            <select v-model="select_diagnostico" style="margin-left: 10px; background-color: #c6c6c6; border-radius: 10px;">
+                                <option 
+                                    v-for="item in diagnosticos" 
+                                    :key="item.id"
+                                    :value="item.id"
+                                >
+                                    {{item.descripcion}}
+                                </option>
+                            </select>
+                        </div>
+                        <textarea v-model="diagnostico_consulta" class="form-control" rows="4"></textarea>
                     </div>
                 </div>
                 <div class="col-sm">
                     <div class="mb-3">
-                        <textarea v-model="antecedente_consulta" class="form-control" rows="4" placeholder="Antecedentes"></textarea>
+                        <div style="margin-bottom: 5px;">
+                            <label style="font-weight: bold;">Antecedentes</label>
+                        </div>
+                        <textarea v-model="antecedente_consulta" class="form-control" rows="4"></textarea>
                     </div>
                 </div>
             </div>
@@ -67,6 +98,10 @@ export default {
         this.select_especialidad = +this.$route.params.id_esp || 1
 
         if(+this.$route.params.id_esp === 0) this.decision_disabled = false
+
+        //
+        await this.obtener_motivos()
+        await this.obtener_diagnosticos()
     },
 
     computed:{
@@ -82,6 +117,30 @@ export default {
             })
 
             this.especialidades = data
+        },
+
+        async obtener_motivos(){
+            const {data} = await authApi.get('/obtener_motivos', {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            for (let i = 0; i < data.length; i++) {
+                this.motivos.push({id: data[i].id, descripcion: data[i].descripcion})
+            }
+        },
+
+        async obtener_diagnosticos(){
+            const {data} = await authApi.get('/obtener_diagnosticos', {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            for (let i = 0; i < data.length; i++) {
+                this.diagnosticos.push({id: data[i].id, descripcion: data[i].descripcion})
+            }
         },
 
         async obtener_id_prof(){
@@ -103,7 +162,7 @@ export default {
                 html: "<h4>Solo un profesional logeado puede registrar consultas</h4>",
                 icon: 'error'})
             } else {
-                if(!this.diagnostico_consulta || !this.motivo_consulta){
+                if(!this.diagnostico_consulta || !this.motivo_consulta || !this.select_diagnostico || !this.select_motivo){
                     Swal.fire({
                     html: "<h4>Debe completar el motivo de consulta y diagnóstico actual</h4>",
                     icon: 'warning'})
@@ -120,6 +179,8 @@ export default {
             obj.id_especialidad = this.select_especialidad
             obj.motivo = this.motivo_consulta
             obj.diagnostico = this.diagnostico_consulta
+            obj.cod_motivo = this.select_motivo
+            obj.cod_diagnostico = this.select_diagnostico
 
             if(this.tecnica_consulta && this.tecnica_consulta.trim().length !== 0) obj.tecnica = this.tecnica_consulta.trim(); else delete obj.tecnica;
             if(this.antecedente_consulta && this.antecedente_consulta.trim().length !== 0) obj.antecedente = this.antecedente_consulta.trim(); else delete obj.antecedente;
@@ -190,6 +251,12 @@ export default {
 
     data() {
         return {
+            motivos: [{id: 0, descripcion: '-- SELECCIONE UN MOTIVO --'}],
+            select_motivo: 0,
+
+            diagnosticos: [{id: 0, descripcion: '-- SELECCIONE UN DIAGNÓSTICO --'}],
+            select_diagnostico: 0,
+
             select_especialidad: 1,
             especialidades: null,
             decision_disabled: true,

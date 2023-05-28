@@ -14,7 +14,9 @@ exports.registrar_consulta = async (req, res) => {
                                              '${consulta.motivo}',
                                              ${antecedente},
                                              '${consulta.diagnostico}',
-                                             ${tecnica})`
+                                             ${tecnica},
+                                             ${consulta.cod_motivo},
+                                             ${consulta.cod_diagnostico})`
 
     try {
         let resp = await db.sequelize.query(query);
@@ -80,7 +82,9 @@ exports.modificar_consullta = async (req, res) => {
                                               '${datos.motivo}',
                                               '${datos.diagnostico}',
                                               ${tec},
-                                              ${ant})`
+                                              ${ant},
+                                              ${datos.cod_motivo},
+                                              ${datos.cod_diagnostico})`
 
     try {
         const datos = await db.sequelize.query(query);
