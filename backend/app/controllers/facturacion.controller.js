@@ -187,7 +187,7 @@ exports.obtener_clientes_pendientes_pago = async (req, res) => {
     TO_CHAR(C.FECHA_FINALIZACION, 'DD/MM/YYYY HH24:MI') AS FECHA,
     COALESCE(TO_CHAR(F.FECHA_EMISION, 'DD/MM/YYYY HH24:MI'), 'No aplica') AS FECHA_PAGO,
     C.FECHA_FINALIZACION AS FECHA_CONSULTA,
-    trim(TO_CHAR(B.PRECIO, '999G999')) || ' Gs.' AS TOTAL,
+    trim(TO_CHAR(COALESCE(F.TOTAL, B.PRECIO), '999G999')) || ' Gs.' AS TOTAL,
     CASE
         WHEN A.COD_FACTURA IS NULL THEN 1
         ELSE 2
