@@ -233,7 +233,7 @@ export default {
         },
 
         pagina_reports(){
-            this.$router.push({ name: 'reports' })
+            this.$router.push({ name: 'reportes-general' })
         },
 
         pagina_parametros_consulta(){

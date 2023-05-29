@@ -96,7 +96,19 @@ export default {
         {
             path: 'reports',
             name: 'reports',
-            component: () => import(/* webpackChunkName: "reports" */ '@/modules/admin/views/Reportes')
+            component: () => import(/* webpackChunkName: "reports" */ '@/modules/admin/views/Reportes'),
+            children: [
+                {
+                    path: '',
+                    name: 'reportes-general',
+                    component: () => import(/* webpackChunkName: "reportes-general" */ '@/modules/admin/components/reports/LayoutGeneral'),
+                },
+                {
+                    path: 'otros',
+                    name: 'reportes-profesionales',
+                    component: () => import(/* webpackChunkName: "reportes-profesionales" */ '@/modules/admin/components/reports/LayoutOtros'),
+                }
+            ]
         },
         {
             path: 'sala',

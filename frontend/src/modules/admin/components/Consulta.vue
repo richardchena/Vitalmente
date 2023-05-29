@@ -26,7 +26,7 @@
                     <div class="mb-3">
                         <div style="display: flex; margin-bottom: 5px;">
                             <label style="font-weight: bold;">Motivo de consulta <label style="color: red">*</label></label>
-                            <select v-model="select_motivo" style="margin-left: 10px; background-color: #c6c6c6; border-radius: 10px;">
+                            <select v-model="select_motivo" style="margin-left: 10px; background-color: #c6c6c6; border-radius: 10px;" :disabled="this.role === 1">
                                 <option 
                                     v-for="item in motivos" 
                                     :key="item.id"
@@ -54,7 +54,7 @@
                     <div class="mb-3">
                         <div style="display: flex; margin-bottom: 5px;">
                             <label style="font-weight: bold;">Diagnóstico actual <label style="color: red">*</label></label>
-                            <select v-model="select_diagnostico" style="margin-left: 10px; background-color: #c6c6c6; border-radius: 10px;">
+                            <select v-model="select_diagnostico" style="margin-left: 10px; background-color: #c6c6c6; border-radius: 10px;" :disabled="this.role === 1">
                                 <option 
                                     v-for="item in diagnosticos" 
                                     :key="item.id"
