@@ -280,3 +280,17 @@ exports.obtener_id_profesional = async (req, res) => {
         res.json(error);
     }
 }
+
+exports.eliminar_agenda = async (req, res) => {
+    const id = req.query.id_agenda;
+    const query = `DELETE FROM DIAS_CONSULTA WHERE ID_AGENDA = ${id};
+                   DELETE FROM AGENDAS WHERE ID = ${id}`
+
+    try {
+        await db.sequelize.query(query);
+        res.json({id: 0, msg: 'Registro eliminado correctamente'})
+
+    } catch (error) {
+        res.json({id: 1, msg: 'Hubo un error inesperado'})
+    }
+};

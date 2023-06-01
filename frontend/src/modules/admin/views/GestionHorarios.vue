@@ -2,7 +2,7 @@
     <div>
         <nav class="navbar" style="background: #c6c6c6">
             <div style="margin-left: 15px; margin-top: 7px; height: 30px;">
-                <strong>Nueva agenda de consultas</strong>
+                <strong>Rango de la agenda</strong>
             </div>
             <div style="position: absolute; margin-left: 240px">
                 <VueDatePicker 
@@ -77,6 +77,11 @@
         </nav>
 
         <br>
+
+        <i><p class="text-center">{{msg}}</p></i>
+
+        <hr>
+
         <div class="container">
             <table class="table table-hover table-cell-border table-striped" id="tabla">
                 <thead>
@@ -894,6 +899,8 @@ export default {
 
     data() {
         return {
+            msg: '',
+
             fecha_inicio: null,
             fecha_fin: null,
             dias_semana: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
@@ -925,6 +932,7 @@ export default {
     async created(){
         document.title = 'Gestionar Horario'
         await this.validar_id()
+        await this.obtener_nombre_profesional()
         //this.listaHoras(new Date(2023, 3-1, 24), new Date(2023, 4-1, 20), 9, 0, 11, 30, 1)
     },
 
@@ -1214,6 +1222,25 @@ export default {
                 
                 this.dias_desactivados.push(obj.date);
                 this.marcadores.push(obj);
+            }
+        },
+
+        async obtener_nombre_profesional(){
+            const {data} = await authApi.get('/obtener_nombre_profesional?id_profesional=' + this.$route.params.id_profesional, {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            this.msg = 'Cargando información...'
+            let nombre;
+
+            if(!data){
+                this.msg = 'No se puede obtener los datos del profesional :('
+
+            } else {
+                nombre = data.profesional.split(' ').filter((item) => item.length !== 0).join(' ')
+                this.msg = 'Nuevas fechas de consultas para ' + nombre
             }
         },
 

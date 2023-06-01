@@ -72,5 +72,10 @@ router.get('/profesionales/obtener_id',
     docs.obtener_id_profesional
 );
 
+router.delete('/profesionales/eliminar_agenda',
+    passport.authenticate('jwt', {session: false}),
+    docs.eliminar_agenda
+);
+
 
 module.exports = router;

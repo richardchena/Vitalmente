@@ -66,6 +66,11 @@ router.put('/reservas/agendas/profesional/cancelar',
     controller.cancelar_cita_prof
 );
 
+router.put('/reservas/agendas/profesional/cancelar_dia_hoy',
+    passport.authenticate('jwt', {session: false}),
+    controller.cancelar_citas_hoy
+);
+
 router.put('/reservas/agendas/paciente/cancelar',
     passport.authenticate('jwt', {session: false}),
     controller.cancelar_cita_paciente

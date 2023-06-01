@@ -336,3 +336,21 @@ async function validar_eliminacion_diagnostico (id){
         return {id: 0, msg: 'Ok'}
     }
 }
+
+
+exports.get_name_profesional_by_id = async (req, res) => {
+    const query = `SELECT 
+	A.ID_PROFESIONAL,
+	INITCAP(F.PRIMER_NOMBRE || ' ' || COALESCE(F.SEGUNDO_NOMBRE, '') || ' ' || COALESCE(F.TERCER_NOMBRE, '')  || ' ' || F.PRIMER_APELLIDO || ' ' || COALESCE(F.SEGUNDO_APELLIDO, '')) PROFESIONAL
+FROM PROFESIONALES A
+INNER JOIN PERSONAS F ON F.ID_PERSONA = A.ID_PERSONA
+WHERE A.ID_PROFESIONAL = ${req.query.id_profesional}`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0][0]);
+
+    } catch (error) {
+        res.json(error);
+    }
+};

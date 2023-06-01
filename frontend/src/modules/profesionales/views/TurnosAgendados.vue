@@ -32,7 +32,7 @@
                     </template>
                 </VueDatePicker>
             </div>
-            <div style="margin-left: -400px;">
+            <div style="margin-left: -240px;">
                 <button class="btn btn-success " @click="ver_todos">
                     VER TODAS LAS FECHAS
                 </button>
@@ -40,9 +40,9 @@
             <div class="d-flex flex-row align-items-center justify-content-center">
                 <div class="d-flex flex-row align-items-center justify-content-center">
                     <div style="margin-right: 10px">
-                        <!--<button style="margin-right: 10px" class="btn btn-success " @click="ver_todos">
-                            VER TODAS LAS FECHAS
-                        </button>-->
+                        <button style="margin-right: 10px" class="btn btn-info text-white" @click="cancelar_hoy">
+                            CANCELAR CITAS DEL DÍA
+                        </button>
                         <button class="btn btn-danger " @click="regresar_atras">
                             IR A INICIO
                         </button>
@@ -150,7 +150,7 @@ export default {
                             if(row[5] === 'CANCELADO PROFESIONAL'){
                                 cancelar = '<button class="btn btn-info" disabled><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>';
                             } else {
-                                cancelar = '<button class="btn btn-info"><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>';
+                                cancelar = '<button class="btn btn-info text-white cancelar_manual"><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>';
                             }
                             return cancelar;
                         }
@@ -158,7 +158,7 @@ export default {
                 ]
             }).api();
 
-            $(".btn-info").click(function(){
+            $(".cancelar_manual").click(function(){
                 let index = $(this).parents("tr")[0].id;
                 funcion_cancelar(index);
             });
@@ -193,6 +193,43 @@ export default {
     },
 
     methods: {
+        cancelar_hoy(){
+            Swal.fire({
+            icon: 'question',
+            html: `<h4>¿Está seguro que quiere cancelar todas las citas del día de hoy (${format(new Date(), 'dd/MM/yyyy')})?</h4>`,
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'OK, cancelar',
+            cancelButtonText: 'Atrás'})
+            .then((result) => {
+                if (result.isConfirmed) {
+                    this.cancelar_todas_citas_hoy()
+                }
+            })
+        },
+
+        async cancelar_todas_citas_hoy(){
+            authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
+            const {data} = await authApi.put('/reservas/agendas/profesional/cancelar_dia_hoy?id_profesional=' + +this.$route.params.id_profesional)
+
+            if(+data.id === 0) {
+                Swal.fire({
+                    html: `<h4>${data.msg}</h4>`,
+                    icon: 'success'
+                }).then(() => {
+                    this.$router.go();
+                })
+
+            } else {
+                Swal.fire({
+                    html: `<h4>${data.msg}</h4>`,
+                    icon: 'error'
+                })
+            }
+
+        },
+
         async ver_todos(){
             await this.$router.replace({query: {  }})
             this.$router.go(0);

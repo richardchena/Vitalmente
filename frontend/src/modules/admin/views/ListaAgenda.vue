@@ -53,6 +53,7 @@
                     <th>Profesional</th>
                     <th>Fecha inicio</th>
                     <th>Fecha fin</th>
+                    <th>Cant. Reservas</th>
                     <th>Estado</th>
                     <th></th>
                 </tr>
@@ -63,6 +64,7 @@
                     <td>{{dato.name}}</td>
                     <td>{{dato.fecha_desde}}</td>
                     <td>{{dato.fecha_hasta}}</td>
+                    <td>{{dato.cantidad_agenda}}</td>
                     <td v-if="dato.estado === 'POR VENCER'" style="color: #dc3545">{{dato.estado}}</td>
                     <td v-else-if="dato.estado === 'VENCIDO'" style="color: black">{{dato.estado}}</td>
                     <td v-else style="color: #1d6042">{{dato.estado}}</td>
@@ -157,9 +159,48 @@ export default {
             }
         },
 
+        funcion_eliminar(id){
+            Swal.fire({
+                html: `<h4>¿Desea eliminar esta agenda #${id}?</h4>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar'
+            })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        this.eliminar_bd_agenda(id);
+                    }
+                })
+
+        },
+
+        async eliminar_bd_agenda(id){
+            authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
+            const {data} = await authApi.delete(`/profesionales/eliminar_agenda?id_agenda=${id}`)
+
+            if(+data.id === 0) {
+                Swal.fire({
+                    html: `<h4>${data.msg}</h4>`,
+                    icon: 'success'
+                }).then(() => {
+                    this.$router.go();
+                })
+
+            } else {
+                Swal.fire({
+                    html: `<h4>${data.msg}</h4>`,
+                    icon: 'error'
+                })
+            }
+        },
+
         async inicio() {
             await this.get_lista();
             const funcion_ver_detalle = this.ver_detalle;
+            const funcion_eliminar = this.funcion_eliminar;
 
             $(document).ready(function(){
                 $('#tabla').dataTable({
@@ -181,6 +222,7 @@ export default {
                         {c: "name", orderable: false},
                         {d: "nro_doc", orderable: false},
                         {e: "name", orderable: false},
+                        {e: "name", orderable: false},
                         {e: "edad", orderable: false},
                         {
                             j: null, 
@@ -188,9 +230,17 @@ export default {
                             orderable: false,
                             searchable: false,
                             //wrap: true, 
-                            render: function () {
-                                let file = '<button class="btn btn-secondary boton"><i class="far fa-file-alt"></i>&nbsp;&nbsp;Ver detalle horario</button>';
-                                return file;
+                            //render: function () {
+                            render: function (data, type, row) {
+
+                                if(+row[4] === 0 && row[5] !== 'VENCIDO') {
+                                    return `<button class="btn btn-secondary boton"><i class="far fa-file-alt"></i>&nbsp;&nbsp;Ver detalle</button>
+                                            <button class="btn btn-danger eliminar_agenda"><i class="fas fa-trash"></i>&nbsp;&nbsp;Eliminar</button>`
+                                
+                                } else {
+                                    return `<button class="btn btn-secondary boton"><i class="far fa-file-alt"></i>&nbsp;&nbsp;Ver detalle</button>
+                                            <button class="btn btn-danger" style="cursor: not-allowed;" disabled><i class="fas fa-trash"></i>&nbsp;&nbsp;Eliminar</button>`;
+                                }
                             }
                         }
                     ]
@@ -201,6 +251,10 @@ export default {
                                         $(this).parents("tr").find("td").eq(2).html(),
                                         $(this).parents("tr").find("td").eq(3).html(),
                                         $(this).parents("tr").find("td").eq(1).html());
+                });
+
+                $(".eliminar_agenda").click(function(){
+                    funcion_eliminar($(this).parents("tr").find("td").eq(0).html());
                 });
             })
         }

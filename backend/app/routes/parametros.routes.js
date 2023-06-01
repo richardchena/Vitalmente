@@ -74,4 +74,8 @@ router.put('/obtener_diagnosticos',
        passport.authenticate('jwt', {session: false}),
        parametros.diagnostico_consultas_modificar);
 
+router.get('/obtener_nombre_profesional',
+       passport.authenticate('jwt', {session: false}),
+       parametros.get_name_profesional_by_id);
+
 module.exports = router;

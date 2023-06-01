@@ -118,7 +118,7 @@ async function obtener_bd_v2(params){
     const query =  `SELECT * 
                     FROM LISTA_FECHAS_DISPONIBLES_V2
                     WHERE ${t_pro} = ${id_pro} AND ${t_tur} = ${id_tur} AND ${t_esp} = ${id_esp} AND ${t_fec} = ${fecha}
-                    ORDER BY ID_AGENDA, ID_DIA, FECHA_RANGO`
+                    ORDER BY FECHA_RANGO, ESPECIALIDAD` //ORDER BY ID_AGENDA, ID_DIA, FECHA_RANGO
 
     try {
         const datos = await db.sequelize.query(query);
@@ -749,3 +749,20 @@ exports.cancelar_cita_prof = async (req, res) => {
         res.json({cod: 1, msg: "Hubo un error al modificar el registro. Intente más tarde"});
     }
 };
+
+
+exports.cancelar_citas_hoy = async (req, res) => {
+    const id_profesional = req.query.id_profesional
+
+    const query = `UPDATE CITAS SET ESTADO = 2
+                   WHERE ID_PROFESIONAL = ${id_profesional} AND ESTADO = 1 AND FECHA = CURRENT_DATE`
+
+    try {
+        await db.sequelize.query(query);
+        res.json({id: 0, msg: "Se ha cancelado correctamente las citas"});
+
+    } catch (error) {
+        res.json({id: 1, msg: "Hubo un error al modificar el registro. Intente más tarde"});
+    }
+
+}
