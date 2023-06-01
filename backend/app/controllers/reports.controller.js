@@ -180,12 +180,27 @@ exports.total_citas = async (req, res) => {
 
 
 exports.especialidades = async (req, res) => {
-    const query = `SELECT 
+    const mes = req.query.mes
+    const anho = req.query.anho
+
+    let query;
+
+    if(+mes === 0 && +anho === 0) {
+        query = `SELECT 
                     COUNT(A.*) AS VALUE,
                     B.DESCRIPCION AS NAME
                 FROM CONSULTAS A
                 INNER JOIN ESPECIALIDADES B ON B.ID_ESPECIALIDAD = A.ID_ESPECIALIDAD
                 GROUP BY B.DESCRIPCION`
+    } else {
+        query = `SELECT 
+                    COUNT(A.*) AS VALUE,
+                    B.DESCRIPCION AS NAME
+                FROM CONSULTAS A
+                INNER JOIN ESPECIALIDADES B ON B.ID_ESPECIALIDAD = A.ID_ESPECIALIDAD
+                WHERE EXTRACT(YEAR FROM A.FECHA_CONSULTA) = ${+anho} AND EXTRACT(MONTH FROM A.FECHA_CONSULTA) = ${+mes + 1}
+                GROUP BY B.DESCRIPCION`
+    }
 
     try {
         const datos = await db.sequelize.query(query);
@@ -197,12 +212,28 @@ exports.especialidades = async (req, res) => {
 }
 
 exports.motivos = async (req, res) => {
-    const query = `SELECT 
-    B.DESCRIPCION AS NAME,
-    COUNT(A.*) AS VALUE
-    FROM CONSULTAS A
-    INNER JOIN MOTIVOS_CONSULTA B ON B.ID = A.COD_MOTIVO
-    GROUP BY B.DESCRIPCION`
+    const mes = req.query.mes
+    const anho = req.query.anho
+
+    let query;
+
+    if(+mes === 0 && +anho === 0) {
+        query = `SELECT 
+        B.DESCRIPCION AS NAME,
+        COUNT(A.*) AS VALUE
+        FROM CONSULTAS A
+        INNER JOIN MOTIVOS_CONSULTA B ON B.ID = A.COD_MOTIVO
+        GROUP BY B.DESCRIPCION`
+
+    } else {
+        query = `SELECT 
+        B.DESCRIPCION AS NAME,
+        COUNT(A.*) AS VALUE
+        FROM CONSULTAS A
+        INNER JOIN MOTIVOS_CONSULTA B ON B.ID = A.COD_MOTIVO
+        WHERE EXTRACT(YEAR FROM A.FECHA_CONSULTA) = ${+anho} AND EXTRACT(MONTH FROM A.FECHA_CONSULTA) = ${+mes + 1}
+        GROUP BY B.DESCRIPCION`
+    }
 
     try {
         const datos = await db.sequelize.query(query);
@@ -214,12 +245,30 @@ exports.motivos = async (req, res) => {
 }
 
 exports.diagnosticos = async (req, res) => {
-    const query = `SELECT 
-    B.DESCRIPCION AS NAME,
-    COUNT(A.*) AS VALUE
-    FROM CONSULTAS A
-    INNER JOIN DIAGNOSTICOS_CONSULTA B ON B.ID = A.COD_DIAGNOSTICO
-    GROUP BY B.DESCRIPCION`
+    const mes = req.query.mes
+    const anho = req.query.anho
+
+    let query;
+
+    if(+mes === 0 && +anho === 0) {
+        query = `SELECT 
+        B.DESCRIPCION AS NAME,
+        COUNT(A.*) AS VALUE
+        FROM CONSULTAS A
+        INNER JOIN DIAGNOSTICOS_CONSULTA B ON B.ID = A.COD_DIAGNOSTICO
+        GROUP BY B.DESCRIPCION`
+    } else {
+        query = `SELECT 
+        B.DESCRIPCION AS NAME,
+        COUNT(A.*) AS VALUE
+        FROM CONSULTAS A
+        INNER JOIN DIAGNOSTICOS_CONSULTA B ON B.ID = A.COD_DIAGNOSTICO
+        WHERE EXTRACT(YEAR FROM A.FECHA_CONSULTA) = ${+anho} AND EXTRACT(MONTH FROM A.FECHA_CONSULTA) = ${+mes + 1}
+        GROUP BY B.DESCRIPCION`
+    }
+
+
+
 
     try {
         const datos = await db.sequelize.query(query);

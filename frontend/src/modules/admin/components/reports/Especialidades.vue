@@ -33,15 +33,26 @@ export default {
         VChart
     },
 
+    props: ['filtro_fecha'],
+
     data(){
         return {
             option_esp: {},
-            datos_esp: [{value: 0, name: 'prueba'}]
+            datos_esp: [{value: 0, name: '0'}]
         }
     },
 
     computed:{
         ...mapGetters('auth', ['accessToken']),
+    },
+
+    watch: {
+        async filtro_fecha(){
+            console.log('sdlfkvdfkv')
+            const d = await this.get_especialidades();
+            console.log(d)
+            this.option_esp.series[0].data = d
+        }
     },
 
     async mounted(){
@@ -52,6 +63,10 @@ export default {
     methods: {
         async get_especialidades(){
             const {data} = await authApi.get('/reports/especialidades', {
+                params: {
+                    mes: this.filtro_fecha ? this.filtro_fecha.month : 0,
+                    anho: this.filtro_fecha ? this.filtro_fecha.year : 0,
+                },
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`
                 }
@@ -61,7 +76,7 @@ export default {
         }
     },
 
-    async created(){
+    created(){
         //await this.get_especialidades()
         
         use([CanvasRenderer,

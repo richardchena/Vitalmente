@@ -41,13 +41,25 @@ export default {
         }
     },
 
+    props: ['filtro_fecha'],
+
     computed:{
         ...mapGetters('auth', ['accessToken']),
+    },
+
+    watch: {
+        async filtro_fecha(){
+            await this.get_motivos()
+        }
     },
 
     methods: {
         async get_motivos(){
             const {data} = await authApi.get('/reports/motivos', {
+                params: {
+                    mes: this.filtro_fecha ? this.filtro_fecha.month : 0,
+                    anho: this.filtro_fecha ? this.filtro_fecha.year : 0,
+                },
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`
                 }
@@ -61,13 +73,20 @@ export default {
                 b.push(+valor[i].value)
             }
 
-            this.encabezado = a;
-            this.valores = b
+            //this.encabezado = a;
+            //this.valores = b
+
+            this.option.xAxis.data = a
+            this.option.series[0].data = b
+
         }
     },
 
-    async created() {
+    async mounted(){
         await this.get_motivos()
+    },
+
+    created() {
         use([CanvasRenderer,
             PieChart,
             TitleComponent,
