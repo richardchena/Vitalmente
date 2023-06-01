@@ -838,7 +838,7 @@ export default {
 
                 if(data.id === 0){
                     Swal.fire({
-                    html: "<h4>Modificado exitoxamente</h4>",
+                    html: "<h4>Modificado exitosamente</h4>",
                     icon: 'success',})
                     .then(() => {
                         document.getElementById('close_modal_registro').click();
@@ -1388,7 +1388,7 @@ export default {
 
                     if(data.completo){
                         Swal.fire({
-                        html: "<h4>Creado exitoxamente</h4>",
+                        html: "<h4>Creado exitosamente</h4>",
                         icon: 'success',})
                         .then(() => {
                             document.getElementById('close_modal_registro').click();

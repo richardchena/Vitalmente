@@ -9,6 +9,7 @@ const sala = require('./sala.routes');
 const pagos = require('./pagos.routes');
 const factura = require('./factura.routes');
 const mov = require('./movimiento.routes');
+const reports = require('./reports.routes');
 
 // Rutas sobre el login del sistema
 router.use(auth);
@@ -21,5 +22,6 @@ router.use(sala);
 router.use(pagos);
 router.use(factura);
 router.use(mov);
+router.use(reports);
 
 module.exports = router;

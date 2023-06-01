@@ -17,19 +17,19 @@
                     <br>
 
                     <label style="margin-left: 40px;">
-                        <i class="fas fa-male"></i>&nbsp;&nbsp;Masculinos:<strong style="margin-left: 88px">{{ pacientes.total_masculino }}</strong>
+                        <i class="fas fa-male"></i>&nbsp;&nbsp;Masculinos:<strong style="margin-left: 88px">{{ pacientes.masculino }}</strong>
                     </label>
 
                     <br>
 
                     <label style="margin-left: 40px;">
-                        <i class="fas fa-female"></i>&nbsp;&nbsp;Femeninos:<strong style="margin-left: 89px">{{ pacientes.total_femenino }}</strong>
+                        <i class="fas fa-female"></i>&nbsp;&nbsp;Femeninos:<strong style="margin-left: 89px">{{ pacientes.femenino }}</strong>
                     </label>
 
                     <br>
 
                     <label style="margin-left: 40px;">
-                        <i class="fas fa-user fa-xs" style="margin-left: -1px;"></i>&nbsp;&nbsp;No menciona:<strong style="margin-left: 72px">{{ pacientes.total_sin_definir }}</strong>
+                        <i class="fas fa-user fa-xs" style="margin-left: -1px;"></i>&nbsp;&nbsp;No menciona:<strong style="margin-left: 73px">{{ pacientes.otros }}</strong>
                     </label>
                 </div>
 

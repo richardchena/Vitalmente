@@ -31,11 +31,12 @@
             </router-link>
         </div>
        
-        <router-view v-slot="{ Component }" style="margin-top: 10px;">
+        <router-view />
+        <!--<router-view v-slot="{ Component }" style="margin-top: 10px;">
             <keep-alive>
                 <component :is="Component" />
             </keep-alive>
-        </router-view>
+        </router-view>-->
     </div>
 </template>
 

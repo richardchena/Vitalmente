@@ -8,7 +8,7 @@
 
         <div class="row" >
             <div class="col">
-                <Especialidades />
+                <Especialidades/>
             </div>
 
             <div class="col-sm" >

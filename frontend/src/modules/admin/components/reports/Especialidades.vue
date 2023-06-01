@@ -8,13 +8,15 @@
             </div>
         </nav>
 
-        <div style="height: 250px; border: 1px solid; border-radius: 10px; background-color: #e1dede; margin-top: 10px;">
+        <div style="height: 250px; border: 1px solid; border-radius: 10px; background-color: #e1dede; margin-top: 10px;" v-if="datos_esp">
             <v-chart class="chart_especialidades" :option="option"/>
         </div>
     </div>
 </template>
 
 <script>
+    import {mapGetters} from 'vuex'
+    import authApi from '@/api/authApi'
     import { use } from 'echarts/core';
     import { CanvasRenderer } from 'echarts/renderers';
     import { PieChart } from 'echarts/charts';
@@ -34,10 +36,30 @@ export default {
     data(){
         return {
             option: null,
+            datos_esp: null
         }
     },
 
-    created() {
+    computed:{
+        ...mapGetters('auth', ['accessToken']),
+    },
+
+    methods: {
+        async get_especialidades(){
+            const {data} = await authApi.get('/reports/especialidades', {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            this.datos_esp = JSON.parse(JSON.stringify(data))
+        }
+    },
+
+    async created(){
+        await this.get_especialidades()
+        
+        if(this.datos_esp) {
         use([CanvasRenderer,
             PieChart,
             TitleComponent,
@@ -58,35 +80,32 @@ export default {
             //},
 
             label: {
-                show: true,
-                color: 'black',
-                formatter(param) {
+                //show: true,
+                //color: 'black',
+                position: 'inside',
+                /*formatter(param) {
                     return '(' + Math.round(param.percent) + '%) ' + param.name ;
-                }
+                }*/
+                formatter: '{c}',
             },
 
             series: [
-            {
-                type: 'pie',
+                {
+                    type: 'pie',
 
-                radius: ['40%', '70%'],
+                    radius: ['40%', '70%'],
 
-                itemStyle: {
-                    borderRadius: 10,
-                    borderColor: '#fff',
-                    borderWidth: 2
-                },
-                
-                data: [
-                    { value: 456, name: 'Especialidad 1' },
-                    { value: 864, name: 'Especialidad 2' },
-                    { value: 145, name: 'Especialidad 3' },
-                    { value: 125, name: 'Especialidad 4' },
-                    { value: 698, name: 'Especialidad 5' }
-                ]
-            }
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    
+                    data: this.datos_esp
+                }
             ]
-};
+        };
+    }
     }    
 }
 </script>
