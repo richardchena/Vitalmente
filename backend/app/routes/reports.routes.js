@@ -37,5 +37,9 @@ router.get('/reports/diagnosticos',
 router.get('/reports/ingreso_egreso_diario',
        passport.authenticate('jwt', {session: false}),
        reports.ingresos_egresos_diario)
+
+router.get('/reports/ingreso_egreso_mensual',
+       passport.authenticate('jwt', {session: false}),
+       reports.ingresos_egresos_mensual)
        
 module.exports = router;

@@ -231,6 +231,15 @@ exports.diagnosticos = async (req, res) => {
 }
 
 exports.ingresos_egresos_diario = async (req, res) => {
+    const mes = req.query.mes
+    let valor;
+
+    if(+mes === 1) {
+        valor = 5
+    } else {
+        valor = 6
+    }
+
     const query = `SELECT 
                         SUM(A.MONTO) AS MONTO,
                         B.DESCRIPCION AS TIPO,
@@ -239,9 +248,29 @@ exports.ingresos_egresos_diario = async (req, res) => {
                         EXTRACT(YEAR FROM A.FECHA_CREACION) AS ANHO
                     FROM MOVIMIENTOS A
                     INNER JOIN TIPO_MOVIMIENTO B ON B.ID = A.TIPO
-                    WHERE A.ESTADO = 'V'
+                    WHERE A.ESTADO = 'V' AND EXTRACT(MONTH FROM A.FECHA_CREACION) = ${valor}
                     GROUP BY TIPO, MES, ANHO, DIA, B.DESCRIPCION
                     ORDER BY DIA, MES, ANHO`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0])
+
+    } catch (error) {
+        res.json(error);
+    }
+}
+
+exports.ingresos_egresos_mensual = async (req, res) => {
+    const query = `SELECT 
+	SUM(A.MONTO) AS MONTO,
+	B.DESCRIPCION AS TIPO,
+	EXTRACT(MONTH FROM A.FECHA_CREACION) AS MES,
+	EXTRACT(YEAR FROM A.FECHA_CREACION) AS ANHO
+FROM MOVIMIENTOS A
+INNER JOIN TIPO_MOVIMIENTO B ON B.ID = A.TIPO
+WHERE A.ESTADO = 'V'
+GROUP BY TIPO, MES, ANHO, B.DESCRIPCION`
 
     try {
         const datos = await db.sequelize.query(query);

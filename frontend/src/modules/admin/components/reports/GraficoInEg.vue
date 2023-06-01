@@ -74,27 +74,40 @@
             ...mapGetters('auth', ['accessToken']),
         },
 
-        /*props: {
-            titulo: {
-                type: String,
-                required: false
-            },
-        },*/
-
         components: {
             VChart
         },
 
         methods: {
-            /*get_saldos(){
-                for (var i = 0; i < 12; i++) {
-                    this.ingresos.push(Math.floor(Math.random() * 100) + 1)
-                    this.egresos.push(Math.floor(Math.random() * 100) + 1)
+            async get_datos_mensual (){
+                const {data} = await authApi.get('/reports/ingreso_egreso_mensual', {
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`
+                    }
+                })
+
+                let a = ['ene', 'feb', 'mar', 'abr', 'may', 'jun']
+                let ing = Array.apply(null, Array(6)).map(Number.prototype.valueOf,0);
+                let egr = Array.apply(null, Array(6)).map(Number.prototype.valueOf,0);
+
+                for (let i = 0; i < data.length; i++) {
+                    if(data[i].tipo === 'Ingreso') {
+                        ing[+data[i].mes - 1] = +data[i].monto
+                    } else {
+                        egr[+data[i].mes - 1] = +data[i].monto
+                    }
                 }
-            },*/
+
+                this.option.xAxis.data = a
+                this.option.series[0].data = ing
+                this.option.series[1].data = egr
+            },
 
             async get_datos(){
                 const {data} = await authApi.get('/reports/ingreso_egreso_diario', {
+                    params: {
+                        mes: this.select_type_mes
+                    },
                     headers: {
                         'Authorization': `Bearer ${this.accessToken}`
                     }
@@ -104,14 +117,28 @@
             },
 
             construir_datos(valores){
-                const diff = intervalToDuration({
-                    start: startOfMonth(new Date()),
-                    end: endOfMonth(new Date())
-                })
+                let diff;
 
-                let dias_ingreso = Array.apply(null, Array(diff.days)).map(Number.prototype.valueOf,0);
-                let dias_egreso = Array.apply(null, Array(diff.days)).map(Number.prototype.valueOf,0);
-                let dias_encabezado = Array.from({length: diff.days}, (x,i) => i+1);
+                if(+this.select_type_mes === 1){
+                    diff = intervalToDuration({
+                        start: startOfMonth(new Date(2023, 5 - 1, 1)),
+                        end: endOfMonth(new Date(2023, 5 - 1, 1))
+                    })
+                } else {
+                    diff = intervalToDuration({
+                        start: startOfMonth(new Date(2023, 6 - 1, 1)),
+                        end: endOfMonth(new Date(2023, 6 - 1, 1))
+                    })
+                }
+
+                /*const diff = intervalToDuration({
+                        start: startOfMonth(new Date()),
+                        end: endOfMonth(new Date())
+                })*/
+
+                let dias_ingreso = Array.apply(null, Array(diff.days + 1)).map(Number.prototype.valueOf,0);
+                let dias_egreso = Array.apply(null, Array(diff.days + 1)).map(Number.prototype.valueOf,0);
+                let dias_encabezado = Array.from({length: diff.days + 1}, (x,i) => i+1);
 
                 for (let i = 0; i < valores.length; i++) {
                     if (valores[i].tipo === 'Ingreso') dias_ingreso[+valores[i].dia - 1] = +valores[i].monto
@@ -133,8 +160,22 @@
         },
 
         watch: {
-            select_type(){
-                //alert(this.select_type)
+            async select_type(){
+                if(+this.select_type === 2) {
+                    await this.get_datos()
+                    this.option.xAxis.data = this.encabezado
+                    this.option.series[0].data = this.ingresos
+                    this.option.series[1].data = this.egresos
+                } else {
+                    this.get_datos_mensual()
+                }
+            },
+
+            async select_type_mes(){
+                await this.get_datos()
+                this.option.xAxis.data = this.encabezado
+                this.option.series[0].data = this.ingresos
+                this.option.series[1].data = this.egresos
             }
         },
 
@@ -147,6 +188,8 @@
         },
 
         created(){
+            //this.get_datos_mensual()
+
             use([
                 CanvasRenderer,
                 //PieChart,

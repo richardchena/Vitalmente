@@ -9,7 +9,7 @@
         </nav>
 
         <div style="height: 250px; border: 1px solid; border-radius: 10px; background-color: #e1dede; margin-top: 10px;" v-if="datos_esp">
-            <v-chart class="chart_especialidades" :option="option"/>
+            <v-chart class="chart_especialidades" :option="option_esp"/>
         </div>
     </div>
 </template>
@@ -35,13 +35,18 @@ export default {
 
     data(){
         return {
-            option: null,
-            datos_esp: null
+            option_esp: {},
+            datos_esp: [{value: 0, name: 'prueba'}]
         }
     },
 
     computed:{
         ...mapGetters('auth', ['accessToken']),
+    },
+
+    async mounted(){
+        const d = await this.get_especialidades();
+        this.option_esp.series[0].data = d
     },
 
     methods: {
@@ -52,14 +57,13 @@ export default {
                 }
             })
 
-            this.datos_esp = JSON.parse(JSON.stringify(data))
+            return data
         }
     },
 
     async created(){
-        await this.get_especialidades()
+        //await this.get_especialidades()
         
-        if(this.datos_esp) {
         use([CanvasRenderer,
             PieChart,
             TitleComponent,
@@ -68,26 +72,34 @@ export default {
             GridComponent 
         ]);
 
-        this.option = {
+        this.option_esp = {
             tooltip: {
                 trigger: 'item'
             },
 
-            //legend: {
-                /*left: 'left',
-                orient: 'vertical',*/
-                //top: 'bottom'
-            //},
-
             label: {
-                //show: true,
-                //color: 'black',
-                position: 'inside',
-                /*formatter(param) {
-                    return '(' + Math.round(param.percent) + '%) ' + param.name ;
-                }*/
-                formatter: '{c}',
+                        show: true,
+                        color: 'black',
+                        position: 'inner',
+                        formatter(param) {
+                            return '(' + Math.round(param.percent) + '%) ' + param.name ;
+                        }
+                        //formatter: '{c}',
             },
+
+            /*legend: {
+                left: 'left',
+                orient: 'center',
+                top: 'bottom'
+            },*/
+
+            /*emphasis: {
+                label: {
+                    show: true,
+                    fontSize: 40,
+                    fontWeight: 'bold'
+                }
+            },*/
 
             series: [
                 {
@@ -105,7 +117,6 @@ export default {
                 }
             ]
         };
-    }
     }    
 }
 </script>

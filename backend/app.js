@@ -12,7 +12,7 @@ const corsOptions = {
     origin: ['http://localhost:82',
     'http://localhost:8080',
     'http://localhost:80',
-    'http://localhost:85',
+    'http://localhost:81',
     'http://localhost',
     'https://clinicavitalmente.com',
     'https://www.clinicavitalmente.com']
@@ -29,7 +29,7 @@ require('./app/controllers/passport')
 
 // Definición de ruta principal y sucundarias
 app.use('/api/v1', api);
-app.use('*', page404.page404)
+//app.use('*', page404.page404)
 
 
 module.exports = app;
