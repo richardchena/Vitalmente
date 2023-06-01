@@ -51,6 +51,12 @@ router.get('/movimientos/saldo',
     mov.obtener_saldo
 );
 
+router.get('/movimientos/saldo/tipos',
+    passport.authenticate('jwt', {session: false}),
+    checkRoles('admin'),
+    mov.obtener_saldo_por_tipo
+);
+
 router.get('/movimientos/ingreso_egreso',
     passport.authenticate('jwt', {session: false}),
     checkRoles('admin'),

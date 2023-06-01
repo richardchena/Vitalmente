@@ -300,3 +300,50 @@ exports.distinct_cat_mov = async (req, res) => {
         res.json(error);
     }
 }
+
+exports.obtener_saldo_por_tipo = async (req, res) => {
+    const query = `WITH INGRESO AS (
+        SELECT 
+            1 AS COD, SUM(MONTO) AS INGRESO
+        FROM MOVIMIENTOS
+        WHERE ESTADO = 'V' AND TIPO = 1 AND MEDIO_PAGO = 'EF'
+    ),
+    
+    EGRESO AS (
+        SELECT 
+            1 AS COD, SUM(MONTO) AS EGRESO
+        FROM MOVIMIENTOS
+        WHERE ESTADO = 'V' AND TIPO = 2 AND MEDIO_PAGO = 'EF'
+    ),
+    
+    INGRESO_CU AS (
+        SELECT 
+            1 AS COD, SUM(MONTO) AS INGRESO
+        FROM MOVIMIENTOS
+        WHERE ESTADO = 'V' AND TIPO = 1 AND MEDIO_PAGO = 'CU'
+    ),
+    
+    EGRESO_CU AS (
+        SELECT 
+            1 AS COD, SUM(MONTO) AS EGRESO
+        FROM MOVIMIENTOS
+        WHERE ESTADO = 'V' AND TIPO = 2 AND MEDIO_PAGO = 'CU'
+    )
+    
+    
+    SELECT COALESCE(B.INGRESO, 0) -  COALESCE(A.EGRESO, 0) AS SALDO, 'EFECTIVO' AS TIPO
+    FROM EGRESO A
+    INNER JOIN INGRESO B ON B.COD = A.COD
+    UNION
+    SELECT COALESCE(B.INGRESO, 0) -  COALESCE(A.EGRESO, 0) AS SALDO, 'CUENTA' AS TIPO
+    FROM EGRESO_CU A
+    INNER JOIN INGRESO_CU B ON B.COD = A.COD;` 
+
+    try {
+        const data = await db.sequelize.query(query);
+        res.json(data[0]);
+
+    } catch (error) {
+        res.json(error);
+    }
+}

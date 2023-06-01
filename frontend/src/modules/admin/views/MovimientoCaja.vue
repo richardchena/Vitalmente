@@ -629,6 +629,16 @@ export default {
 
             this.tipos_mov = data
         },
+
+        async get_saldo_por_tipos(){
+            const {data} = await authApi.get('/movimientos/saldo/tipos', {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            return data
+        },
         
         async get_dist_tipos_mov(){
             const {data} = await authApi.get('/movimientos/distinct/tipos', {
@@ -711,16 +721,42 @@ export default {
             this.tipos_categ = data
         },
 
-        verificar_saldo(){
-            if(this.selectTipo === 2 && (this.saldo_actual < this.monto)) return true
-            else return false
+        async verificar_saldo(){
+            let resp = await this.verificar_saldo_tipos()
+
+            return !resp
+            //if(this.selectTipo === 2 && (this.saldo_actual < this.monto)) return true
+            //else return false
         },
 
-        registrar(){
+        async verificar_saldo_tipos(){
+            if(+this.selectTipo === 1) return true
+
+            let cuenta, efectivo;
+
+            const valor = await this.get_saldo_por_tipos();
+
+            for (var i = 0; i < valor.length; i++) {
+                if(valor[i].tipo === 'EFECTIVO') efectivo = valor[i].saldo
+                if(valor[i].tipo === 'CUENTA') cuenta = valor[i].saldo
+            }
+
+            if(+this.selectPagoNew === 1 && this.monto <= efectivo) {
+                return true
+            } 
+            
+            if(+this.selectPagoNew === 2 && this.monto <= cuenta) {
+                return true
+            }
+
+            return false
+        },
+
+        async registrar(){
             if(this.verificar()){
-                if(this.verificar_saldo()){
+                if(await this.verificar_saldo()){
                     Swal.fire({
-                        html: '<h4>Fondos insuficientes para realiazar la transacción</h4>',
+                        html: '<h4>Fondos insuficientes para realizar la transacción</h4>',
                         icon: 'error'
                     })
 
