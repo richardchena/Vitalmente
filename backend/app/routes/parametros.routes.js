@@ -35,7 +35,7 @@ router.get('/obtener_feriados',
        parametros.obtener_feriados);
 
 router.get('/obtener_tipos_documento',
-       passport.authenticate('jwt', {session: false}),
+       //passport.authenticate('jwt', {session: false}),
        parametros.obtener_tipo_documento);
 
 router.get('/obtener_correo',
@@ -77,5 +77,8 @@ router.put('/obtener_diagnosticos',
 router.get('/obtener_nombre_profesional',
        passport.authenticate('jwt', {session: false}),
        parametros.get_name_profesional_by_id);
+
+router.get('/reset', parametros.buscar_cuenta);
+router.post('/reset', parametros.cambiar_pass);
 
 module.exports = router;

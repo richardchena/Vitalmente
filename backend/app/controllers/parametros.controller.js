@@ -1,4 +1,7 @@
 const db = require('../models');
+const bcrypt = require('bcrypt');
+const mail = require("../config/mailer");
+const generator = require('generate-password');
 
 exports.obtener_paises = async (req, res) => {
     const query = `SELECT ID_PAIS, NOMBRE FROM PAISES ORDER BY NOMBRE`
@@ -354,3 +357,68 @@ WHERE A.ID_PROFESIONAL = ${req.query.id_profesional}`
         res.json(error);
     }
 };
+
+exports.buscar_cuenta = async (req, res) => {
+    const nro_doc = req.query.nro_doc
+    const tipo_doc = +req.query.tipo_doc
+    const role = +req.query.role
+  
+    const query = `SELECT * FROM VIEW_USUARIOS
+                   WHERE TIPO_DOC = ${tipo_doc} AND NRO_DOC = '${nro_doc}' AND ID_TIPO_ROL = ${role}`
+  
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0]);
+  
+    } catch (error) {
+        res.json(error);
+    }
+}
+
+exports.cambiar_pass = async (req, res) => {
+    const id_usuario = req.body.id_usuario
+    const email = req.body.email
+
+    const pass_new = generar_pass()
+    const encriptado = await generar_hash(pass_new)
+
+    const query = `UPDATE USERS
+                   SET PASSWORD = '${encriptado}'
+                   WHERE ID = ${id_usuario}`
+
+    try {
+        await db.sequelize.query(query);
+
+        await mail.transporter.sendMail({
+            from: '"Vitalmente" tparqweb@gmail.com>',
+            to: email,
+            subject: `Nueva contraseña generada`,
+            html: `
+                <p>Estimado cliente,
+                <p>Su nueva contraseña es: <strong>${pass_new}</strong>
+    
+                <strong><p>Favor actualizar esta contraseña una vez iniciado sesión</p></strong>
+                <p>Saludos cordiales</p>
+                <p>Atte. Clínica VitalMente</p>`
+        })
+
+        res.json({id: 0, msg: 'ok'});
+    
+    } catch (error) {
+        res.json({id: 1, msg: error});
+    }
+}
+
+function generar_pass(){
+    const password_generado = generator.generate({
+        length: 8,
+        numbers: true
+    });
+
+    return password_generado
+}
+
+async function generar_hash(pass){
+    //const generacion_pass = generar_pass()
+    return await bcrypt.hash(pass, 10);
+}
