@@ -18,7 +18,8 @@
                 </div>
             </div>
         </nav>
-        <div class="contenedor">
+
+        <div class="contenedor" v-if="bandera">
             <br>
             <div class="container">
                 <div class="row">
@@ -94,6 +95,17 @@
                 </div>
             </div>
         </div>
+
+        <div class="contenedor text-center" style="margin-top: 30px; margin-bottom: -15px;" v-else>
+            <img src="@/assets/loading.gif" 
+                alt="persona" 
+                class="rounded-circle"
+                height="30"
+                style="margin-right: 10px;"
+            >
+            <strong style="margin-top: 10px"><label>Cargando datos... Espere por favor</label></strong>
+        </div>
+
         <br>
         <hr>
     </div>
@@ -106,7 +118,7 @@ import Swal  from 'sweetalert2'
 
 export default {
     created() {
-        document.title = 'Modificar'
+        document.title = 'Modificar datos contribuyente'
         this.datos_iniciales();
     },
 
@@ -116,6 +128,8 @@ export default {
 
     methods: {
         async datos_iniciales(){
+            this.bandera = false
+            await new Promise(resolve => setTimeout(resolve, 500));
             await this.get_departamentos();
 
             const {data} = await authApi.get('/pagos/contribuyente/modificar?id=' + this.$route.params.id, {
@@ -141,6 +155,8 @@ export default {
             await this.get_ciudades();
 
             this.selectedCiu = data.ubicacion
+
+            this.bandera = true
         },
 
         regresar_atras(){
@@ -244,6 +260,7 @@ export default {
 
     data(){
         return {
+            bandera: null,
             razon: null,
             alias: null,
             ruc: null,

@@ -138,6 +138,7 @@ exports.lista_timbrados = async (req, res) => {
                         LPAD(CAST(A.ESTABLECIMINETO AS VARCHAR), 3, '0') AS EST,
                         LPAD(CAST(A.EXPEDICION AS VARCHAR), 3, '0') AS EXP,
                         NRO_DESDE::VARCHAR || ' - ' || NRO_HASTA::VARCHAR AS RANGO,
+                        A.ULT_NRO_EMITIDO,
                         TO_CHAR(FECHA_DESDE, 'dd/mm/YYYY') AS FECHA_DESDE,
                         TO_CHAR(FECHA_HASTA, 'dd/mm/YYYY') AS FECHA_HASTA,
                         CASE A.STATUS

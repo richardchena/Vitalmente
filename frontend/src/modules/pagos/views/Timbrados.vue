@@ -11,79 +11,126 @@
                 </button>
 
                 <div class="form-group" style="margin-right: 12px">
-                    <input type="text" class="form-control" id="buscador" style="width: 225px" placeholder='&#x1F50E;&#xFE0E; Realiza una búsqueda aquí'>
+                    <input v-model="filtro" type="text" class="form-control" id="buscador" style="width: 225px" placeholder='&#x1F50E;&#xFE0E; Realiza una búsqueda aquí'>
                 </div>
             </div>
         </nav>
 
-        <div class="contendor_tabla">
-            <table class="table table-hover table-cell-border table-striped" id="timbrados">
-                <thead>
-                <tr>
-                    <th>Contribuyente</th>
-                    <th>Número</th>
-                    <th>Tipo de Comprobante</th>
-                    <th>C.E.</th>
-                    <th>P.E.</th>
-                    <th>Rango</th>
-                    <th>Inicio vigencia</th>
-                    <th>Fin vigencia</th>
-                    <th>Estado</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="t in timbrados" :key="t.id" :id="t.id">
-                    <td>{{t.ruc}}</td>
-                    <td>{{t.nro_timbrado}}</td>
-                    <td>{{t.tipo_doc}}</td>
-                    <td>{{t.est}}</td>
-                    <td>{{t.exp}}</td>
-                    <td>{{t.rango}}</td>
-                    <td>{{t.fecha_desde}}</td>
-                    <td>{{t.fecha_hasta}}</td>
-                    <td>{{t.estado}}</td>
-                    <th></th>
-                </tr>
-                </tbody>
-            </table>
+        <div class="container" style="margin-top: 10px;">
+            <VueGoodTable
+                :columns="columns"
+                :rows="timbrados"
+                styleClass="vgt-table condensed"
+                :pagination-options="{
+                    enabled: true,
+                    mode: 'pages',
+                    perPageDropdownEnabled: false,
+                    perPage: 9,
+                    nextLabel: 'Siguiente',
+                    ofLabel: 'de',
+                    pageLabel: 'Pagina',
+                    prevLabel: 'Anterior',    
+                }"
+                :search-options="{
+                    enabled: false,
+                    externalQuery: filtro
+                }"
+            >
+                <template #emptystate>
+                    <div class="text-center">{{texto_tabla}}</div>
+                </template>
+
+                <template #table-row="props">
+                    <span v-if="props.column.field == 'controles'">
+                        <button class="btn btn-info boton" @click="modificar(props.row.id)"><i class="fas fa-pencil-alt"></i></button>
+                        <button class="btn btn-danger boton" @click="eliminar(props.row.nro_timbrado, props.row.id)"><i class="fas fa-trash-alt"></i></button>
+                    </span>
+
+                    <span v-else>
+                        {{props.formattedRow[props.column.field]}}
+                    </span>
+                </template>
+            </VueGoodTable>
         </div>
     </div>
 </template>
 
 <script>
-//Bootstrap and jQuery libraries
-import 'jquery/dist/jquery.min.js';
-//Datatable Modules
-import "datatables.net-dt/js/dataTables.dataTables"
-import "datatables.net-dt/css/jquery.dataTables.min.css"
-import * as $ from 'jquery';
 import {mapGetters} from 'vuex'
 import authApi from '@/api/authApi'
 import Swal  from 'sweetalert2'
+
+import { VueGoodTable } from 'vue-good-table-next';
+import 'vue-good-table-next/dist/vue-good-table-next.css'
+
 
 export default {
     computed:{
         ...mapGetters('auth', ['accessToken'])
     },
 
+    components: {
+        VueGoodTable
+    },
+
     data() {
         return{
-            /*timbrados: [{ruc: '80022106-9',
-                        nro: 15673870, 
-                        tipo: 'FACTURA',
-                        ce: '005',
-                        pe: '018',
-                        rango: '01-1000',
-                        inicio: '06/06/2022',
-                        fin: '06/06/2023',
-                        estado: 'ACTIVO'}]*/
-            timbrados: null
+            filtro: null,
+            timbrados: [],
+            texto_tabla: null,
+            columns: [
+                {
+                    label: 'Contribuyente',
+                    field: 'ruc'
+                },
+                {
+                    label: 'Número',
+                    field: 'nro_timbrado'
+                },
+                {
+                    label: 'Tipo de Comprobante',
+                    field: 'tipo_doc'
+                },
+                {
+                    label: 'C.E.',
+                    field: 'est'
+                },
+                {
+                    label: 'P.E.',
+                    field: 'exp'
+                },
+                {
+                    label: 'Rango',
+                    field: 'rango'
+                },
+                {
+                    label: 'Ult. Emitido',
+                    field: 'ult_nro_emitido'
+                },
+                {
+                    label: 'Inicio vigencia',
+                    field: 'fecha_desde'
+                },
+                {
+                    label: 'Fin vigencia',
+                    field: 'fecha_hasta'
+                },
+                {
+                    label: 'Estado',
+                    field: 'estado'
+                },
+                {
+                    label: 'Controles',
+                    field: 'controles',
+                    sortable: false
+                },
+            ]
         }   
     },
 
     created() {
         document.title = 'Timbrados'
+        this.get_datos()
     },
 
     methods: {
@@ -113,7 +160,7 @@ export default {
             try {
                 const {data} = await authApi.delete(`/pagos/timbrado?id=${id}`)
                 if (data.id === 0){
-                    this.$router.go();
+                    this.get_datos();
                 } else {
                     Swal.fire({
                     html: "<h4>Hubo un error inesperado</h4>",
@@ -127,6 +174,8 @@ export default {
         },
 
         async get_datos(){
+            this.timbrados = []
+            this.texto_tabla = 'Cargando lista... Espere por favor'
             const {data} = await authApi.get('/pagos/timbrado', {
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`
@@ -134,80 +183,13 @@ export default {
             })
 
             this.timbrados = data
+            this.texto_tabla = 'No hay informacion disponible'
+
         },
 
         modificar(id){
             this.$router.push({name: 'modificar-timbrado', params: {id}})
         }
-    },
-
-    async mounted(){
-        await this.get_datos();
-        const eliminar = this.eliminar;
-        const modificar = this.modificar;
-        $(document).ready(function(){
-            let tabla = $('#timbrados').dataTable({
-                responsive: true,
-                destroy: true,
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json"
-                },
-                fixedColumns: true,
-                pageLength: 8,
-                lengthChange: false,
-                searching: true,
-                searchDelay: 0,
-                dom: 'lrtip',
-                order: [],
-                columnDefs: [
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"}
-                ],
-                columns:[
-                {"className": "dt-center", "targets": "_all"},
-                {"className": "dt-center", "targets": "_all"},
-                {"className": "dt-center", "targets": "_all"},
-                {"className": "dt-center", "targets": "_all"},
-                {"className": "dt-center", "targets": "_all"},
-                {"className": "dt-center", "targets": "_all"},
-                {"className": "dt-center", "targets": "_all"},
-                {"className": "dt-center", "targets": "_all"},
-                {"className": "dt-center", "targets": "_all"},
-                    {
-                        j: null, 
-                        title: 'Controles',
-                        orderable: false,
-                        searchable: false,
-                        //wrap: true, 
-                        render: function () {
-                            return `
-                                <button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>
-                                <button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
-                                `
-                        }
-                    }
-                ]
-            }).api();
-
-            $('#buscador').on('keyup change', function(){
-                tabla.search($(this).val()).draw();
-            });
-
-            $(".btn-danger").click(function(){
-                eliminar($(this).parents("tr").find("td").eq(1).html(), $(this).parents("tr")[0].id);
-            });
-
-            $(".btn-info").click(function(){
-                modificar($(this).parents("tr")[0].id);
-            });
-        })
     },
 }
 </script>

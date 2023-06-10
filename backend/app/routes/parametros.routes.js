@@ -78,6 +78,10 @@ router.get('/obtener_nombre_profesional',
        passport.authenticate('jwt', {session: false}),
        parametros.get_name_profesional_by_id);
 
+router.get('/obtener_nombre_paciente',
+       passport.authenticate('jwt', {session: false}),
+       parametros.get_name_paciente_by_id);
+
 router.get('/reset', parametros.buscar_cuenta);
 router.post('/reset', parametros.cambiar_pass);
 

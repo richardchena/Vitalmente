@@ -358,6 +358,24 @@ WHERE A.ID_PROFESIONAL = ${req.query.id_profesional}`
     }
 };
 
+exports.get_name_paciente_by_id = async (req, res) => {
+    const query = `SELECT 
+                    A.ID_PACIENTE,
+                    INITCAP(F.PRIMER_NOMBRE || ' ' || COALESCE(F.SEGUNDO_NOMBRE, '') || ' ' || COALESCE(F.TERCER_NOMBRE, '')  || ' ' || F.PRIMER_APELLIDO || ' ' || COALESCE(F.SEGUNDO_APELLIDO, '')) PACIENTE
+                   FROM PACIENTES A
+                   INNER JOIN PERSONAS F ON F.ID_PERSONA = A.ID_PERSONA
+                   WHERE A.ID_PACIENTE = ${req.query.id_paciente}`
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json(datos[0][0]);
+
+    } catch (error) {
+        res.json(error);
+    }
+};
+
+
 exports.buscar_cuenta = async (req, res) => {
     const nro_doc = req.query.nro_doc
     const tipo_doc = +req.query.tipo_doc

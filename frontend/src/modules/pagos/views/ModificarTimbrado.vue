@@ -19,7 +19,7 @@
             </div>
         </nav>
 
-        <div class="contenedor">
+        <div class="contenedor" v-if="bandera">
             <br>
             <div class="container">
                 <div class="row">
@@ -84,6 +84,16 @@
             </div>
             <hr>
         </div>
+
+        <div class="contenedor text-center" style="margin-top: 30px" v-else>
+            <img src="@/assets/loading.gif" 
+                alt="persona" 
+                class="rounded-circle"
+                height="30"
+                style="margin-right: 10px;"
+            >
+            <strong style="margin-top: 10px"><label>Cargando datos... Espere por favor</label></strong>
+        </div>
     </div>
 </template>
 
@@ -108,6 +118,7 @@ export default {
 
     data(){
         return {
+            bandera: null,
             rucs: [{id: null, ruc: '--Selecciona un contribuyente--'}],
             selectedRuc: null,
             fecha_inicio: null,
@@ -128,6 +139,8 @@ export default {
 
     methods: {
         async datos_iniciales(){
+            this.bandera = false
+            await new Promise(resolve => setTimeout(resolve, 500));
             const {data} = await authApi.get('/pagos/timbrado/modificar?id=' + this.$route.params.id, {
                 headers: {
                     'Authorization': `Bearer ${this.accessToken}`
@@ -147,6 +160,8 @@ export default {
             this.rango_final = data.nro_hasta
             this.inicio = data.fecha_desde
             this.fin = data.fecha_hasta
+
+            this.bandera = true
         },
 
         regresar_atras(){

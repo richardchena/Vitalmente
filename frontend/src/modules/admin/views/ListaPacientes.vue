@@ -72,14 +72,20 @@
                 </template>
 
                 <template #table-row="props">
-                    <span v-if="props.column.field == 'controles'">
+                    <div v-if="props.column.field == 'controles' && this.role === 1">
                         <button class="btn btn-success boton" title="Reserva" @click="funcion_reserva(props.row.id)"><i class="fas fa-calendar-plus"></i></button>
                         <button class="btn btn-secondary boton" title="Ver expediente" @click="expediente(props.row.id)"><i class="far fa-file-alt"></i></button>
                         <button class="btn btn-info boton" title="Modificar registro" @click="modificar(props.row.id)"><i class="fas fa-pencil-alt"></i></button>
                         <button v-if="props.row.status === 'Activa'" class="btn btn-warning boton" title="Desactivar cuenta" @click="activar_desactivar(props.row.id)"><i class="fas fa-user"></i></button>
                         <button v-else class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user-slash" @click="activar_desactivar(props.row.id)"></i></button>
                         <button class="btn btn-danger boton" title="Eliminar" @click="eliminar(props.row.id, props.row.name)"><i class="fas fa-trash-alt"></i></button>
-                    </span>
+                    </div>
+
+                    <div v-else-if="props.column.field == 'controles' && this.role === 2">
+                        <button class="btn btn-success boton" title="Nueva consulta" @click="registrar_consulta(props.row.id)"><i class="fas fa-notes-medical"></i></button>
+                        <button class="btn btn-secondary boton" title="Ver expediente" @click="expediente(props.row.id)"><i class="far fa-file-alt"></i></button>
+                        <button class="btn btn-warning boton" title="Modificar registro" @click="modificar(props.row.id)"><i class="fas fa-pencil-alt"></i></button>
+                    </div>
 
                     <span v-else>
                         {{props.formattedRow[props.column.field]}}
@@ -162,6 +168,19 @@ export default {
     },
 
     methods: {
+        registrar_consulta(id){
+                if(this.role === 1) {
+                    this.$router.push({name: 'datos-historial-consultas-admin', params:{
+                        id
+                    }})
+                } else {
+                    this.$router.push({name: 'datos-historial-consultas-prof', params:{
+                        id, id_esp: 0
+                    }})
+                }
+
+            },
+
         modificar(id){
             this.id_user_mod = +id;
             this.$refs.boton.click();

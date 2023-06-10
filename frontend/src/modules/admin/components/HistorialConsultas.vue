@@ -40,6 +40,10 @@
             </div>
         </nav>
 
+        <div class="text-center" style="margin-top: 15px; margin-bottom: 0px;" v-show="nombre_paciente">
+            <i>Paciente: {{ nombre_paciente }}</i>
+        </div>
+
         <div class="container" style="margin-top: 10px;">
             <VueGoodTable
                 :columns="columns"
@@ -91,6 +95,7 @@
     export default {
         data: function() {
             return {
+                nombre_paciente: null,
                 id: this.$route.params.id,
                 filtro: null,
                 datos: [],
@@ -100,10 +105,6 @@
                 fecha_mostrar: null,
 
                 columns: [
-                    /*{
-                        label: 'ID',
-                        field: 'id'
-                    },*/
                     {
                         label: 'Fecha y hora',
                         field: 'fecha'
@@ -144,9 +145,28 @@
 
         created(){
             document.title = 'Historial de consultas'
+            this.obtener_nombre_paciente()
         },
 
         methods:{
+            async obtener_nombre_paciente(){
+                const {data} = await authApi.get('/obtener_nombre_paciente?id_paciente=' + this.$route.params.id, {
+                    headers: {
+                        'Authorization': `Bearer ${this.accessToken}`
+                    }
+                })
+
+                let nombre;
+
+                if(!data){
+                    this.nombre_paciente = 'No se puede obtener los datos del paciente :('
+
+                } else {
+                    nombre = data.paciente.split(' ').filter((item) => item.length !== 0).join(' ')
+                    this.nombre_paciente = nombre
+                }
+            },
+
             iniciar(){
                 if(isNaN(this.$route.params.id)) {
                     Swal.fire({
