@@ -76,4 +76,9 @@ router.put('/reservas/agendas/paciente/cancelar',
     controller.cancelar_cita_paciente
 );
 
+router.put('/reservas/agendas/paciente/cancelar_admin',
+    passport.authenticate('jwt', {session: false}),
+    controller.cancelar_cita_paciente_admin
+);
+
 module.exports = router;

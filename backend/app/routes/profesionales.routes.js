@@ -72,6 +72,11 @@ router.get('/profesionales/obtener_id',
     docs.obtener_id_profesional
 );
 
+router.get('/profesionales/agendas/validar',
+    passport.authenticate('jwt', {session: false}),
+    docs.validar_agenda_nuevo
+);
+
 router.delete('/profesionales/eliminar_agenda',
     passport.authenticate('jwt', {session: false}),
     docs.eliminar_agenda

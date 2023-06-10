@@ -33,9 +33,9 @@
                 </div>
             </div>
             <hr style="margin-top: 5px">
-            <div class="container">
+            <div class="container" v-show="bandera">
                 <div class="row">
-                    <div class="d-flex col">
+                    <div class="d-flex col" v-show="profesionales">
                         <strong><p>Profesional</p></strong>
                         <select v-model="selectProfesional" class="form-select" style="height: 33px" @change="cambiar_profesional">
                             <option 
@@ -85,12 +85,23 @@
                     </div>
                 </div>
             </div>
+
+            <div class="container text-center" v-show="!bandera">
+                <img src="@/assets/loading.gif" 
+                    alt="persona" 
+                    class="rounded-circle"
+                    height="30"
+                    style="margin-right: 10px;"
+                >
+                <strong style="margin-top: 10px"><label>Cargando... Espere por favor</label></strong>
+            </div>
+
             <hr style="margin-top: 6px">
             <TablaFechas
                 :id_paciente=+nro_exp
-                :id_profesional=selectProfesional
-                :id_especialidad=selectEspecialidad
-                :id_turno=selectTurno
+                :id_profesional=+selectProfesional
+                :id_especialidad=+selectEspecialidad
+                :id_turno=+selectTurno
                 :id_fecha=selectFecha
             />
         </div>
@@ -104,26 +115,20 @@ import Swal  from 'sweetalert2'
 import authApi from '@/api/authApi'
 
 export default {
-    created(){
+    async created(){
         document.title = 'Reservar turno';
-    },
 
-    //Cuando esta activado el Keep
-    /*async activated () {
         await this.validar_role();
         this.valores_iniciales();
         this.iniciar();
         await this.obtener_datos_paciente();
         this.validar_paciente();
         await this.obtener_datos_lista_desplegable();
-    },*/
-
-    /*deactivated(){
-        console.log('Desactivado');
-    },*/
+    },
 
     data(){
         return{
+            bandera: null,
             nombre: null,
             nro_exp: this.$route.params.id_paciente,
             nro_doc: null,
@@ -139,15 +144,6 @@ export default {
             selectEspecialidad: 0,
             selectFecha: 0
         }
-    },
-
-    async mounted(){
-        await this.validar_role();
-        this.valores_iniciales();
-        this.iniciar();
-        await this.obtener_datos_paciente();
-        this.validar_paciente();
-        await this.obtener_datos_lista_desplegable();
     },
 
     components: {
@@ -211,6 +207,7 @@ export default {
         },
 
         async obtener_datos_lista_desplegable(){
+            this.bandera = false;
             //PARA PROFESIONALES
             const {data} = await authApi.get('/reservas/v2/distinct', {
                 params: {
@@ -233,6 +230,8 @@ export default {
             await this.lista_turnos();
             await this.lista_especialidades();
             await this.lista_fechas();
+
+            this.bandera = true
         },
 
         async cambiar_profesional(){

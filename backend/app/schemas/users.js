@@ -15,7 +15,10 @@ const cod_diagnostico = joi.number().integer().required();
 
 //EXTRAS PACIENTE
 const lugar_residencia = joi.number().integer().min(0).max(9999).required();
-const direccion = joi.string().min(2).max(200).required();
+const direccion = joi.string().min(2).max(200).required().messages({
+  'string.min': `"Dirección" debe tener una longitud mínima de {#limit} caracteres`,
+});
+
 const tipo_doc = joi.number().integer().required();
 
 const telf_numb = joi.string().regex(/^[0-9]{4}-[0-9]{3}-[0-9]{3}$/).required().messages({
@@ -26,16 +29,35 @@ const telf_numb = joi.string().regex(/^[0-9]{4}-[0-9]{3}-[0-9]{3}$/).required().
 });
 
 //DATOS DEL USUARIO
-const username = joi.string().min(3).required();
+const username = joi.string().min(3).required().messages({
+  'string.min': `"Username" debe tener una longitud mínima de {#limit} caracteres`,
+});
+
+
 const email = joi.string().email().required();
 const role = joi.number().integer().min(1).max(3).required();
 
 //DATOS DE LA PERSONA
-const pri_nombre = joi.string().min(2).max(100).required();
-const seg_nombre = joi.string().min(2).max(100);
-const ter_nombre = joi.string().min(2).max(100);
-const pri_apellido = joi.string().min(2).max(100).required();
-const seg_apellido = joi.string().min(2).max(100);
+const pri_nombre = joi.string().min(2).max(100).required().messages({
+  'string.min': `"Primer Nombre" debe tener una longitud mínima de {#limit} caracteres`,
+});
+
+const seg_nombre = joi.string().min(2).max(100).messages({
+  'string.min': `"Segundo Nombre" debe tener una longitud mínima de {#limit} caracteres`,
+});
+
+const ter_nombre = joi.string().min(2).max(100).messages({
+  'string.min': `"Tercer Nombre" debe tener una longitud mínima de {#limit} caracteres`,
+});
+
+const pri_apellido = joi.string().min(2).max(100).required().messages({
+  'string.min': `"Primer Apellido" debe tener una longitud mínima de {#limit} caracteres`,
+});
+
+const seg_apellido = joi.string().min(2).max(100).messages({
+  'string.min': `"Segundo Apellido" debe tener una longitud mínima de {#limit} caracteres`,
+});
+
 const fec_nac = joi.date().required();
 //const nac = joi.number().integer().required();
 const nac = joi.number().integer().min(0).max(300).required();
@@ -47,7 +69,9 @@ const nro_doc = joi.string().min(1).max(50).required();
 const reg = joi.string().min(1).max(100).required();
 
 //DATOS DEL PACIENTE
-const ocu = joi.string().min(2).max(100).required();
+const ocu = joi.string().min(2).max(100).required().messages({
+  'string.min': `"Ocupación" debe tener una longitud mínima de {#limit} caracteres`,
+});
 
 const crear_usuario = joi.object({
   //USER

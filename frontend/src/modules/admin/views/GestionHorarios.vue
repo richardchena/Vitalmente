@@ -80,9 +80,9 @@
 
         <i><p class="text-center">{{msg}}</p></i>
 
-        <hr>
+        <hr v-if ="especialidades">
 
-        <div class="container">
+        <div class="container" v-if ="especialidades">
             <table class="table table-hover table-cell-border table-striped" id="tabla">
                 <thead>
                     <tr>
@@ -871,6 +871,16 @@
                 </tbody>
             </table>
         </div>
+
+        <div v-else class="text-center">
+            <img src="@/assets/loading.gif" 
+                alt="persona" 
+                class="rounded-circle"
+                height="30"
+                style="margin-right: 10px;"
+            >
+            <strong style="margin-top: 10px"><label>Cargando... Espere por favor</label></strong>
+        </div>
     </div>
 </template>
 
@@ -891,6 +901,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import { ref } from 'vue';
 import addDays from 'date-fns/addDays';
 import Swal  from 'sweetalert2'
+import format from 'date-fns/format';
 
 export default {
     components: {
@@ -980,8 +991,25 @@ export default {
                 this.$router.push({name: 'agenda-profesional-prof', params: {id_profesional: id_prof}})
             }
         },
-        
+
         async registro_agenda(){
+            const resp = await this.obtener_validacion_fechas_agendas()
+            if(resp.id === 0) {
+                if(resp.cantidad === 0) {
+                    this.registro_agenda_2()
+                } else {
+                    Swal.fire({
+                    html: `<h4>Ya hay una fecha registrada en el rango seleccionado, no pueden solaparse</h4>`,
+                    icon: 'error'})
+                }
+            } else {
+                Swal.fire({
+                html: `<h4>${resp.msg}</h4>`,
+                icon: 'error'})
+            }
+        },
+        
+        async registro_agenda_2(){
             const id_agenda = await this.registro_fechas();
             let resp1, resp2;
 
@@ -1030,6 +1058,21 @@ export default {
                 })
             }
 
+        },
+
+        async obtener_validacion_fechas_agendas(){
+            const {data} = await authApi.get('/profesionales/agendas/validar', {
+                params: {
+                    id_profesional: this.$route.params.id_profesional,
+                    desde: format(this.fecha_inicio, 'yyyy-MM-dd'),
+                    hasta: format(this.fecha_fin, 'yyyy-MM-dd')
+                },
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            return data
         },
 
         async registro_fechas(){

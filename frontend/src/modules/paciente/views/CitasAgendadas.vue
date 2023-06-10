@@ -14,8 +14,39 @@
                 </div>
             </div>
         </nav>
-    <div>
-        <div class="container">
+        <div class="container" style="margin-top: 10px;">
+            <VueGoodTable
+                :columns="columns"
+                :rows="datos"
+                styleClass="vgt-table condensed"
+                :pagination-options="{
+                    enabled: true,
+                    mode: 'pages',
+                    perPageDropdownEnabled: false,
+                    perPage: 9,
+                    nextLabel: 'Siguiente',
+                    ofLabel: 'de',
+                    pageLabel: 'Pagina',
+                    prevLabel: 'Anterior',    
+                }"
+            >
+                <template #emptystate>
+                    <div class="text-center">{{texto_tabla}}</div>
+                </template>
+
+                <template #table-row="props">
+                    <span v-if="props.column.field == 'control'">
+                        <button class="btn btn-info" @click="cancelar_reserva(props.row.id_cita)"><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>
+                    </span>
+
+                    <span v-else>
+                        {{props.formattedRow[props.column.field]}}
+                    </span>
+                </template>
+            </VueGoodTable>
+        </div>
+        
+        <div class="container" v-show="false">
             <table class="table table-hover table-cell-border table-striped" id="tabla">
                 <thead>
                     <tr>
@@ -42,26 +73,59 @@
             </table>
         </div>
     </div>
-    </div>
 </template>
 
 <script>
-//Bootstrap and jQuery libraries
-import 'jquery/dist/jquery.min.js';
-//Datatable Modules
-import "datatables.net-dt/js/dataTables.dataTables"
-import "datatables.net-dt/css/jquery.dataTables.min.css"
-import * as $ from 'jquery';
 import 'bootstrap';
 
 import { mapGetters} from 'vuex'
 import authApi from '@/api/authApi'
 import Swal  from 'sweetalert2'
 
+import { VueGoodTable } from 'vue-good-table-next';
+import 'vue-good-table-next/dist/vue-good-table-next.css'
+
 export default {
+    components: {
+        VueGoodTable
+    },
+
     data(){
         return {
-            datos: null,
+            datos: [],
+
+            texto_tabla: null,
+
+            columns: [
+                {
+                    label: 'Nro. Reserva',
+                    field: 'id_cita'
+                },
+                {
+                    label: 'Paciente',
+                    field: 'paciente'
+                },
+                {
+                    label: 'Fecha Reserva',
+                    field: 'fecha_reserva'
+                },
+                {
+                    label: 'Fecha Turno',
+                    field: 'fecha_turno'
+                },
+                {
+                    label: 'Especialidad',
+                    field: 'especialidad'
+                },
+                {
+                    label: 'Profesional',
+                    field: 'profesional'
+                },
+                {
+                    label: 'Control',
+                    field: 'control'
+                },
+            ]
         }
     },
 
@@ -71,6 +135,7 @@ export default {
     },
 
     async created(){
+        document.title = 'Turnos agendados paciente'
         await this.validar();
     },
 
@@ -105,7 +170,7 @@ export default {
                 if(data.cod === 0){
                     Swal.fire({
                     html: '<h4>¡Cancelado!</h4>',
-                    icon: 'success'}).then(() => { this.$router.go(); });
+                    icon: 'success'}).then(() => { this.obtener_lista() });
                 } else {
                     Swal.fire({
                     html: '<h4>Error desconocido :(</h4>',
@@ -133,6 +198,8 @@ export default {
         },
 
         async obtener_lista(){
+            this.datos = []
+            this.texto_tabla = 'Cargando turnos... Espere por favor'
             const {data} = await authApi.get('/reservas/agendas/paciente', {
                 params: {
                     id_paciente: +this.$route.params.id_paciente
@@ -143,6 +210,7 @@ export default {
             })
 
             this.datos = data
+            this.texto_tabla = 'No hay datos para mostrar'
         },
 
         async obtener_id(){
@@ -162,52 +230,6 @@ export default {
 
     async mounted(){
         await this.obtener_lista();
-        const funcion_cancelar = this.cancelar_reserva;
-
-        $(document).ready(function(){
-            this.tabla = $('#tabla').dataTable({
-                responsive: true,
-                destroy: true,
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json",
-                    emptyTable: "No tiene turnos agendados"
-                },
-                fixedColumns: true,
-                pageLength: 5,
-                lengthChange: false,
-                searching: true,
-                searchDelay: 0,
-                order: [[0, 'asc']],
-                dom: 'lrtip',
-                columns:[
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {
-                        className: "dt-center",
-                        title: 'Control',
-                        orderable: false,
-                        searchable: false,
-                        //wrap: true, 
-                        render: function () {
-                            let cancelar;
-
-                            cancelar = '<button class="btn btn-info boton"><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>';
-
-                            return cancelar;
-                        }
-                    }
-                ]
-            }).api();
-
-            $(".btn-info").click(function(){
-                let index = $(this).parents("tr")[0].id;
-                funcion_cancelar(index);
-            });
-        });
     }
 }
 </script>

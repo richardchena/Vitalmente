@@ -7,180 +7,193 @@
             <strong style="font-size: 25px; margin-left: 20px; margin-top:15px; color: black"><p>Modificando paciente... Aguarde por favor</p></strong>
         </div>
 
-        <strong><p class="text-center">1- Datos Personales</p></strong>
-        <hr>
+        <div v-if="bandera">
+            <strong><p class="text-center">1- Datos Personales</p></strong>
+            <hr>
 
-        <div class="container">
-            <div class="row">
-                <div class="col-sm">
-                    <label for="primer_nombre">Primer nombre <label style="color: red">*</label></label>
-                    <input v-model="pri_nom" type="text" class="form-control" id="primer_nombre" :disabled="this.role !== 1">
-                </div>
-                <div class="col-sm">
-                    <label for="segundo_nombre">Segundo nombre</label>
-                    <input v-model="seg_nom" type="text" class="form-control" id="segundo_nombre" :disabled="this.role !== 1">
-                </div>
-                <div class="col-sm">
-                    <label for="tercer_nombre">Tercer nombre</label>
-                    <input v-model="ter_nom" type="text" class="form-control" id="tercer_nombre" :disabled="this.role !== 1">
-                </div>
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-sm">
-                    <label for="primer_apellido">Primer apellido <label style="color: red">*</label></label>
-                    <input v-model="pri_ape" type="text" class="form-control" id="primer_apellido" :disabled="this.role !== 1">
-                </div>
-                <div class="col-sm">
-                    <label for="segundo_apellido">Segundo apellido</label>
-                    <input v-model="seg_ape" type="text" class="form-control" id="segundo_apellido" :disabled="this.role !== 1">
-                </div>
-                <div class="col-sm-2">
-                    <label for="inputState">Tipo Doc. <label style="color: red">*</label></label>
-                    <select v-model="selectedDoc" class="form-select" :disabled="this.role !== 1">
-                        <option 
-                            v-for="item in tipos_docs" 
-                            :key="item.id"
-                            :value="item.id"
-                        >
-                            {{item.descripcion}}
-                        </option>
-                    </select>
-                </div>
-                <div class="col-sm-2">
-                    <label for="doc">Nro. del doc. <label style="color: red">*</label></label>
-                    <input v-model="nro_doc" type="text" class="form-control" id="doc" placeholder="Nro. de identificación" :disabled="this.role !== 1">
-                </div>
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-sm">
-                    <label for="inputState">Nacionalidad <label style="color: red">*</label></label>
-                    <select v-model="selectedPais" class="form-select" @change="cambiar_pais">
-                        <option 
-                            v-for="item in paises" 
-                            :key="item.id_pais"
-                            :value="item.id_pais"
-                        >
-                            {{item.nombre}}
-                        </option>
-                    </select>
-                </div>
-                <div class="col-sm">
-                    <label for="inputState">Departamento nacimiento</label>
-                    <select v-model="selectedDep" class="form-select" :disabled="desactivar" @change="cambiar_ciudad">
-                        <option 
-                            v-for="item in departamentos" 
-                            :key="item.id_departamento"
-                            :value="item.id_departamento"
-                        >
-                            {{item.descripcion}}
-                        </option>
-                    </select>
-                </div>
-                <div class="col-sm">
-                    <label for="inputState">Ciudad nacimiento</label>
-                    <select v-model="selectedCiu" class="form-select" :disabled="desactivar"> 
-                        <option 
-                            v-for="item in ciudades" 
-                            :key="item.cod_concatenado"
-                            :value="item.cod_concatenado"
-                        >
-                            {{item.descripcion}}
-                        </option>
-                    </select>
-                </div>
-            </div>
-            <br>
-            <div class="row">
-                <div class="col-sm">
-                    <label for="segundo_apellido">Dirección actual <label style="color: red">*</label></label>
-                    <input v-model="direccion" type="text" class="form-control" id="segundo_apellido" placeholder="Calle principal, secundaria y numeración">
-                </div>
-                <div class="col-sm">
-                    <label for="inputState">Departamento residencia <label style="color: red">*</label></label>
-                    <select v-model="selectedDepResi" class="form-select" @change="cambiar_ciudad_residencia">
-                        <option 
-                            v-for="item in departamentos" 
-                            :key="item.id_departamento"
-                            :value="item.id_departamento"
-                        >
-                            {{item.descripcion}}
-                        </option>
-                    </select>
-                </div>
-                <div class="col-sm">
-                    <label for="inputState">Ciudad residencia <label style="color: red">*</label></label>
-                    <select v-model="selectedCiuResi" class="form-select"> 
-                        <option 
-                            v-for="item in ciudades_residencia" 
-                            :key="item.cod_concatenado"
-                            :value="item.cod_concatenado"
-                        >
-                            {{item.descripcion}}
-                        </option>
-                    </select>
-                </div>
-            </div>
-            <br>
-            <div class="row">
+            <div class="container">
                 <div class="row">
-                    <div class="col-sm-4" style="margin-right: 10px">
-                        <label for="primer_apellido">Fecha de nacimiento <label style="color: red">*</label></label>
-                        <input v-model="fec_nac" type="date" class="form-control" id="primer_apellido" :max="max_fecha">
+                    <div class="col-sm">
+                        <label for="primer_nombre">Primer nombre <label style="color: red">*</label></label>
+                        <input v-model="pri_nom" type="text" class="form-control" id="primer_nombre" :disabled="this.role !== 1">
+                    </div>
+                    <div class="col-sm">
+                        <label for="segundo_nombre">Segundo nombre</label>
+                        <input v-model="seg_nom" type="text" class="form-control" id="segundo_nombre" :disabled="this.role !== 1">
+                    </div>
+                    <div class="col-sm">
+                        <label for="tercer_nombre">Tercer nombre</label>
+                        <input v-model="ter_nom" type="text" class="form-control" id="tercer_nombre" :disabled="this.role !== 1">
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm">
+                        <label for="primer_apellido">Primer apellido <label style="color: red">*</label></label>
+                        <input v-model="pri_ape" type="text" class="form-control" id="primer_apellido" :disabled="this.role !== 1">
+                    </div>
+                    <div class="col-sm">
+                        <label for="segundo_apellido">Segundo apellido</label>
+                        <input v-model="seg_ape" type="text" class="form-control" id="segundo_apellido" :disabled="this.role !== 1">
                     </div>
                     <div class="col-sm-2">
-                        <label for="inputState">Estado civil <label style="color: red">*</label></label>
-                        <select v-model="est_civ" id="inputState" class="form-select">
-                            <option value="S">Soltero</option>
-                            <option value="C">Casado</option>
-                            <option value="V">Viudo</option>
-                            <option value="D">Divorsiado</option>
-                            <option value="M">Menor</option>
-                            <option value="O">Otro</option>
+                        <label for="inputState">Tipo Doc. <label style="color: red">*</label></label>
+                        <select v-model="selectedDoc" class="form-select" :disabled="this.role !== 1">
+                            <option 
+                                v-for="item in tipos_docs" 
+                                :key="item.id"
+                                :value="item.id"
+                            >
+                                {{item.descripcion}}
+                            </option>
                         </select>
                     </div>
                     <div class="col-sm-2">
-                        <label for="inputState">Género <label style="color: red">*</label></label>
-                        <select v-model="genero" id="inputState" class="form-select">
-                            <option selected value="P">Prefiero no decirlo</option>
-                            <option value="M">Masculino</option>
-                            <option value="F">Femenino</option>
-                            <option value="O">Otro</option>
+                        <label for="doc">Nro. del doc. <label style="color: red">*</label></label>
+                        <input v-model="nro_doc" type="text" class="form-control" id="doc" placeholder="Nro. de identificación" :disabled="this.role !== 1">
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm">
+                        <label for="inputState">Nacionalidad <label style="color: red">*</label></label>
+                        <select v-model="selectedPais" class="form-select" @change="cambiar_pais">
+                            <option 
+                                v-for="item in paises" 
+                                :key="item.id_pais"
+                                :value="item.id_pais"
+                            >
+                                {{item.nombre}}
+                            </option>
                         </select>
                     </div>
-                    <div class="col-sm" style="margin-left: 8px">
-                        <label for="ocupacion">Ocupación <label style="color: red">*</label></label>
-                        <input v-model="ocu" type="text" class="form-control" id="ocupacion">
+                    <div class="col-sm">
+                        <label for="inputState">Departamento nacimiento</label>
+                        <select v-model="selectedDep" class="form-select" :disabled="desactivar" @change="cambiar_ciudad">
+                            <option 
+                                v-for="item in departamentos" 
+                                :key="item.id_departamento"
+                                :value="item.id_departamento"
+                            >
+                                {{item.descripcion}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-sm">
+                        <label for="inputState">Ciudad nacimiento</label>
+                        <select v-model="selectedCiu" class="form-select" :disabled="desactivar"> 
+                            <option 
+                                v-for="item in ciudades" 
+                                :key="item.cod_concatenado"
+                                :value="item.cod_concatenado"
+                            >
+                                {{item.descripcion}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-sm">
+                        <label for="segundo_apellido">Dirección actual <label style="color: red">*</label></label>
+                        <input v-model="direccion" type="text" class="form-control" id="segundo_apellido" placeholder="Calle principal, secundaria y numeración">
+                    </div>
+                    <div class="col-sm">
+                        <label for="inputState">Departamento residencia <label style="color: red">*</label></label>
+                        <select v-model="selectedDepResi" class="form-select" @change="cambiar_ciudad_residencia">
+                            <option 
+                                v-for="item in departamentos" 
+                                :key="item.id_departamento"
+                                :value="item.id_departamento"
+                            >
+                                {{item.descripcion}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-sm">
+                        <label for="inputState">Ciudad residencia <label style="color: red">*</label></label>
+                        <select v-model="selectedCiuResi" class="form-select"> 
+                            <option 
+                                v-for="item in ciudades_residencia" 
+                                :key="item.cod_concatenado"
+                                :value="item.cod_concatenado"
+                            >
+                                {{item.descripcion}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="row">
+                        <div class="col-sm-4" style="margin-right: 10px">
+                            <label for="primer_apellido">Fecha de nacimiento <label style="color: red">*</label></label>
+                            <input v-model="fec_nac" type="date" class="form-control" id="primer_apellido" :max="max_fecha">
+                        </div>
+                        <div class="col-sm-2">
+                            <label for="inputState">Estado civil <label style="color: red">*</label></label>
+                            <select v-model="est_civ" id="inputState" class="form-select">
+                                <option value="S">Soltero</option>
+                                <option value="C">Casado</option>
+                                <option value="V">Viudo</option>
+                                <option value="D">Divorsiado</option>
+                                <option value="M">Menor</option>
+                                <option value="O">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <label for="inputState">Género <label style="color: red">*</label></label>
+                            <select v-model="genero" id="inputState" class="form-select">
+                                <option selected value="P">Prefiero no decirlo</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                                <option value="O">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-sm" style="margin-left: 8px">
+                            <label for="ocupacion">Ocupación <label style="color: red">*</label></label>
+                            <input v-model="ocu" type="text" class="form-control" id="ocupacion">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <strong><p class="text-center">2- Datos de acceso y otros</p></strong>
+            <hr>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <label for="username">Username</label>
+                        <input v-model="username" type="text" class="form-control" id="username" disabled>
+                    </div>
+                    <div class="col-sm">
+                        <label for="email">Email <label style="color: red">*</label></label>
+                        <input v-model="email" type="email" class="form-control" id="email">
+                    </div>
+                    <div class="col-sm">
+                        <label for="ocupacion">Teléfono<label style="color: red">*</label></label>
+                        <input v-model="telf" type="tel" class="form-control" id="telefono" pattern="[0-9]{4}-[0-9]{3}-[0-9]{3}" placeholder="Formato 09XX-XXX-XXX">
                     </div>
                 </div>
             </div>
         </div>
 
-        <br>
-        <strong><p class="text-center">2- Datos de acceso y otros</p></strong>
-        <hr>
-
-        <div class="container">
-            <div class="row">
-                <div class="col-sm">
-                    <label for="username">Username</label>
-                    <input v-model="username" type="text" class="form-control" id="username" disabled>
-                </div>
-                <div class="col-sm">
-                    <label for="email">Email <label style="color: red">*</label></label>
-                    <input v-model="email" type="email" class="form-control" id="email">
-                </div>
-                <div class="col-sm">
-                    <label for="ocupacion">Teléfono<label style="color: red">*</label></label>
-                    <input v-model="telf" type="tel" class="form-control" id="telefono" pattern="[0-9]{4}-[0-9]{3}-[0-9]{3}" placeholder="Formato 09XX-XXX-XXX">
-                </div>
-            </div>
+        <div v-else class="text-center">
+            <img src="@/assets/loading.gif" 
+                alt="persona" 
+                class="rounded-circle"
+                height="30"
+                style="margin-right: 10px;"
+            >
+            <strong style="margin-top: 10px"><label>Cargando datos... Espere por favor</label></strong>
         </div>
+
         <br>
         <div class="modal-footer">
             <button class="btn" data-bs-dismiss="modal" style="background-color: #dc3545; color: white">Cancelar</button>
-            <button class="btn" style="background-color: #f0820d; color: white" @click="validar">Modificar</button>
+            <button class="btn" style="background-color: #f0820d; color: white" @click="validar" :disabled="!bandera">Modificar</button>
         </div>
     </div>
 </template>
@@ -200,12 +213,15 @@ import 'bootstrap'
         },
 
         async created(){
+            this.bandera = false;
+            await new Promise(resolve => setTimeout(resolve, 1000));
             await this.get_tipos_documentos();
             await this.obtener_datos_iniciales();
             await this.get_paises();
             await this.get_departamentos();
             await this.get_ciudades();
             await this.get_ciudades_residencia();
+            this.bandera = true;
         },
 
         computed:{
@@ -214,12 +230,15 @@ import 'bootstrap'
 
         watch: {
             async id_paciente() {
+                this.bandera = false;
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 await this.get_tipos_documentos();
                 await this.obtener_datos_iniciales();
                 await this.get_paises();
                 await this.get_departamentos();
                 await this.get_ciudades();
                 await this.get_ciudades_residencia();
+                this.bandera = true;
             },
         },
 
@@ -505,6 +524,7 @@ import 'bootstrap'
 
                 //
                 isLoading: false,
+                bandera: false,
             }
         }
     }

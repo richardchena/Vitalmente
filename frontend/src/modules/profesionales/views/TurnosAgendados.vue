@@ -50,31 +50,47 @@
                 </div>
             </div>
         </nav>
-        <div class="container">
-            <table class="table table-hover table-cell-border table-striped" id="tabla">
-                <thead>
-                    <tr>
-                        <th>Nro. Reserva</th>
-                        <th>Fecha Reserva</th>
-                        <th>Paciente</th>
-                        <th>Fecha Turno</th>
-                        <th>Especialidad</th>
-                        <th>Status</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="dato in datos" :key="dato.id_cita" :id="dato.id_cita">
-                        <td>{{dato.id_cita}}</td>
-                        <td>{{dato.fecha_reserva}}</td>
-                        <td>{{dato.paciente}}</td>
-                        <td>{{dato.fecha_turno}}</td>
-                        <td>{{dato.especialidad}}</td>
-                        <td>{{dato.estado_cita}}</td>
-                        <th></th>
-                    </tr>
-                </tbody>
-            </table>
+
+        <div class="container" style="margin-top: 10px;">
+            <VueGoodTable
+                :columns="columns"
+                :rows="datos"
+                styleClass="vgt-table condensed"
+                :pagination-options="{
+                    enabled: true,
+                    mode: 'pages',
+                    perPageDropdownEnabled: false,
+                    perPage: 9,
+                    nextLabel: 'Siguiente',
+                    ofLabel: 'de',
+                    pageLabel: 'Pagina',
+                    prevLabel: 'Anterior',    
+                }"
+                :search-options="{
+                    enabled: false,
+                    externalQuery: filtro
+                }"
+            >
+                <template #emptystate>
+                    <div class="text-center">{{texto_tabla}}</div>
+                </template>
+
+                <template #table-row="props">
+                    <span v-if="props.column.field == 'controles'">
+                        <div v-if="props.row.estado_cita==='CANCELADO PROFESIONAL'">
+                            <button class="btn btn-info" disabled><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>
+                        </div>
+
+                        <div v-else>
+                            <button class="btn btn-info text-white" @click="cancelar_reserva(props.row.id_cita)"><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>
+                        </div>
+                    </span>
+
+                    <span v-else>
+                        {{props.formattedRow[props.column.field]}}
+                    </span>
+                </template>
+            </VueGoodTable>
         </div>
     </div>
 </template>
@@ -85,19 +101,17 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import { mapGetters} from 'vuex'
 import '@vuepic/vue-datepicker/dist/main.css'
 
-//Bootstrap and jQuery libraries
-import 'jquery/dist/jquery.min.js';
-//Datatable Modules
-import "datatables.net-dt/js/dataTables.dataTables"
-import "datatables.net-dt/css/jquery.dataTables.min.css"
-import * as $ from 'jquery';
 import 'bootstrap';
 import Swal  from 'sweetalert2'
 import format from 'date-fns/format';
 
+import { VueGoodTable } from 'vue-good-table-next';
+import 'vue-good-table-next/dist/vue-good-table-next.css'
+
 export default {
     components: {
-        VueDatePicker
+        VueDatePicker,
+        VueGoodTable
     },
 
     data(){
@@ -108,61 +122,53 @@ export default {
             dias_semana: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
             marcadores: [],
             dias_desactivados: [],
-            datos: null,
-            fecha_filtro: null
+            datos: [],
+            fecha_filtro: null,
+
+            columns: [
+                {
+                    label: 'Nro. Reserva',
+                    field: 'id_cita'
+                },
+                {
+                    label: 'Fecha Reserva',
+                    field: 'fecha_reserva'
+                },
+                {
+                    label: 'Paciente',
+                    field: 'paciente'
+                },
+                {
+                    label: 'Fecha Turno',
+                    field: 'fecha_turno'
+                },
+                /*{
+                    label: 'Tipo Doc.',
+                    field: 'tipo_doc'
+                },
+                {
+                    label: 'Nro. doc.',
+                    field: 'nro_doc'
+                },*/
+                {
+                    label: 'Especialidad',
+                    field: 'especialidad'
+                },
+                {
+                    label: 'Estado cita',
+                    field: 'estado_cita'
+                },
+                {
+                    label: 'Controles',
+                    field: 'controles',
+                    sortable: false,
+                }
+            ]
         }
     },
 
     async mounted(){
         await this.obtener_lista();
-        const funcion_cancelar = this.cancelar_reserva;
-
-        $(document).ready(function(){
-            this.tabla = $('#tabla').dataTable({
-                responsive: true,
-                destroy: true,
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json",
-                    emptyTable: "No hay citas agendadas para la fecha seleccionada"
-                },
-                fixedColumns: true,
-                pageLength: 8,
-                lengthChange: false,
-                searching: true,
-                searchDelay: 0,
-                order: [[0, 'asc']],
-                dom: 'lrtip',
-                columns:[
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {
-                        className: "dt-center",
-                        title: 'Control',
-                        orderable: false,
-                        searchable: false,
-                        //wrap: true, 
-                        render: function (data, type,row) {
-                            let cancelar;
-                            if(row[5] === 'CANCELADO PROFESIONAL'){
-                                cancelar = '<button class="btn btn-info" disabled><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>';
-                            } else {
-                                cancelar = '<button class="btn btn-info text-white cancelar_manual"><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>';
-                            }
-                            return cancelar;
-                        }
-                    }
-                ]
-            }).api();
-
-            $(".cancelar_manual").click(function(){
-                let index = $(this).parents("tr")[0].id;
-                funcion_cancelar(index);
-            });
-        });
     },
 
     computed:{
@@ -172,11 +178,6 @@ export default {
     created(){
         document.title = 'Turnos agendados'
         this.obtener_feriados();
-        /*if(!this.$route.query.fecha){
-            this.fecha = new Date(this.$route.query.fecha)
-        } else {
-            this.fecha = new Date()
-        }*/
     },
 
     watch:{
@@ -274,14 +275,6 @@ export default {
         },
 
         async obtener_lista(){
-            //let f;
-
-            /*if(!this.$route.query.fecha) {
-                f = format(new Date(), 'yyyy/MM/dd')
-            } else {
-                f = this.$route.query.fecha
-            }*/
-
             let obj = {}
             obj.id_profesional = +this.$route.params.id_profesional
             
@@ -289,6 +282,8 @@ export default {
                 obj.fecha = this.$route.query.fecha
             }
 
+            this.datos = []
+            this.texto_tabla = 'Cargado lista... Por favor espere'
             const {data} = await authApi.get('/reservas/agendas/profesional', {
                 params: obj,
                 headers: {
@@ -296,6 +291,7 @@ export default {
                 }
             })
 
+            this.texto_tabla = 'No hay turnos agendados'
             this.datos = data
         },
 

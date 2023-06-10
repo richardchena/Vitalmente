@@ -46,67 +46,114 @@
                 </div>
             </div>
         </nav>
-        <div class="contendor_tabla">
-            <table class="table table-hover table-cell-border table-striped" id="tabla">
-                <thead>
-                <tr>
-                    <th>Exp.</th>
-                    <th>Nombre completo</th>
-                    <th>Tipo documento</th>
-                    <th>Nro. Documento</th>
-                    <th>Residencia</th>
-                    <th>Télefono</th>
-                    <th>Status Account</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="user in users" :key="user.id">
-                    <td>{{user.id}}</td>
-                    <td>{{user.name}}</td>
-                    <td>{{user.tipo_doc}}</td>
-                    <td>{{user.nro_doc}}</td>
-                    <td>{{user.residencia}}</td>
-                    <td>{{user.telefono}}</td>
-                    <td>{{user.status}}</td>
-                    <th></th>
-                </tr>
-                
-                </tbody>
-            </table>
+
+        <div class="container" style="margin-top: 10px;">
+            <VueGoodTable
+                :columns="columns"
+                :rows="users"
+                styleClass="vgt-table condensed"
+                :pagination-options="{
+                    enabled: true,
+                    mode: 'pages',
+                    perPageDropdownEnabled: false,
+                    perPage: 9,
+                    nextLabel: 'Siguiente',
+                    ofLabel: 'de',
+                    pageLabel: 'Pagina',
+                    prevLabel: 'Anterior',    
+                }"
+                :search-options="{
+                    enabled: false,
+                    externalQuery: filtro
+                }"
+            >
+                <template #emptystate>
+                    <div class="text-center">{{texto_tabla}}</div>
+                </template>
+
+                <template #table-row="props">
+                    <span v-if="props.column.field == 'controles'">
+                        <button class="btn btn-success boton" title="Reserva" @click="funcion_reserva(props.row.id)"><i class="fas fa-calendar-plus"></i></button>
+                        <button class="btn btn-secondary boton" title="Ver expediente" @click="expediente(props.row.id)"><i class="far fa-file-alt"></i></button>
+                        <button class="btn btn-info boton" title="Modificar registro" @click="modificar(props.row.id)"><i class="fas fa-pencil-alt"></i></button>
+                        <button v-if="props.row.status === 'Activa'" class="btn btn-warning boton" title="Desactivar cuenta" @click="activar_desactivar(props.row.id)"><i class="fas fa-user"></i></button>
+                        <button v-else class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user-slash" @click="activar_desactivar(props.row.id)"></i></button>
+                        <button class="btn btn-danger boton" title="Eliminar" @click="eliminar(props.row.id, props.row.name)"><i class="fas fa-trash-alt"></i></button>
+                    </span>
+
+                    <span v-else>
+                        {{props.formattedRow[props.column.field]}}
+                    </span>
+                </template>
+            </VueGoodTable>
         </div>
    </div>
 </template>
  
 <script>
-//Bootstrap and jQuery libraries
-import 'jquery/dist/jquery.min.js';
-//Datatable Modules
-import "datatables.net-dt/js/dataTables.dataTables"
-import "datatables.net-dt/css/jquery.dataTables.min.css"
-import * as $ from 'jquery';
-
 import {mapGetters} from 'vuex'
 import authApi from '@/api/authApi'
 import Swal  from 'sweetalert2'
 import 'bootstrap';
 import {defineAsyncComponent} from 'vue'
 
+import { VueGoodTable } from 'vue-good-table-next';
+import 'vue-good-table-next/dist/vue-good-table-next.css'
+
 export default {
     components: {
-        FormularioActualizar: defineAsyncComponent(() => import ('@/modules/admin/components/EstructuraRegistro'))
+        FormularioActualizar: defineAsyncComponent(() => import ('@/modules/admin/components/EstructuraRegistro')),
+        VueGoodTable
     },
 
     data: function() {
         return {
             filtro: null,
             tabla: null,
-            users: null,
+            users: [],
             isLoading: false,
             msg: 'Actualizando datos',
 
             //DATOS DEL MODAL
-            id_user_mod: 0
+            id_user_mod: 0,
+
+            texto_tabla: null,
+
+            columns: [
+                /*{
+                    label: 'Exp.',
+                    field: 'id'
+                },*/
+                {
+                    label: 'Nombre Completo',
+                    field: 'name'
+                },
+                {
+                    label: 'Tipo Doc.',
+                    field: 'tipo_doc'
+                },
+                {
+                    label: 'Nro. Doc.',
+                    field: 'nro_doc'
+                },
+                {
+                    label: 'Residencia',
+                    field: 'residencia'
+                },
+                {
+                    label: 'Teléfono',
+                    field: 'telefono'
+                },
+                {
+                    label: 'Estado Cuenta',
+                    field: 'status'
+                },
+                {
+                    label: 'Controles',
+                    field: 'controles',
+                    sortable: false,
+                }
+            ]
         }
     },
 
@@ -121,6 +168,9 @@ export default {
         },
 
         async get_pacientes(){
+            this.texto_tabla = 'Cargando los datos... Por favor espere'
+            this.users = []
+            
             try {
                 const {data} = await authApi.get('/pacientes', {
                     headers: {
@@ -131,6 +181,8 @@ export default {
             } catch (error) {
                 console.log(error)
             }
+
+            this.texto_tabla = 'No hay registros disponibles'
         },
 
         registrar_paciente(){
@@ -146,7 +198,7 @@ export default {
 
         eliminar(id_paciente, nombre){
             Swal.fire({
-            html: `<strong><div style="font-size: 22px">¿Eliminar al paciente #${id_paciente} ${nombre}?</div></strong>`,
+            html: `<h4>¿Eliminar al paciente #${id_paciente} ${nombre}?</h4>`,
             //text: "¡Esta acción no se puede deshacer!",
             icon: 'warning',
             showCancelButton: true,
@@ -163,16 +215,16 @@ export default {
         },
 
         async eliminar_bd(id){
+            this.msg = 'Eliminando el usuario'
             authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
 
             try {
                 this.isLoading = true;
-                const {data} = await authApi.delete(`/pacientes/eliminar_paciente/${id}`)
-                this.msg = 'Eliminando el usuario'
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                authApi.delete(`/pacientes/eliminar_paciente/${id}`)
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
                 this.get_pacientes();
                 this.isLoading = false;
-                console.log(data)
 
             } catch (error) {
                 this.isLoading = false;
@@ -181,16 +233,15 @@ export default {
         },
 
         async activar_desactivar(id_paciente){
+            this.msg = 'Actualizando estado del usuario'
             authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
 
             try {
                 this.isLoading = true;
-                const {data} = await authApi.post(`/pacientes/cambiar_estado/${id_paciente}`)
-                this.msg = 'Actualizando estado del usuario'
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                await authApi.post(`/pacientes/cambiar_estado/${id_paciente}`)
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                this.get_pacientes()
                 this.isLoading = false;
-                this.$router.go();
-                console.log(data)
 
             } catch (error) {
                 this.isLoading = false;
@@ -213,94 +264,8 @@ export default {
         document.title = 'Lista de Pacientes'
     },
 
-    /*beforeUnmount() {  
-        console.log(this.tabla)
-    },*/
-
     async mounted(){
         await this.get_pacientes();
-
-        const funcion_modificar = this.modificar;
-        const function_eliminar = this.eliminar;
-        const funcion_cambiar = this.activar_desactivar;
-        const funcion_expendiente = this.expediente;
-        const funcion_reserva = this.funcion_reserva;
-
-        $(document).ready(function(){
-            let tabla = $('#tabla').dataTable({
-                responsive: true,
-                destroy: true,
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json"
-                },
-                fixedColumns: true,
-                pageLength: 8,
-                lengthChange: false,
-                searching: true,
-                searchDelay: 0,
-                dom: 'lrtip',
-                order: [],
-                columns:[
-                    {a: "id"},
-                    {c: "name"},
-                    {d: "nro_doc"},
-                    {e: "edad"},
-                    {f: "genero"},
-                    {g: "email"},
-                    {i: "status"},
-                    {
-                        j: null, 
-                        title: 'Controles',
-                        orderable: false,
-                        searchable: false,
-                        //wrap: true, 
-                        render: function (data, type, row) {
-                            let mod, file, dis, del, reserva;
-
-                            if(row[6] === 'Activa') {
-                                reserva = '<button class="btn btn-success boton" title="Reserva"><i class="fas fa-calendar-plus"></i></button>';
-                                file = '<button class="btn btn-secondary boton" title="Ver expediente"><i class="far fa-file-alt"></i></button>';
-                                mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
-                                dis = '<button class="btn btn-warning boton" title="Desactivar cuenta"><i class="fas fa-user"></i></button>';
-                                del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
-                            } else {
-                                reserva = '<button class="btn btn-success boton" title="Reserva"><i class="fas fa-calendar-plus"></i></button>';
-                                file = '<button class="btn btn-secondary boton" title="Ver expediente"><i class="far fa-file-alt"></i></button>';
-                                mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
-                                dis = '<button class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user-slash"></i></button>';
-                                del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
-                            }
-
-                            return reserva + file + mod + dis + del;
-                        }
-                    }
-                ]
-            }).api();
-
-            $('#buscador').on('keyup change', function(){
-                tabla.search($(this).val()).draw();
-            });
-
-            $(".btn-secondary").click(function(){
-                funcion_expendiente($(this).parents("tr").find("td").eq(0).html());
-            });
-
-            $(".btn-info").click(function(){
-                funcion_modificar($(this).parents("tr").find("td").eq(0).html());
-            });
-
-            $(".btn-danger").click(function(){
-                function_eliminar($(this).parents("tr").find("td").eq(0).html(), $(this).parents("tr").find("td").eq(1).html());
-            });
-
-            $(".btn-warning").click(function(){
-                funcion_cambiar($(this).parents("tr").find("td").eq(0).html());
-            });
-
-            $(".btn-success").click(function(){
-                funcion_reserva($(this).parents("tr").find("td").eq(0).html());
-            });
-        })
     },
 }
 </script>
@@ -314,7 +279,7 @@ export default {
     }
 
     .boton{
-        margin-right: 10px;
+        margin-right: 5px;
     }
 
     .contendor_tabla{

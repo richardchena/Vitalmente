@@ -725,7 +725,8 @@ exports.distinct_profs_admin = async (req, res) => {
 //CANCELAR CITA
 exports.cancelar_cita_paciente = async (req, res) => {
     const cod = req.body.id_cita
-    const query = `UPDATE CITAS SET ESTADO = 2 WHERE ID_CITA = ${cod}`
+    const query = `UPDATE CITAS SET ESTADO = 2 WHERE ID_CITA = ${cod};
+                   DELETE FROM SALA_ESPERA WHERE ID_CITA = ${cod}`
 
     try {
         await db.sequelize.query(query);
@@ -733,6 +734,20 @@ exports.cancelar_cita_paciente = async (req, res) => {
 
     } catch (error) {
         res.json({cod: 1, msg: "Hubo un error al modificar el registro. Intente más tarde"});
+    }
+};
+
+exports.cancelar_cita_paciente_admin = async (req, res) => {
+    const cod = req.query.id_cita
+    const query = `UPDATE CITAS SET ESTADO = 5 WHERE ID_CITA = ${cod};
+                   DELETE FROM SALA_ESPERA WHERE ID_CITA = ${cod}`
+
+    try {
+        await db.sequelize.query(query);
+        res.json({id: 0, msg: "Se ha cancelado correctamente"});
+
+    } catch (error) {
+        res.json({id: 1, msg: "Hubo un error al modificar el registro. Intente más tarde"});
     }
 };
 

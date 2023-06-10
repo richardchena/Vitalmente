@@ -328,6 +328,9 @@ export default {
 
     async created(){
         document.title = 'Movimiento de caja'
+        this.texto_tabla = 'Cargando... Por favor espere'
+        this.categoria_movimientos = [{id: 0, categoria: '--  CATEGORIA --'}],
+        this.tipos_movimientos = [{id: 0, tipo: '-- TIPO MOV. --'}],
 
         //Para el modal
         await this.get_lista_tipos()
@@ -487,6 +490,7 @@ export default {
 
     methods: {
         async init(){
+            this.texto_tabla = 'Cargando... Por favor espere'
             this.datos = []
 
             this.categoria_movimientos = [{id: 0, categoria: '--  CATEGORIA --'}],
@@ -514,9 +518,6 @@ export default {
             this.egresos = 0
             this.saldo_actual = 0
 
-            this.texto_tabla = 'Cargando... Por favor espere'
-
-            //AWAIT PROMISE
             await this.get_mov()
             await this.get_saldo()
             await this.get_ingreso_egreso()
@@ -692,7 +693,7 @@ export default {
         },
 
         async get_mov(){
-            await new Promise(resolve => setTimeout(resolve, 500)); 
+            //await new Promise(resolve => setTimeout(resolve, 500)); 
             //TODO: ELIMINAR DESPUES EN PRODUCCION
 
             const {data} = await authApi.get('/movimientos', {

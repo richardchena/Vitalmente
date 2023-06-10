@@ -5,7 +5,7 @@
             <div class="modal-dialog modal-dialog-centered modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">DATOS DE LA CONSULTA #{{id_consulta}}</h5>
+                        <h5 class="modal-title">CONSULTA DEL {{fecha_mostrar}}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
@@ -39,52 +39,97 @@
                 <button class="btn btn-danger" style="margin-right: 20px" @click="atras">ATRÁS</button>
             </div>
         </nav>
-        <div class="contendor_tabla" style="padding: 20px 100px 0px 100px;">
-            <table class="table table-hover table-cell-border table-striped" id="tabla">
-                <thead>
-                    <tr>
-                        <th>Nro. consulta</th>
-                        <th>Fecha y hora</th>
-                        <th>Profesional</th>
-                        <th>Especialidad</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="dato in datos" :key="dato.id">
-                        <td>{{dato.id}}</td>
-                        <td>{{dato.fecha}}</td>
-                        <td>{{dato.profesional}}</td>
-                        <td>{{dato.especialidad}}</td>
-                        <th></th>
-                    </tr>
-                </tbody>
-            </table>
+
+        <div class="container" style="margin-top: 10px;">
+            <VueGoodTable
+                :columns="columns"
+                :rows="datos"
+                styleClass="vgt-table condensed"
+                :pagination-options="{
+                    enabled: true,
+                    mode: 'pages',
+                    perPageDropdownEnabled: false,
+                    perPage: 9,
+                    nextLabel: 'Siguiente',
+                    ofLabel: 'de',
+                    pageLabel: 'Pagina',
+                    prevLabel: 'Anterior',    
+                }"
+                :search-options="{
+                    enabled: false,
+                    externalQuery: filtro
+                }"
+            >
+                <template #emptystate>
+                    <div class="text-center">{{texto_tabla}}</div>
+                </template>
+
+                <template #table-row="props">
+                    <span v-if="props.column.field == 'controles'">
+                        <button class="btn btn-success boton" @click="ver_detalles(props.row.id, props.row.fecha)"><i class="fas fa-file"></i>&nbsp;&nbsp;Ver detalles</button>
+                    </span>
+
+                    <span v-else>
+                        {{props.formattedRow[props.column.field]}}
+                    </span>
+                </template>
+            </VueGoodTable>
         </div>
     </div>
 </template>
 
 <script>
-    //Bootstrap and jQuery libraries
-    import 'jquery/dist/jquery.min.js';
-    //Datatable Modules
-    import "datatables.net-dt/js/dataTables.dataTables"
-    import "datatables.net-dt/css/jquery.dataTables.min.css"
-    import * as $ from 'jquery';
-
     import {mapGetters} from 'vuex'
     import authApi from '@/api/authApi'
     import 'bootstrap';
     import Swal  from 'sweetalert2'
     import {defineAsyncComponent} from 'vue'
 
+    import { VueGoodTable } from 'vue-good-table-next';
+    import 'vue-good-table-next/dist/vue-good-table-next.css'
+
     export default {
         data: function() {
             return {
                 id: this.$route.params.id,
                 filtro: null,
-                datos: null,
-                id_consulta: 0
+                datos: [],
+                id_consulta: 0,
+
+                texto_tabla: null,
+                fecha_mostrar: null,
+
+                columns: [
+                    /*{
+                        label: 'ID',
+                        field: 'id'
+                    },*/
+                    {
+                        label: 'Fecha y hora',
+                        field: 'fecha'
+                    },
+                    {
+                        label: 'Profesional',
+                        field: 'profesional'
+                    },
+                    {
+                        label: 'Especialidad',
+                        field: 'especialidad'
+                    },
+                    {
+                        label: 'Motivo',
+                        field: 'tipo_motivo'
+                    },
+                    {
+                        label: 'Diagnóstico',
+                        field: 'tipo_diagnostico'
+                    },
+                    {
+                        label: 'Controles',
+                        field: 'controles',
+                        sortable: false
+                    },
+                ]
             }
         },
 
@@ -93,7 +138,8 @@
         },
 
         components: {
-            Consulta: defineAsyncComponent(() => import ('@/modules/admin/components/Consulta'))
+            Consulta: defineAsyncComponent(() => import ('@/modules/admin/components/Consulta')),
+            VueGoodTable
         },
 
         created(){
@@ -139,6 +185,9 @@
             },
 
             async get_lista(){
+                this.texto_tabla = 'Cargando los datos... Por favor espere'
+                this.datos = []
+
                 const {data} = await authApi.get('/consultas', {
                     params: {
                         id_paciente: this.$route.params.id
@@ -149,10 +198,12 @@
                 })
 
                 this.datos = data
+                this.texto_tabla = 'No hay registros disponibles'
             },
 
-            ver_detalles(id){
+            ver_detalles(id, fecha){
                 this.id_consulta = id;
+                this.fecha_mostrar = fecha;
                 this.$refs.boton.click();
             }
         },
@@ -160,54 +211,6 @@
         async mounted(){
             this.iniciar()
             await this.get_lista()
-            const funcion_ver = this.ver_detalles; 
-
-            $(document).ready(function(){
-                var tabla = $('#tabla').dataTable({
-                    responsive: true,
-                    destroy: true,
-                    language: {
-                        url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json",
-                        emptyTable: "No hay consultas previas del paciente seleccionado"
-                    },
-                    fixedColumns: true,
-                    pageLength: 8,
-                    lengthChange: false,
-                    searching: true,
-                    searchDelay: 0,
-                    dom: 'lrtip',
-                    order: [],
-                    columns:[
-                        {a: "id"},
-                        {b: "fecha"},
-                        {c: "profesional"},
-                        {d: "especialidad"},
-                        {
-                            e: null, 
-                            title: 'Controles',
-                            orderable: false,
-                            searchable: false,
-                            //wrap: true, 
-                            render: function () {
-                                //console.log(data, row, type)
-                                let mod;
-
-                                mod = '<button class="btn btn-success boton"><i class="fas fa-file"></i>&nbsp;&nbsp;Ver detalles</button>';
-                                
-                                return mod;
-                            }
-                        }
-                    ]
-                }).api();
-
-                $('#buscador').on('keyup change', function(){
-                    tabla.search($(this).val()).draw();
-                });
-
-                $(".btn-success").click(function(){
-                    funcion_ver($(this).parents("tr").find("td").eq(0).html());
-                });
-            })
         },
     }
 </script>

@@ -7,7 +7,7 @@
             <strong style="font-size: 25px; margin-left: 20px; margin-top:15px; color: black"><p>Modificando consulta... Aguarde por favor</p></strong>
         </div>
 
-        <div class="container">
+        <div class="container" v-if="bandera">
             <div style="margin-top: 15px; margin-bottom: 15px; display: flex">
                 <strong><label style="margin-top: 1px; margin-right: 10px">Especialidad: </label></strong>
                 <select v-model="select_especialidad" :disabled="this.role === 1">
@@ -77,10 +77,21 @@
                 </div>
             </div>
         </div>
+
+        <div v-else class="text-center">
+            <img src="@/assets/loading.gif" 
+                alt="persona" 
+                class="rounded-circle"
+                height="30"
+                style="margin-right: 10px;"
+            >
+            <strong style="margin-top: 10px"><label>Cargando datos... Espere por favor</label></strong>
+        </div>
+
         <br>
         <div class="modal-footer">
             <button class="btn" data-bs-dismiss="modal" style="background-color: #dc3545; color: white">Cancelar</button>
-            <button class="btn" style="background-color: #f0820d; color: white" @click="validar" :disabled="this.role === 1">Modificar</button>
+            <button class="btn" style="background-color: #f0820d; color: white" @click="validar" :disabled="this.role === 1 || !this.bandera">Modificar</button>
         </div>
     </div>
 </template>
@@ -129,12 +140,15 @@ export default {
 
             //
             isLoading: false,
+            bandera: null
         }
     },
 
     watch: {
         async id_consulta() {
+            this.bandera = false;
             await this.obtener_datos_iniciales();
+            this.bandera = true;
         },
     },
 

@@ -294,3 +294,27 @@ exports.eliminar_agenda = async (req, res) => {
         res.json({id: 1, msg: 'Hubo un error inesperado'})
     }
 };
+
+exports.validar_agenda_nuevo = async (req, res) => {
+    const id_profesional = req.query.id_profesional;
+    const desde = req.query.desde;
+    const hasta = req.query.hasta;
+
+    if(!id_profesional || !desde || !hasta){
+        return res.json({id: 1, cantidad: 0, msg: 'No se han recibido los parametros'})
+    }
+
+    const query = `SELECT * FROM AGENDAS
+                   WHERE ID_PROFESIONAL = ${id_profesional} AND '${desde}' BETWEEN FECHA_DESDE AND FECHA_HASTA
+                   UNION
+                   SELECT * FROM AGENDAS
+                   WHERE ID_PROFESIONAL = ${id_profesional} AND '${hasta}' BETWEEN FECHA_DESDE AND FECHA_HASTA`;
+
+    try {
+        const datos = await db.sequelize.query(query);
+        res.json({id: 0, cantidad: datos[0].length, msg: 'ok'})
+
+    } catch (error) {
+        res.json({id: 1, cantidad: 0, msg: error});
+    }
+};

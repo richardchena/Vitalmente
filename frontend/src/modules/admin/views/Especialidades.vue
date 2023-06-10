@@ -36,7 +36,12 @@
 
                     <div class="modal-footer">
                         <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                        <button class="btn btn-success" @click="registrar_especialidad">Registrar</button>
+                        <button class="btn btn-success" @click="registrar_especialidad" v-show="!boton_registrar_bandera">Registrar</button>
+
+                        <button class="btn btn-success" type="button" disabled v-show="boton_registrar_bandera">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Registrando...
+                        </button>
                     </div>
                 </div>
             </div>
@@ -83,7 +88,12 @@
 
                     <div class="modal-footer">
                         <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
-                        <button class="btn btn-info text-white" @click="modificar_especialidad">Modificar</button>
+                        <button class="btn btn-info text-white" @click="modificar_especialidad" v-show="!boton_modificar_bandera">Modificar</button>
+
+                        <button class="btn btn-info text-white" type="button" disabled v-show="boton_modificar_bandera">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Modificando...
+                        </button>
                     </div>
                 </div>
             </div>
@@ -115,50 +125,72 @@
         </nav>
 
         <div class="contendor_tabla">
-            <table class="table table-hover table-cell-border table-striped" id="tabla">
-                <thead>
-                <tr>
-                    
-                    <th>Descripción Especialidad</th>
-                    <th>Costo por consulta</th>
-                    <th>Impuesto Aplicado</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="e in especialidades" :key="e.id_especialidad" :id="e.id_especialidad">
-                    
-                    <td>{{e.descripcion}}</td>
-                    <td>{{ new Intl.NumberFormat('es-CL').format(e.precio) + ' GS.'}}</td>
-                    <td>{{e.porc_iva + ' %'}}</td>
-                    <th></th>
-                </tr>
-                
-                </tbody>
-            </table>
+            <VueGoodTable
+                :columns="columns"
+                :rows="especialidades"
+                styleClass="vgt-table condensed"
+                :pagination-options="{
+                    enabled: true,
+                    mode: 'pages',
+                    perPageDropdownEnabled: false,
+                    perPage: 9,
+                    nextLabel: 'Siguiente',
+                    ofLabel: 'de',
+                    pageLabel: 'Pagina',
+                    prevLabel: 'Anterior',    
+                }"
+                :search-options="{
+                    enabled: false,
+                    externalQuery: filtro
+                }"
+            >
+                <template #emptystate>
+                    <div class="text-center">{{texto_tabla}}</div>
+                </template>
+
+                <template #table-row="props">
+                    <span v-if="props.column.field === 'controles'">
+                        <button class="btn btn-info text-white boton" @click="modificar(props.row.id_especialidad)"><i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Modificar</button>
+                        <button class="btn btn-danger boton" @click="eliminar(props.row.id_especialidad, props.row.descripcion)"><i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Eliminar</button>
+                    </span>
+
+                    <span v-else-if="props.column.field === 'precio'">
+                        <span>{{new Intl.NumberFormat('es-CL').format(props.row.precio) + ' GS.'}}</span>
+                    </span>
+
+                    <span v-else-if="props.column.field === 'porc_iva'">
+                        <span>{{props.row.porc_iva + ' %'}}</span>
+                    </span>
+
+                    <span v-else>
+                        {{props.formattedRow[props.column.field]}}
+                    </span>
+                </template>
+            </VueGoodTable>
         </div>
     </div>
 </template>
 
 <script>
-//Bootstrap and jQuery libraries
-import 'jquery/dist/jquery.min.js';
-//Datatable Modules
-import "datatables.net-dt/js/dataTables.dataTables"
-import "datatables.net-dt/css/jquery.dataTables.min.css"
-import * as $ from 'jquery';
 import authApi from '@/api/authApi'
 import {mapGetters} from 'vuex'
 import Swal  from 'sweetalert2'
+import { VueGoodTable } from 'vue-good-table-next';
+import 'vue-good-table-next/dist/vue-good-table-next.css'
 
 export default {
     created(){
         document.title = 'Especialidades'
     },
 
+    components: {
+        VueGoodTable
+    },
+
    data(){
         return {
-            especialidades: null,
+            especialidades: [],
+            texto_tabla: null,
 
             new_especialidad_costo: null,
             new_especialidad_desc: null,
@@ -170,6 +202,28 @@ export default {
             old_especialidad_id: null,
 
             filtro: null,
+
+            boton_modificar_bandera: false,
+            boton_registrar_bandera: false,
+
+            columns: [
+                {
+                    label: 'Descripción Especialidad',
+                    field: 'descripcion'
+                },
+                {
+                    label: 'Costo por consulta',
+                    field: 'precio'
+                },
+                {
+                    label: 'Impuesto Aplicado',
+                    field: 'porc_iva'
+                },
+                {
+                    label: 'Controles',
+                    field: 'controles'
+                },
+            ]
         }
    },
 
@@ -195,12 +249,15 @@ export default {
 
             } else {
                 authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
-
+                this.boton_registrar_bandera = true
+                await new Promise(resolve => setTimeout(resolve, 500));
                 const {data} = await authApi.post('/obtener_especialidades', {
                     descripcion: this.new_especialidad_desc,
                     costo: this.new_especialidad_costo,
                     iva: this.new_especialidad_iva
                 })
+
+                this.boton_registrar_bandera = false
 
                 if(+data.id === 0) {
                     Swal.fire({
@@ -208,7 +265,10 @@ export default {
                         icon: 'success'
                     }).then(() => {
                         this.$refs.cerrar_modal_new.click()
-                        this.$router.go()
+                        this.new_especialidad_desc = null
+                        this.new_especialidad_desc = null
+                        this.new_especialidad_iva = 10
+                        this.get_especialidad()
                     })
                 } else {
                     Swal.fire({
@@ -239,8 +299,9 @@ export default {
                 })
 
             } else {
+                this.boton_modificar_bandera = true;
+                await new Promise(resolve => setTimeout(resolve, 500));
                 authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
-
                 const {data} = await authApi.put('/obtener_especialidades', {
                     descripcion: this.old_especialidad_desc,
                     costo: this.old_especialidad_costo,
@@ -248,13 +309,15 @@ export default {
                     id: this.old_especialidad_id
                 })
 
+                this.boton_modificar_bandera = false;
+                this.$refs.cerrar_modal_modificar.click()
+
                 if(+data.id === 0) {
                     Swal.fire({
                         html: `<h4>${data.msg}</h4>`,
                         icon: 'success'
                     }).then(() => {
-                        this.$refs.cerrar_modal_modificar.click()
-                        this.$router.go()
+                        this.get_especialidad()
                     })
                 } else {
                     Swal.fire({
@@ -274,6 +337,8 @@ export default {
         },
 
         async get_especialidad(){
+            this.especialidades = []
+            this.texto_tabla = 'Cargando especialidades... Espere por favor'
             try {
                 const {data} = await authApi.get('/obtener_especialidades', {
                     headers: {
@@ -285,6 +350,8 @@ export default {
             } catch (error) {
                 console.log(error)
             }
+
+            this.texto_tabla = 'No hay registros'
         },
 
         eliminar(id, nombre){
@@ -314,7 +381,7 @@ export default {
                         icon: 'success'
                     }).then(() => {
                         this.$refs.cerrar_modal_new.click()
-                        this.$router.go()
+                        this.get_especialidad()
                     })
 
             } else {
@@ -344,7 +411,7 @@ export default {
 
    async mounted(){
         await this.get_especialidad();
-        const function_eliminar = this.eliminar;
+        /*const function_eliminar = this.eliminar;
         const function_modificar = this.modificar;
 
         $(document).ready(function(){
@@ -372,9 +439,6 @@ export default {
                             searchable: false,
                             //wrap: true, 
                             render: function () {
-                                /*<button class="btn btn-success"><i class="fas fa-stethoscope"></i></button>
-                                        <button class="btn btn-secondary"><i class="fas fa-notes-medical"></i>&nbsp;&nbsp;Diagnosticos</button> */
-
                                 return `
                                         <button class="btn btn-info text-white boton_modificar"><i class="fas fa-pencil-alt"></i>&nbsp;&nbsp;Modificar</button>
                                         <button class="btn btn-danger boton_eliminar"><i class="fas fa-trash-alt"></i>&nbsp;&nbsp;Eliminar</button>`
@@ -394,7 +458,7 @@ export default {
                 $(".boton_modificar").click(function(){
                     function_modificar($(this).parents("tr")[0].id);
                 });
-            });
+            });*/
     }
 }
 </script>

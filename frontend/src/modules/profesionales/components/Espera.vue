@@ -7,47 +7,52 @@
                 </div>
             </div>
 
-            <table class="table table-hover table-cell-border table-striped" id="espera_profesionales">
-                <thead>
-                    <tr>
-                        <th>Orden</th>
-                        <th>Paciente</th>
-                        <th>Tipo Doc.</th>
-                        <th>Nro. Doc.</th>
-                        <th>Especialidad</th>
-                        <th>Cant. Sesiones</th>
-                        <th>Turno</th>
-                        <th>Horario</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="dato in atendidos" :key="dato.id_cita" :id="dato.id_cita">
-                        <td>{{dato.orden}}</td>
-                        <td>{{dato.paciente}}</td>
-                        <td>{{dato.tipo_doc}}</td>
-                        <td>{{dato.nro_doc}}</td>
-                        <td>{{dato.especialidad}}</td>
-                        <td>{{dato.cant_ses}}</td>
-                        <td>{{dato.turno}}</td>
-                        <td>{{dato.horario}}</td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            <div class="container" style="margin-top: 10px;">
+                <VueGoodTable
+                    :columns="columns"
+                    :rows="atendidos"
+                    styleClass="vgt-table condensed"
+                    :pagination-options="{
+                        enabled: true,
+                        mode: 'pages',
+                        perPageDropdownEnabled: false,
+                        perPage: 9,
+                        nextLabel: 'Siguiente',
+                        ofLabel: 'de',
+                        pageLabel: 'Pagina',
+                        prevLabel: 'Anterior',    
+                    }"
+                    :search-options="{
+                        enabled: false,
+                        externalQuery: filtro
+                    }"
+                >
+                    <template #emptystate>
+                        <div class="text-center">{{texto_tabla}}</div>
+                    </template>
 
+                    <template #table-row="props">
+                        <span v-if="props.column.field == 'controles'">
+                            <button class="btn btn-success" @click="funcion_iniciar(props.row.id_cita)"><i class="fas fa-play"></i>&nbsp;&nbsp;Iniciar atención</button>
+                        </span>
+
+                        <span v-else>
+                            {{props.formattedRow[props.column.field]}}
+                        </span>
+                    </template>
+                </VueGoodTable>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
-import 'jquery/dist/jquery.min.js';
-import "datatables.net-dt/js/dataTables.dataTables"
-import "datatables.net-dt/css/jquery.dataTables.min.css"
-import * as $ from 'jquery';
 import authApi from '@/api/authApi'
 import { mapGetters} from 'vuex'
 import Swal  from 'sweetalert2'
+
+import { VueGoodTable } from 'vue-good-table-next';
+import 'vue-good-table-next/dist/vue-good-table-next.css'
 
 export default {
     created(){
@@ -57,9 +62,57 @@ export default {
     data(){
         return{
             id_profesional: null,
-            atendidos: null,
+            atendidos: [],
             bandera: false,
+
+            filtro: null,
+            texto_tabla: null,
+
+            columns: [
+                {
+                    label: 'Orden',
+                    field: 'orden'
+                },
+                {
+                    label: 'Paciente',
+                    field: 'paciente'
+                },
+                {
+                    label: 'Tipo Doc.',
+                    field: 'tipo_doc'
+                },
+                {
+                    label: 'Nro. doc.',
+                    field: 'nro_doc'
+                },
+                {
+                    label: 'Especialidad',
+                    field: 'especialidad'
+                },
+                {
+                    label: 'Cant. Sesiones',
+                    field: 'cant_ses'
+                },
+                {
+                    label: 'Turno',
+                    field: 'turno'
+                },
+                {
+                    label: 'Horario',
+                    field: 'horario'
+                },
+                {
+                    label: 'Controles',
+                    field: 'controles',
+                    sortable: false,
+                }
+            ]
+
         }
+    },
+
+    components: {
+        VueGoodTable
     },
 
     computed:{
@@ -98,12 +151,15 @@ export default {
         async get_citas(){
             await this.obtener_id_prof();
             if(this.id_profesional){
+                this.atendidos = []
+                this.texto_tabla = 'Cargando lista... Por favor espere'
                 const {data} = await authApi.get(`/sala_espera/profesional/espera?id_profesional=${this.id_profesional}`, {
                     headers: {
                         'Authorization': `Bearer ${this.accessToken}`
                     }
                 })
 
+                this.texto_tabla = 'No hay pacientes en espera'
                 this.atendidos = data
             }
 
@@ -163,60 +219,6 @@ export default {
     async mounted(){
         await this.get_citas();
         await this.verificar_consulta_curso();
-
-        const funcion_iniciar = this.funcion_iniciar;
-        $(document).ready(function(){
-            let espera_prof = $('#espera_profesionales').dataTable({
-                responsive: true,
-                destroy: true,
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json",
-                    emptyTable: "No hay pacientes en sala de espera",
-                },
-                fixedColumns: true,
-                pageLength: 7,
-                lengthChange: false,
-                searching: true,
-                searchDelay: 0,
-                ordering: false,
-                dom: 'lrtip',
-                columnDefs: [
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"}
-                ],
-                columns:[{"className": "dt-center", "targets": "_all"}, 
-                         {"className": "dt-center", "targets": "_all"},
-                         {"className": "dt-center", "targets": "_all"},
-                         {"className": "dt-center", "targets": "_all"},
-                         {"className": "dt-center", "targets": "_all"},
-                         {"className": "dt-center", "targets": "_all"},
-                         {"className": "dt-center", "targets": "_all"},
-                         {"className": "dt-center", "targets": "_all"},
-                         {title: 'Control',
-                          className: "dt-center",
-                          orderable: false,
-                          searchable: false,
-                          render: function () {
-                            return `<button class="btn btn-success"><i class="fas fa-play"></i>&nbsp;&nbsp;Iniciar atención</button>`
-                            }
-                         }]
-            }).api();
-        
-            $('#buscador_espera_prof').on('keyup change', function(){
-                espera_prof.search($(this).val()).draw();
-            });
-
-            $(".btn-success").click(function(){
-                let index = $(this).parents("tr")[0].id;
-                funcion_iniciar(index);
-            });
-        })
     }
 }
 </script>

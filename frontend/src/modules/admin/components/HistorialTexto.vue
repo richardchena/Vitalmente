@@ -1,8 +1,18 @@
 <template>
     <div>
-        <div class="container">
+        <div class="container" v-if="bandera">
             <br>
             <textarea v-model="datos" class="form-control" rows="10" readonly></textarea>
+        </div>
+
+        <div v-else class="text-center" style="margin-top: 20px;">
+            <img src="@/assets/loading.gif" 
+                alt="persona" 
+                class="rounded-circle"
+                height="30"
+                style="margin-right: 10px;"
+            >
+            <strong style="margin-top: 10px"><label>Cargando datos del historial... Espere por favor</label></strong>
         </div>
     </div>
 </template>
@@ -10,11 +20,12 @@
 <script>
     import authApi from '@/api/authApi'
     import { mapGetters} from 'vuex'
-    //import Swal  from 'sweetalert2'
 
     export default {
         async created(){
+            this.bandera = false;
             await this.obtener_lista()
+            this.bandera = true;
             this.cargar()
         },
 
@@ -26,7 +37,8 @@
             return{
                 id: this.$route.params.id,
                 datos: '',
-                registros: null
+                registros: null,
+                bandera: null
             }
         },
 

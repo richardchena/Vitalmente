@@ -51,12 +51,13 @@
                 </div>
             </div>
         </nav>
-        <div class="contenedor">
+
+        <div class="contenedor" >
             <br>
             <strong><p class="text-center">Datos del paciente (Nro. {{id_paciente}})</p></strong>
             <hr>
 
-            <div class="container">
+            <div class="container" v-if="nombre">
                 <div class="row">
                     <div class="col-sm">
                         <strong><p class="text-left">Nombre completo: {{nombre}}</p></strong>
@@ -68,11 +69,20 @@
                     </div>
                     <div class="col-sm">
                         <strong><p class="text-left">Número de documento: {{nro_doc}}</p></strong>
-                        <strong><p class="text-left">Lugar de nacimiento: {{pais}} - {{ciudad}}</p></strong>
+                        <strong><p class="text-left">Lugar de residencia: {{ciudad}}</p></strong>
                     </div>
                 </div>
             </div>
-    
+
+            <div v-else class="text-center" style="margin-bottom: 10px;">
+                <img src="@/assets/loading.gif" 
+                    alt="persona" 
+                    class="rounded-circle"
+                    height="30"
+                    style="margin-right: 10px;"
+                >
+                <strong style="margin-top: 10px;"><label>Cargando datos del paciente... Espere por favor</label></strong>
+            </div>
         </div>
 
         <div style="padding: 5px 55px 0px 55px">

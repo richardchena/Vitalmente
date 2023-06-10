@@ -1,23 +1,5 @@
 <template>
     <div>
-        <!--<table class="table table-hover table-cell-border table-striped" id="tabla2">
-            <thead>
-            <tr>
-                <th>Día</th>
-                <th>Turno mañana</th>
-                <th>Turno tarde</th>
-                <th>Especialidad</th>
-            </tr>
-            </thead>
-            <tbody>
-                <tr v-for="dato in agendas" :key="dato.id_dia">
-                    <td>{{dato.dia}}</td>
-                    <td >{{dato.turno_man}}</td>
-                    <td>{{dato.turno_tar}}</td>
-                    <td>{{dato.especialidad}}</td>
-                </tr>
-            </tbody>
-        </table>-->
         <VueGoodTable
             :columns="columns"
             :rows="rows"
@@ -34,7 +16,7 @@
             }"
         >
             <template #emptystate>
-                <div class="text-center">No hay datos para mostrar :(</div>
+                <div class="text-center"><strong>{{text}}</strong></div>
             </template>
         </VueGoodTable>
 
@@ -42,11 +24,6 @@
 </template>
 
 <script>
-    /*import 'jquery/dist/jquery.min.js';
-    import "datatables.net-dt/js/dataTables.dataTables"
-    import "datatables.net-dt/css/jquery.dataTables.min.css"
-    import * as $ from 'jquery';*/
-
     import { VueGoodTable } from 'vue-good-table-next';
     import 'vue-good-table-next/dist/vue-good-table-next.css'
 
@@ -60,7 +37,6 @@ export default {
     data() {
        return {
             agendas: null,
-
 
             columns: [
                 {
@@ -82,6 +58,8 @@ export default {
             ],
 
             rows: [],
+
+            text: null,
        } 
     },
 
@@ -98,10 +76,6 @@ export default {
         }
     },
 
-    /*async mounted() {
-        await this.inicio_tabla()
-    },*/
-
     async created(){
         await this.get_lista();
     },
@@ -112,6 +86,9 @@ export default {
 
     methods: {
         async get_lista(){
+            this.rows = []
+            this.text = 'Cargando horarios... Espere por favor'
+
             if(this.id_agenda){
                 const {data} = await authApi.get('/profesionales/agenda/dias', {
                     params: {
@@ -123,42 +100,9 @@ export default {
                 })
 
                 this.rows = data
-                //this.agendas = data
+                this.text = 'No hay datos para mostrar'
             }
         },
-
-        /*async inicio_tabla(){
-            await this.get_lista();
-            $(document).ready(function(){
-                $('#tabla2').dataTable({
-                    responsive: true,
-                    destroy: true,
-                    ordering: false,
-                    language: {
-                        url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json",
-                        emptyTable: " "
-                    },
-                    fixedColumns: true,
-                    pageLength: 10,
-                    lengthChange: false,
-                    searching: true,
-                    //searchDelay: 0,
-                    dom: '',
-                    columnDefs: [
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"},
-                        {"className": "text-center"}
-                    ],
-                    columns:[
-                        {"className": "dt-center", "targets": "_all"},
-                        {"className": "dt-center", "targets": "_all"},
-                        {"className": "dt-center", "targets": "_all"},
-                        {"className": "dt-center", "targets": "_all"}
-                    ]
-                }).api();
-            });
-        }*/
     }
 }
 </script>

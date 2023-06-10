@@ -1,48 +1,54 @@
 <template>
     <div>
         <div class="container">
-            <table class="table table-hover table-cell-border table-striped" id="tabla">
-                <thead>
-                    <tr>
-                        <th>Orden</th>
-                        <th>Fecha</th>
-                        <th>Día</th>
-                        <th>Hora</th>
-                        <th>Profesional</th>
-                        <th>Especialidad</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(dato, index) in datos_citas" :key="index" :id="index">
-                        <td>{{index + 1}}</td>
-                        <td>{{dato.fecha}}</td>
-                        <td>{{dato.dia}}</td>
-                        <td>{{dato.hora}}</td>
-                        <td>{{dato.profesional}}</td>
-                        <td>{{dato.especialidad}}</td>
-                        <th></th>
-                    </tr>
-                </tbody>
-            </table>
+            <VueGoodTable
+                :columns="columns"
+                :rows="datos_citas"
+                styleClass="vgt-table condensed"
+                :pagination-options="{
+                    enabled: true,
+                    mode: 'pages',
+                    perPageDropdownEnabled: false,
+                    perPage: 5,
+                    nextLabel: 'Siguiente',
+                    ofLabel: 'de',
+                    pageLabel: 'Pagina',
+                    prevLabel: 'Anterior',    
+                }"
+            >
+                <template #emptystate>
+                    <div class="text-center">{{msg}}</div>
+                </template>
+
+                <template #table-row="props">
+                    <span v-if="props.column.field == 'control'">
+                        <button class="btn btn-success" @click="reservar(props.row.originalIndex)"><i class="fas fa-plus"></i>&nbsp;&nbsp;Reservar</button>
+                    </span>
+
+                    <span v-else>
+                        {{props.formattedRow[props.column.field]}}
+                    </span>
+                </template>
+            </VueGoodTable>
         </div>
     </div>
 </template>
 
 <script>
-//Bootstrap and jQuery libraries
-import 'jquery/dist/jquery.min.js';
-//Datatable Modules
-import "datatables.net-dt/js/dataTables.dataTables"
-import "datatables.net-dt/css/jquery.dataTables.min.css"
-import * as $ from 'jquery';
 import 'bootstrap';
 import { mapGetters} from 'vuex'
 import authApi from '@/api/authApi'
 
 import Swal  from 'sweetalert2'
 
+import { VueGoodTable } from 'vue-good-table-next';
+import 'vue-good-table-next/dist/vue-good-table-next.css'
+
 export default {
+    components: {
+        VueGoodTable
+    },
+
     props: {
         id_paciente: {
             type: Number,
@@ -60,27 +66,65 @@ export default {
             type: Number,
             required: true
         },
-        id_fecha: {
-            type: String,
-            required: true
-        }
+
+        id_fecha: {}
     },
+
+    /*watch: {
+        id_profesional(){
+            this.obtener_lista_disponible()
+        },
+
+        id_especialidad(){
+            this.obtener_lista_disponible()
+        },
+
+        id_turno(){
+            this.obtener_lista_disponible()
+        },
+
+        id_fecha(){
+            this.obtener_lista_disponible()
+        }
+    },*/
 
     data(){
         return {
             datos_citas: [],
             datos_sin_filtro: [],
             tabla: null,
-            //query_id_profesional: this.$route.query.id_profesional
+            msg: null,
+
+            columns: [
+                {
+                    label: 'Fecha',
+                    field: 'fecha'
+                },
+                {
+                    label: 'Día',
+                    field: 'dia'
+                },
+                {
+                    label: 'Hora',
+                    field: 'hora'
+                },
+                {
+                    label: 'Profesional',
+                    field: 'profesional'
+                },
+                {
+                    label: 'Especialidad',
+                    field: 'especialidad'
+                },
+                {
+                    label: 'Control',
+                    field: 'control',
+                    sortable: false,
+                },
+            ]
         }
     },
 
-    /*watch: {
-        query_id_profesional() {
-            console.log('sdvkjsndv')
-            this.$router.reload()
-        }
-    },*/
 
     computed:{
         ...mapGetters('auth', ['accessToken']),
@@ -90,6 +134,9 @@ export default {
 
     methods: {
         async obtener_lista_disponible(){
+            this.datos_citas = []
+            this.msg = 'Cargando fechas disponibles... Espere por favor'
+            
             const {data} = await authApi.get('/reservas/v2', {
                 params: {
                     id_profesional: this.$route.query.id_profesional || 0,
@@ -103,13 +150,13 @@ export default {
             })
 
             this.datos_citas = data
+            this.msg = 'No hay fechas disponibles'
         },
 
         reservar(id){
             if(this.datos_citas !== undefined){
                 let obj = this.datos_citas[id]
 
-                console.log(obj)
                 Swal.fire({
                 title: '<strong>Confirme la reserva</strong>',
                 icon: 'question',
@@ -189,53 +236,6 @@ export default {
 
     async mounted(){
         await this.obtener_lista_disponible();
-        const funcion_reserva = this.reservar;
-
-        $(document).ready(function(){
-            this.tabla = $('#tabla').dataTable({
-                responsive: true,
-                destroy: true,
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json",
-                    emptyTable: "No hay fechas disponibles para los filtros aplicados"
-                },
-                fixedColumns: true,
-                pageLength: 5,
-                lengthChange: false,
-                searching: true,
-                searchDelay: 0,
-                order: [[0, 'asc']],
-                dom: 'lrtip',
-                columns:[
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {
-                        className: "dt-center",
-                        title: 'Control',
-                        orderable: false,
-                        searchable: false,
-                        //wrap: true, 
-                        render: function () {
-                            let reservar;
-
-                            reservar = '<button class="btn btn-success boton"><i class="fas fa-plus"></i>&nbsp;&nbsp;Reservar</button>';
-
-                            return reservar;
-                        }
-                    }
-                ]
-            }).api();
-
-            $(".btn-success").click(function(){
-                let index = $(this).parents("tr")[0].id;
-                funcion_reserva(index);
-            });
-
-        })
     },
 }
 </script>

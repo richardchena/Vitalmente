@@ -63,31 +63,26 @@
             </div>
         </nav>
 
-        <div class="contenedor">
-            <table class="table table-hover table-cell-border table-striped" id="tabla">
-                <thead>
-                    <tr>
-                        <th>Nro.</th>
-                        <th>Fecha Reserva</th>
-                        <th>Paciente</th>
-                        <th>Fecha Turno</th>
-                        <th>Profesional</th>
-                        <th>Especialidad</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="dato in datos" :key="dato.id_cita" :id="dato.id_cita">
-                        <td>{{dato.id_cita}}</td>
-                        <td>{{dato.fecha_reserva}}</td>
-                        <td>{{dato.paciente}}</td>
-                        <td>{{dato.fecha_turno}}</td>
-                        <td>{{dato.profesional}}</td>
-                        <td>{{dato.especialidad}}</td>
-                        <td>{{dato.estado_cita}}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="contenedor" style="margin-top: 10px;">
+            <VueGoodTable
+                :columns="columns"
+                :rows="datos"
+                styleClass="vgt-table condensed"
+                :pagination-options="{
+                    enabled: true,
+                    mode: 'pages',
+                    perPageDropdownEnabled: false,
+                    perPage: 9,
+                    nextLabel: 'Siguiente',
+                    ofLabel: 'de',
+                    pageLabel: 'Pagina',
+                    prevLabel: 'Anterior',    
+                }"
+            >
+                <template #emptystate>
+                    <div class="text-center">{{texto_tabla}}</div>
+                </template>
+            </VueGoodTable>
         </div>
     </div>
 </template>
@@ -98,14 +93,11 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import { mapGetters} from 'vuex'
 import '@vuepic/vue-datepicker/dist/main.css'
 
-//Bootstrap and jQuery libraries
-import 'jquery/dist/jquery.min.js';
-//Datatable Modules
-import "datatables.net-dt/js/dataTables.dataTables"
-import "datatables.net-dt/css/jquery.dataTables.min.css"
-import * as $ from 'jquery';
 import 'bootstrap';
 import format from 'date-fns/format';
+
+import { VueGoodTable } from 'vue-good-table-next';
+import 'vue-good-table-next/dist/vue-good-table-next.css'
 
 export default {
     data(){
@@ -115,11 +107,44 @@ export default {
             dias_semana: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
             marcadores: [],
             dias_desactivados: [],
-            datos: null,
+            datos: [],
             fecha_filtro: null,
 
             profesionales: [{id: 0, nombre: '--SELECCIONA UN PROFESIONAL--'}], 
             selectProfesional: this.$route.query.cod || 0,
+
+            texto_tabla: null,
+
+            columns: [
+                {
+                    label: 'Nro. Reserva',
+                    field: 'id_cita'
+                },
+                {
+                    label: 'Fecha Reserva',
+                    field: 'fecha_reserva'
+                },
+                {
+                    label: 'Paciente',
+                    field: 'paciente'
+                },
+                {
+                    label: 'Fecha Turno',
+                    field: 'fecha_turno'
+                },
+                {
+                    label: 'Profesional',
+                    field: 'profesional'
+                },
+                {
+                    label: 'Especialidad',
+                    field: 'especialidad'
+                },
+                {
+                    label: 'Estado',
+                    field: 'estado_cita'
+                },
+            ]
         }
     },
 
@@ -133,7 +158,8 @@ export default {
     },
 
     components: {
-        VueDatePicker
+        VueDatePicker,
+        VueGoodTable
     },
 
     watch:{
@@ -157,7 +183,8 @@ export default {
                     await this.$router.replace({query: { fecha: this.fecha_filtro, cod: prueba}})
                 }
                 
-                this.$router.go(0);
+                //this.$router.go(0);
+                this.obtener_lista()
             }
         },
     },
@@ -165,7 +192,7 @@ export default {
     methods: {
         async ver_todos(){
             await this.$router.replace({query: {}})
-            this.$router.go(0);
+            this.obtener_lista()
         },
 
         async cambiar_profesional(){
@@ -176,7 +203,8 @@ export default {
                     await this.$router.replace({query: { fecha: this.$route.query.fecha, cod: this.selectProfesional}})
                 }
                 
-                this.$router.go(0);
+                this.obtener_lista()
+                //this.$router.go(0);
             //}
         },
 
@@ -193,6 +221,10 @@ export default {
         },
 
         async obtener_lista(){
+            this.datos = []
+            this.texto_tabla = 'Cargando datos... Espere por favor'
+            //await new Promise(resolve => setTimeout(resolve, 1000));
+
             let obj = {}
 
             if(!this.$route.query.cod && this.$route.query.fecha) {
@@ -216,6 +248,7 @@ export default {
             })
 
             this.datos = data
+            this.texto_tabla = 'No hay registros para mostrar'
         },
 
         async obtener_lista_profs(){
@@ -257,33 +290,6 @@ export default {
 
     async mounted(){
         await this.obtener_lista()
-        $(document).ready(function(){
-            this.tabla = $('#tabla').dataTable({
-                responsive: true,
-                destroy: true,
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json",
-                    emptyTable: "No hay citas agendadas"
-                },
-                fixedColumns: true,
-                pageLength: 8,
-                lengthChange: false,
-                searching: true,
-                searchDelay: 0,
-                order: [[0, 'asc']],
-                dom: 'lrtip',
-                columns:[
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"},
-                    {"className": "dt-center", "targets": "_all"}
-                ]
-            }).api();
-
-        });
     }
 }
 </script>

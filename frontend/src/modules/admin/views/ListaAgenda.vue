@@ -45,56 +45,71 @@
             </div>
         </nav>
 
+        <div class="text-center" style="margin-top: 15px; margin-bottom: -10px;" v-show="nombre_agenda">
+            <i>Profesional: {{ nombre_agenda }}</i>
+        </div>
+
         <div class="contendor_tabla">
-            <table class="table table-hover table-cell-border table-striped" id="tabla">
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Profesional</th>
-                    <th>Fecha inicio</th>
-                    <th>Fecha fin</th>
-                    <th>Cant. Reservas</th>
-                    <th>Estado</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="dato in agendas" :key="dato.id">
-                    <td>{{dato.id}}</td>
-                    <td>{{dato.name}}</td>
-                    <td>{{dato.fecha_desde}}</td>
-                    <td>{{dato.fecha_hasta}}</td>
-                    <td>{{dato.cantidad_agenda}}</td>
-                    <td v-if="dato.estado === 'POR VENCER'" style="color: #dc3545">{{dato.estado}}</td>
-                    <td v-else-if="dato.estado === 'VENCIDO'" style="color: black">{{dato.estado}}</td>
-                    <td v-else style="color: #1d6042">{{dato.estado}}</td>
-                    <th></th>
-                </tr>
-                
-                </tbody>
-            </table>
+            <VueGoodTable
+                :columns="columns_agenda"
+                :rows="agendas"
+                styleClass="vgt-table condensed"
+                :pagination-options="{
+                    enabled: true,
+                    mode: 'pages',
+                    perPageDropdownEnabled: false,
+                    perPage: 9,
+                    nextLabel: 'Siguiente',
+                    ofLabel: 'de',
+                    pageLabel: 'Pagina',
+                    prevLabel: 'Anterior',    
+                }"
+            >
+                <template #emptystate>
+                    <div class="text-center">{{texto_tabla}}</div>
+                </template>
+
+                <template #table-row="props">
+                    <span v-if="props.column.field == 'controles'">
+                        <button class="btn btn-secondary boton" @click="ver_detalle(props.row.id, props.row.fecha_desde, props.row.fecha_hasta, props.row.name)"><i class="far fa-file-alt"></i>&nbsp;&nbsp;Ver detalle</button>
+                        <button v-if="props.row.cantidad_agenda === 0 && props.row.estado !== 'VENCIDO'" class="btn btn-danger" @click="funcion_eliminar(props.row.id)"><i class="fas fa-trash"></i>&nbsp;&nbsp;Eliminar</button>
+                        <button v-else class="btn btn-danger" disabled><i class="fas fa-trash"></i>&nbsp;&nbsp;Eliminar</button>
+                    </span>
+
+                    <span v-if="props.column.field == 'estado'">
+                        <span v-if="props.row.estado === 'POR VENCER'" style="color: #dc3545">{{props.row.estado}}</span>
+                        <span v-else-if="props.row.estado === 'VENCIDO'" style="color: black">{{props.row.estado}}</span>
+                        <span v-else style="color: #1d6042">{{props.row.estado}}</span>
+                    </span>
+
+                    <span v-else>
+                        {{props.formattedRow[props.column.field]}}
+                    </span>
+                </template>
+            </VueGoodTable>
         </div>
     </div>
 </template>
 
 
 <script>
-//Bootstrap and jQuery libraries
-import 'jquery/dist/jquery.min.js';
-//Datatable Modules
-import "datatables.net-dt/js/dataTables.dataTables"
-import "datatables.net-dt/css/jquery.dataTables.min.css"
-import * as $ from 'jquery';
-
 import {mapGetters} from 'vuex'
 import authApi from '@/api/authApi'
 import 'bootstrap';
 import {defineAsyncComponent} from 'vue'
 import Swal  from 'sweetalert2'
 
+import { VueGoodTable } from 'vue-good-table-next';
+import 'vue-good-table-next/dist/vue-good-table-next.css'
+
 export default {
     components: {
-        Horario: defineAsyncComponent(() => import ('@/modules/admin/views/VerHorario'))
+        Horario: defineAsyncComponent(() => import ('@/modules/admin/views/VerHorario')),
+        VueGoodTable
+    },
+
+    async created() {
+        document.title = 'Agendas'
     },
 
     methods: {
@@ -138,6 +153,9 @@ export default {
         },
 
         async get_lista(){
+            this.texto_tabla = 'Cargando los datos... Por favor espere'
+            this.agendas = []
+
             const {data} = await authApi.get('/profesionales/agenda/lista', {
                 params: {
                     id_profesional: this.$route.params.id_profesional
@@ -148,6 +166,7 @@ export default {
             })
 
             this.agendas = data
+            this.texto_tabla = 'No hay registros disponibles'
         },
 
         check() {
@@ -156,6 +175,25 @@ export default {
                 if(this.agendas[i].estado === 'VIGENTE') {
                     this.bandera = 1
                 }
+            }
+        },
+
+        async obtener_nombre_profesional(){
+            const {data} = await authApi.get('/obtener_nombre_profesional?id_profesional=' + this.$route.params.id_profesional, {
+                headers: {
+                    'Authorization': `Bearer ${this.accessToken}`
+                }
+            })
+
+            this.nombre_agenda = 'Cargando información...'
+            let nombre;
+
+            if(!data){
+                this.nombre_agenda = 'No se puede obtener los datos del profesional :('
+
+            } else {
+                nombre = data.profesional.split(' ').filter((item) => item.length !== 0).join(' ')
+                this.nombre_agenda = nombre
             }
         },
 
@@ -199,64 +237,6 @@ export default {
 
         async inicio() {
             await this.get_lista();
-            const funcion_ver_detalle = this.ver_detalle;
-            const funcion_eliminar = this.funcion_eliminar;
-
-            $(document).ready(function(){
-                $('#tabla').dataTable({
-                    responsive: true,
-                    destroy: true,
-                    language: {
-                        url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json",
-                        emptyTable: "Aún no se han cargado fechas de consultas"
-                    },
-                    fixedColumns: true,
-                    pageLength: 10,
-                    lengthChange: false,
-                    ordering: false,
-                    //searching: true,
-                    //searchDelay: 0,
-                    dom: 'lrtip',
-                    columns:[
-                        {a: "id", orderable: false},
-                        {c: "name", orderable: false},
-                        {d: "nro_doc", orderable: false},
-                        {e: "name", orderable: false},
-                        {e: "name", orderable: false},
-                        {e: "edad", orderable: false},
-                        {
-                            j: null, 
-                            title: 'Controles',
-                            orderable: false,
-                            searchable: false,
-                            //wrap: true, 
-                            //render: function () {
-                            render: function (data, type, row) {
-
-                                if(+row[4] === 0 && row[5] !== 'VENCIDO') {
-                                    return `<button class="btn btn-secondary boton"><i class="far fa-file-alt"></i>&nbsp;&nbsp;Ver detalle</button>
-                                            <button class="btn btn-danger eliminar_agenda"><i class="fas fa-trash"></i>&nbsp;&nbsp;Eliminar</button>`
-                                
-                                } else {
-                                    return `<button class="btn btn-secondary boton"><i class="far fa-file-alt"></i>&nbsp;&nbsp;Ver detalle</button>
-                                            <button class="btn btn-danger" style="cursor: not-allowed;" disabled><i class="fas fa-trash"></i>&nbsp;&nbsp;Eliminar</button>`;
-                                }
-                            }
-                        }
-                    ]
-                }).api();
-
-                $(".btn-secondary").click(function(){
-                    funcion_ver_detalle($(this).parents("tr").find("td").eq(0).html(),
-                                        $(this).parents("tr").find("td").eq(2).html(),
-                                        $(this).parents("tr").find("td").eq(3).html(),
-                                        $(this).parents("tr").find("td").eq(1).html());
-                });
-
-                $(".eliminar_agenda").click(function(){
-                    funcion_eliminar($(this).parents("tr").find("td").eq(0).html());
-                });
-            })
         }
     },
 
@@ -267,16 +247,50 @@ export default {
 
     data() {
         return {
-            agendas: null,
+            nombre_agenda: null,
+            agendas: [],
             id_agenda_select: 0,
             fecha_desde_select: null,
             fecha_hasta_select: null,
             prof_selec: null,
-            bandera: null
+            bandera: null,
+            texto_tabla: null,
+            columns_agenda: [
+                /*{
+                    label: 'ID',
+                    field: 'id'
+                },*/
+                {
+                    label: 'Profesional',
+                    field: 'name'
+                },
+                {
+                    label: 'Fecha Inicio',
+                    field: 'fecha_desde'
+                },
+                {
+                    label: 'Fecha Fin',
+                    field: 'fecha_hasta'
+                },
+                {
+                    label: 'Cant. Reservas',
+                    field: 'cantidad_agenda'
+                },
+                {
+                    label: 'Estado',
+                    field: 'estado'
+                },
+                {
+                    label: 'Controles',
+                    field: 'controles',
+                    sortable: false,
+                }
+            ]
         }
     },
 
     async mounted(){
+        this.obtener_nombre_profesional()
         this.inicio()
     }
 }

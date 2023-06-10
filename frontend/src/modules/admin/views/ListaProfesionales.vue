@@ -46,7 +46,48 @@
                 </div>
             </div>
         </nav>
-        <div class="contendor_tabla">
+
+        <div class="container" style="margin-top: 10px;">
+            <VueGoodTable
+                :columns="columns"
+                :rows="users"
+                styleClass="vgt-table condensed"
+                :pagination-options="{
+                    enabled: true,
+                    mode: 'pages',
+                    perPageDropdownEnabled: false,
+                    perPage: 9,
+                    nextLabel: 'Siguiente',
+                    ofLabel: 'de',
+                    pageLabel: 'Pagina',
+                    prevLabel: 'Anterior',    
+                }"
+                :search-options="{
+                    enabled: false,
+                    externalQuery: filtro
+                }"
+            >
+                <template #emptystate>
+                    <div class="text-center">{{texto_tabla}}</div>
+                </template>
+
+                <template #table-row="props">
+                    <span v-if="props.column.field == 'controles'">
+                        <button class="btn btn-success boton" title="Agenda profesional" @click="agenda(props.row.id)"><i class="far fa-calendar-alt"></i></button>
+                        <button class="btn btn-info boton" title="Modificar registro" @click="modificar(props.row.id)"><i class="fas fa-pencil-alt"></i></button>
+                        <button v-if="props.row.status === 'Activa'" class="btn btn-warning boton" title="Desactivar cuenta" @click="activar_desactivar(props.row.id)"><i class="fas fa-user"></i></button>
+                        <button v-else class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user-slash" @click="activar_desactivar(props.row.id)"></i></button>
+                        <button class="btn btn-danger boton" title="Eliminar" @click="eliminar(props.row.id, props.row.name)"><i class="fas fa-trash-alt"></i></button>
+                    </span>
+
+                    <span v-else>
+                        {{props.formattedRow[props.column.field]}}
+                    </span>
+                </template>
+            </VueGoodTable>
+        </div>
+
+        <div class="contendor_tabla" v-show="false">
             <table class="table table-hover table-cell-border table-striped" id="tabla">
                 <thead>
                 <tr>
@@ -80,18 +121,14 @@
 </template>
 
 <script>
-    //Bootstrap and jQuery libraries
-    import 'jquery/dist/jquery.min.js';
-    //Datatable Modules
-    import "datatables.net-dt/js/dataTables.dataTables"
-    import "datatables.net-dt/css/jquery.dataTables.min.css"
-    import * as $ from 'jquery';
-
     import {mapGetters} from 'vuex'
     import authApi from '@/api/authApi'
     import Swal  from 'sweetalert2'
     import 'bootstrap';
     import {defineAsyncComponent} from 'vue'
+
+    import { VueGoodTable } from 'vue-good-table-next';
+    import 'vue-good-table-next/dist/vue-good-table-next.css'
 
     export default {
         computed:{
@@ -99,7 +136,8 @@
         },
 
         components: {
-            FormularioActualizar: defineAsyncComponent(() => import ('@/modules/admin/components/EstructuraRegistroProfesional'))
+            FormularioActualizar: defineAsyncComponent(() => import ('@/modules/admin/components/EstructuraRegistroProfesional')),
+            VueGoodTable
         },
 
 
@@ -107,12 +145,50 @@
             return {
                 filtro: null,
                 tabla: null,
-                users: null,
+                users: [],
                 isLoading: false,
                 msg: 'Actualizando datos',
 
                 //DATOS DEL MODAL
-                id_user_mod: 0
+                id_user_mod: 0,
+
+                texto_tabla: null,
+
+                columns: [
+                    /*{
+                        label: 'Exp.',
+                        field: 'id'
+                    },*/
+                    {
+                        label: 'Nombre Completo',
+                        field: 'name'
+                    },
+                    {
+                        label: 'Tipo Doc.',
+                        field: 'tipo_doc'
+                    },
+                    {
+                        label: 'Nro. Doc.',
+                        field: 'nro_doc'
+                    },
+                    {
+                        label: 'Residencia',
+                        field: 'residencia'
+                    },
+                    {
+                        label: 'Teléfono',
+                        field: 'telefono'
+                    },
+                    {
+                        label: 'Estado Cuenta',
+                        field: 'status'
+                    },
+                    {
+                        label: 'Controles',
+                        field: 'controles',
+                        sortable: false,
+                    }
+                ]
             }
         },
 
@@ -127,25 +203,30 @@
             },
 
             async get_profesionales(){
+                this.texto_tabla = 'Cargando los datos... Por favor espere'
+                this.users = []
+
                 const {data} = await authApi.get('/profesionales', {
                     headers: {
                         'Authorization': `Bearer ${this.accessToken}`
                     }
                 })
+
                 this.users = data
+                this.texto_tabla = 'No hay registros disponibles'
             },
 
             async activar_desactivar(id){
+                this.msg = 'Actualizando estado del usuario'
                 authApi.defaults.headers.common['Authorization'] = `Bearer ${this.accessToken}`
 
                 try {
                     this.isLoading = true;
-                    const {data} = await authApi.post(`/profesionales/cambiar_estado/${id}`)
-                    this.msg = 'Actualizando estado del usuario'
+                    await authApi.post(`/profesionales/cambiar_estado/${id}`)
                     await new Promise(resolve => setTimeout(resolve, 1500));
+                    this.get_profesionales()
                     this.isLoading = false;
-                    this.$router.go();
-                    console.log(data)
+                    
 
                 } catch (error) {
                     this.isLoading = false;
@@ -196,81 +277,6 @@
 
         async mounted(){
             await this.get_profesionales();
-
-            const funcion_modificar = this.modificar;
-            const function_eliminar = this.eliminar;
-            const funcion_cambiar = this.activar_desactivar;
-            const function_agenda = this.agenda;
-
-            $(document).ready(function(){
-                var tabla = $('#tabla').dataTable({
-                    responsive: true,
-                    destroy: true,
-                    language: {
-                        url: "//cdn.datatables.net/plug-ins/1.10.11/i18n/Spanish.json"
-                    },
-                    fixedColumns: true,
-                    pageLength: 8,
-                    lengthChange: false,
-                    searching: true,
-                    searchDelay: 0,
-                    order: [],
-                    dom: 'lrtip',
-                    columns:[
-                        {a: "id"},
-                        {c: "name"},
-                        {d: "nro_doc"},
-                        {x: "registro"},
-                        {e: "edad"},
-                        {f: "genero"},
-                        {g: "email"},
-                        {i: "status"},
-                        {
-                            j: null, 
-                            title: 'Controles',
-                            orderable: false,
-                            searchable: false,
-                            render: function (data, type, row) {
-                                let mod, dis, del, cal;
-
-                                if(row[7] === 'Activa') {
-                                    cal = '<button class="btn btn-success boton" title="Agenda profesional"><i class="far fa-calendar-alt"></i></button>'
-                                    mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
-                                    dis = '<button class="btn btn-warning boton" title="Desactivar cuenta"><i class="fas fa-user"></i></button>';
-                                    del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
-                                } else {
-                                    cal = '<button class="btn btn-success boton" title="Agenda profesional"><i class="far fa-calendar-alt"></i></button>'
-                                    mod = '<button class="btn btn-info boton" title="Modificar registro"><i class="fas fa-pencil-alt"></i></button>';
-                                    dis = '<button class="btn btn-warning boton" title="Activar cuenta"><i class="fas fa-user-slash"></i></button>';
-                                    del = '<button class="btn btn-danger boton" title="Eliminar"><i class="fas fa-trash-alt"></i></button>';
-                                }
-
-                                return cal + mod + dis + del;
-                            }
-                        }
-                    ]
-                }).api();
-
-                $('#buscador').on('keyup change', function(){
-                    tabla.search($(this).val()).draw();
-                });
-
-                $(".btn-info").click(function(){
-                    funcion_modificar($(this).parents("tr").find("td").eq(0).html());
-                });
-
-                $(".btn-danger").click(function(){
-                    function_eliminar($(this).parents("tr").find("td").eq(0).html(), $(this).parents("tr").find("td").eq(1).html());
-                });
-
-                $(".btn-success").click(function(){
-                    function_agenda($(this).parents("tr").find("td").eq(0).html(), $(this).parents("tr").find("td").eq(1).html());
-                });
-
-                $(".btn-warning").click(function(){
-                    funcion_cambiar($(this).parents("tr").find("td").eq(0).html());
-                });
-            })
         },
     }
 </script>
