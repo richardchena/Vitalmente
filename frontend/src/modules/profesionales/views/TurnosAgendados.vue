@@ -142,14 +142,6 @@ export default {
                     label: 'Fecha Turno',
                     field: 'fecha_turno'
                 },
-                /*{
-                    label: 'Tipo Doc.',
-                    field: 'tipo_doc'
-                },
-                {
-                    label: 'Nro. doc.',
-                    field: 'nro_doc'
-                },*/
                 {
                     label: 'Especialidad',
                     field: 'especialidad'
@@ -186,10 +178,10 @@ export default {
                 this.fecha_filtro = format(this.fecha, 'yyyy/MM/dd')//'dd/MM/yyyy')
                 await this.$router.replace({query: { fecha: this.fecha_filtro }})
                 this.$router.go(0);
-            } else {
+            } /*else {
                 await this.$router.replace({query: { fecha: format(new Date(), 'yyyy/MM/dd') }})
                 this.$router.go(0);
-            }
+            }*/
         }
     },
 
@@ -233,7 +225,8 @@ export default {
 
         async ver_todos(){
             await this.$router.replace({query: {  }})
-            this.$router.go(0);
+            this.fecha = null
+            this.obtener_lista()
         },
 
         async cancelar_reserva(id_cita){

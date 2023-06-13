@@ -96,13 +96,14 @@
                 <strong style="margin-top: 10px"><label>Cargando... Espere por favor</label></strong>
             </div>
 
-            <hr style="margin-top: 6px">
+            <hr style="margin-top: 6px" v-if="bandera">
             <TablaFechas
                 :id_paciente=+nro_exp
                 :id_profesional=+selectProfesional
                 :id_especialidad=+selectEspecialidad
                 :id_turno=+selectTurno
                 :id_fecha=selectFecha
+                :bandera=bandera
             />
         </div>
     </div>

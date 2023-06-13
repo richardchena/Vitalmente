@@ -192,6 +192,7 @@ export default {
     methods: {
         async ver_todos(){
             await this.$router.replace({query: {}})
+            this.fecha = null
             this.obtener_lista()
         },
 

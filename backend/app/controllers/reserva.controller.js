@@ -769,8 +769,11 @@ exports.cancelar_cita_prof = async (req, res) => {
 exports.cancelar_citas_hoy = async (req, res) => {
     const id_profesional = req.query.id_profesional
 
-    const query = `UPDATE CITAS SET ESTADO = 2
-                   WHERE ID_PROFESIONAL = ${id_profesional} AND ESTADO = 1 AND FECHA = CURRENT_DATE`
+    const query = `UPDATE CITAS SET ESTADO = 3
+                   WHERE ID_PROFESIONAL = ${id_profesional} AND ESTADO = 1 AND FECHA = CURRENT_DATE;
+                   
+                   INSERT INTO RESTRICCION_FECHAS_PROFESIONAL(FECHA_FILTRO, ID_PROFESIONAL)
+                   VALUES (CURRENT_DATE, ${id_profesional})`
 
     try {
         await db.sequelize.query(query);

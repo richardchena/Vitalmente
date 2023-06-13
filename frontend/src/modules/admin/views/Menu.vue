@@ -138,6 +138,7 @@ import { mapGetters} from 'vuex'
 import authApi from '@/api/authApi'
 import 'bootstrap';
 import Swal  from 'sweetalert2'
+import format from 'date-fns/format';
 
 export default {
     created(){
@@ -261,7 +262,7 @@ export default {
         },
 
         pagina_citas_agendadas(){
-            this.$router.push({ name: 'citas-agendadas-admin' })
+            this.$router.push({ name: 'citas-agendadas-admin', query: {fecha: format(new Date(), 'yyyy/MM/dd')} })
         },
 
         especialidades(){

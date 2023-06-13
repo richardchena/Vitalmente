@@ -36,7 +36,8 @@
 
                 <template #table-row="props">
                     <span v-if="props.column.field == 'control'">
-                        <button class="btn btn-info" @click="cancelar_reserva(props.row.id_cita)"><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>
+                        <button v-if="props.row.estado === 'EN CURSO'" class="btn btn-info" @click="cancelar_reserva(props.row.id_cita)"><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>
+                        <button v-else class="btn btn-info" disabled><i class="fas fa-ban"></i>&nbsp;&nbsp;Cancelar</button>
                     </span>
 
                     <span v-else>
@@ -44,33 +45,6 @@
                     </span>
                 </template>
             </VueGoodTable>
-        </div>
-        
-        <div class="container" v-show="false">
-            <table class="table table-hover table-cell-border table-striped" id="tabla">
-                <thead>
-                    <tr>
-                        <th>Nro. Reserva</th>
-                        <th>Paciente</th>
-                        <th>Fecha Reserva</th>
-                        <th>Fecha Turno</th>
-                        <th>Especialidad</th>
-                        <th>Profesional</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="dato in datos" :key="dato.id_cita" :id="dato.id_cita">
-                        <td>{{dato.id_cita}}</td>
-                        <td>{{dato.paciente}}</td>
-                        <td>{{dato.fecha_reserva}}</td>
-                        <td>{{dato.fecha_turno}}</td>
-                        <td>{{dato.especialidad}}</td>
-                        <td>{{dato.profesional}}</td>
-                        <th></th>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
 </template>
@@ -98,7 +72,7 @@ export default {
 
             columns: [
                 {
-                    label: 'Nro. Reserva',
+                    label: 'Nro.',
                     field: 'id_cita'
                 },
                 {
@@ -120,6 +94,10 @@ export default {
                 {
                     label: 'Profesional',
                     field: 'profesional'
+                },
+                {
+                    label: 'Estado',
+                    field: 'estado'
                 },
                 {
                     label: 'Control',

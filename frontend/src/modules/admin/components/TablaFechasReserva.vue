@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="container">
+        <div class="container" v-if="bandera">
             <VueGoodTable
                 :columns="columns"
                 :rows="datos_citas"
@@ -67,7 +67,9 @@ export default {
             required: true
         },
 
-        id_fecha: {}
+        id_fecha: {},
+
+        bandera: {}
     },
 
     /*watch: {
