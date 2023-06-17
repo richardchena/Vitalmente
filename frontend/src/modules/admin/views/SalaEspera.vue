@@ -56,7 +56,7 @@ export default {
         },
 
         ver_todos_002(){
-            this.$router.push('citas_agendadas')
+            this.$router.push({name: 'citas-agendadas-admin'})
         }
     }
 }
