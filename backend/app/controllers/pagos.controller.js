@@ -119,7 +119,7 @@ exports.reg_timbrado = async (req, res) => {
 
 
 exports.distinct_ruc = async (req, res) => {
-    const query = `SELECT DISTINCT ID, RUC FROM CONTRIBUYENTES`
+    const query = `SELECT DISTINCT ID, RUC FROM CONTRIBUYENTES WHERE STATUS = 'A'`
     try {
         const data = await db.sequelize.query(query);
         res.json(data[0]);
