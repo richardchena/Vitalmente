@@ -26,6 +26,7 @@
                         <select v-model="select_type_mes" class="form-select" style="margin-left: -50px; width: 110%;">
                             <option value=1>MAYO/2023</option>
                             <option value=2>JUNIO/2023</option>
+                            <option value=3>JULIO/2023</option>
                         </select>
                     </div>
                 </div> 
@@ -64,9 +65,9 @@
                 egresos: [0],
                 encabezado: ['prueba'],
 
-                select_type: 2,
+                select_type: 1,
                 select_type_anho: 1,
-                select_type_mes: 1
+                select_type_mes: 3
             }
         },
 
@@ -86,7 +87,7 @@
                     }
                 })
 
-                let a = ['ene', 'feb', 'mar', 'abr', 'may', 'jun']
+                let a = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul']
                 let ing = Array.apply(null, Array(6)).map(Number.prototype.valueOf,0);
                 let egr = Array.apply(null, Array(6)).map(Number.prototype.valueOf,0);
 
@@ -124,17 +125,17 @@
                         start: startOfMonth(new Date(2023, 5 - 1, 1)),
                         end: endOfMonth(new Date(2023, 5 - 1, 1))
                     })
-                } else {
+                } else if(+this.select_type_mes === 2){
                     diff = intervalToDuration({
                         start: startOfMonth(new Date(2023, 6 - 1, 1)),
                         end: endOfMonth(new Date(2023, 6 - 1, 1))
                     })
+                } else {
+                    diff = intervalToDuration({
+                        start: startOfMonth(new Date(2023, 7 - 1, 1)),
+                        end: endOfMonth(new Date(2023, 7 - 1, 1))
+                    })
                 }
-
-                /*const diff = intervalToDuration({
-                        start: startOfMonth(new Date()),
-                        end: endOfMonth(new Date())
-                })*/
 
                 let dias_ingreso = Array.apply(null, Array(diff.days + 1)).map(Number.prototype.valueOf,0);
                 let dias_egreso = Array.apply(null, Array(diff.days + 1)).map(Number.prototype.valueOf,0);
@@ -180,15 +181,17 @@
         },
 
         async mounted(){
-            await this.get_datos()
-
             this.option.xAxis.data = this.encabezado
             this.option.series[0].data = this.ingresos
             this.option.series[1].data = this.egresos
         },
 
         created(){
-            //this.get_datos_mensual()
+            if(+this.select_type === 1) 
+                 this.get_datos_mensual()
+            else 
+                 this.get_datos()
+
 
             use([
                 CanvasRenderer,

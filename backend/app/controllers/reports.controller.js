@@ -285,8 +285,10 @@ exports.ingresos_egresos_diario = async (req, res) => {
 
     if(+mes === 1) {
         valor = 5
-    } else {
+    } else if(+mes === 2) {
         valor = 6
+    } else {
+        valor = 7
     }
 
     const query = `SELECT 
